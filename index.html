@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visual Proof</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&display=swap');
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+font-family: 'Inter', sans-serif;
+}
+:root {
+--amber-950: #0a0502;
+--amber-900: #170c06;
+--amber-800: #29150a;
+--amber-700: #3d2110;
+--amber-600: #5c3218;
+--amber-500: #854823;
+--amber-400: #ab5e2e;
+--amber-300: #d17834;
+--amber-200: #e69655;
+--amber-100: #f0b584;
+--amber-50: #f7d4b7;
+--accent: #ab5e2e;
+--accent-glow: rgba(171, 94, 46, 0.4);
+--glass-bg: rgba(23, 12, 6, 0.85);
+--glass-border: rgba(171, 94, 46, 0.3);
+--shadow: 0 12px 40px rgba(10, 5, 2, 0.9);
+--text-light: #f7d4b7;
+--danger: #ff7a5c;
+--transition-speed: 0.2s;
+}
+body.performance-mode {
+--transition-speed: 0s;
+}
+body.performance-mode * {
+transition: none !important;
+animation: none !important;
+}
+::selection {
+background: var(--amber-600);
+color: var(--amber-50);
+}
+body {
+background: var(--amber-950);
+color: var(--text-light);
+height: 100vh;
+display: flex;
+overflow: hidden;
+}
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-track { background: var(--amber-950); }
+::-webkit-scrollbar-thumb { background: var(--amber-700); border-radius: 20px; border: 3px solid var(--amber-950); }
+::-webkit-scrollbar-thumb:hover { background: var(--amber-500); }
+.activity-bar {
+width: 72px;
+background: var(--amber-900);
+border-right: 1px solid var(--amber-800);
+display: flex;
+flex-direction: column;
+align-items: center;
+padding-top: 28px;
+box-shadow: 4px 0 20px rgba(10, 5, 2, 0.8);
+z-index: 30;
+transition: width var(--transition-speed);
+white-space: nowrap;
+}
+.activity-bar.hidden { width: 0; overflow: hidden; padding: 0; }
+.activity-icon {
+width: 34px;
+height: 34px;
+display: flex;
+align-items: center;
+justify-content: center;
+margin-bottom: 30px;
+cursor: pointer;
+transition: transform var(--transition-speed), opacity var(--transition-speed), color var(--transition-speed);
+opacity: 0.7;
+color: var(--amber-400);
+font-size: 28px;
+}
+.activity-icon.fa-icon:hover { opacity: 1; color: var(--amber-200); transform: translateY(-3px) scale(1.1); filter: drop-shadow(0 4px 10px var(--accent-glow)); }
+.sidebar {
+width: 300px;
+background: var(--amber-900);
+border-right: 1px solid var(--amber-800);
+display: flex;
+flex-direction: column;
+box-shadow: 2px 0 25px rgba(10, 5, 2, 0.7);
+z-index: 20;
+transition: width var(--transition-speed);
+white-space: nowrap;
+}
+.sidebar.hidden { width: 0; overflow: hidden; padding: 0; }
+.project-header { padding: 24px 20px; border-bottom: 1px solid var(--amber-800); }
+.project-name {
+background: var(--amber-950);
+border: 1px solid var(--amber-700);
+color: var(--amber-100);
+font-size: 16px;
+font-weight: 600;
+width: 100%;
+padding: 14px 20px;
+outline: none;
+border-radius: 16px;
+transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+text-align: center;
+}
+.project-name:focus { border-color: var(--amber-400); box-shadow: 0 0 20px var(--accent-glow); }
+.sidebar-title {
+padding: 24px 20px 12px;
+color: var(--amber-400);
+font-size: 12px;
+font-weight: 700;
+letter-spacing: 1.5px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+text-transform: uppercase;
+}
+.add-file-btn {
+width: 32px; height: 32px;
+display: flex; align-items: center; justify-content: center;
+border-radius: 10px;
+background: var(--amber-800);
+border: 1px solid var(--amber-600);
+color: var(--amber-200);
+cursor: pointer;
+transition: background var(--transition-speed), color var(--transition-speed), transform var(--transition-speed);
+}
+.add-file-btn:hover { background: var(--amber-500); color: var(--amber-950); border-color: var(--amber-400); transform: scale(1.05); }
+.file-list { list-style: none; flex: 1; overflow-y: auto; padding: 0 12px; }
+.file-item {
+padding: 12px 16px; margin: 4px 0; border-radius: 12px;
+display: flex; align-items: center; justify-content: space-between;
+cursor: pointer; transition: background var(--transition-speed), color var(--transition-speed);
+font-size: 14px;
+color: var(--amber-200);
+}
+.file-item:hover { background: var(--amber-800); color: var(--amber-50); }
+.file-item.active { background: var(--amber-700); color: var(--amber-50); font-weight: 600; border-left: 4px solid var(--amber-400); }
+.file-left { display: flex; align-items: center; gap: 12px; width: 100%; }
+.file-left i { width: 20px; text-align: center; }
+.delete-btn {
+opacity: 0; background: none; border: none; color: var(--danger); font-size: 18px;
+cursor: pointer; width: 28px; height: 28px; border-radius: 8px;
+display: flex; align-items: center; justify-content: center;
+transition: opacity var(--transition-speed), background var(--transition-speed);
+}
+.delete-btn:hover { background: rgba(255,122,92,0.15); }
+.file-item:hover .delete-btn { opacity: 1; }
+.import-export {
+display: flex; gap: 10px; padding: 20px; border-top: 1px solid var(--amber-800);
+}
+.import-export button {
+flex: 1; background: var(--amber-800); border: 1px solid var(--amber-600);
+color: var(--amber-200); padding: 12px 0; border-radius: 12px; cursor: pointer;
+font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;
+transition: background var(--transition-speed), color var(--transition-speed), box-shadow var(--transition-speed);
+}
+.import-export button:hover { background: var(--amber-600); color: var(--amber-50); box-shadow: 0 4px 15px var(--accent-glow); }
+.workspace {
+flex: 1; display: flex; overflow: hidden;
+background: var(--amber-950);
+}
+.editor-section {
+flex: 1 1 0; display: flex; flex-direction: column; min-width: 200px;
+border: 1px solid var(--amber-800); position: relative;
+background: var(--amber-950);
+}
+.splitter {
+width: 8px;
+background: var(--amber-800);
+cursor: col-resize;
+transition: background var(--transition-speed);
+user-select: none;
+z-index: 10;
+}
+.splitter:hover, .splitter.dragging { background: var(--amber-500); }
+.preview-section {
+flex: 1 1 0; display: flex; flex-direction: column; min-width: 200px;
+background: var(--amber-50); position: relative;
+border: 1px solid var(--amber-800);
+}
+.preview-section.hidden { display: none; }
+.splitter.hidden { display: none; }
+.tabs {
+display: flex; background: var(--amber-900); height: 48px; overflow-x: auto;
+border-bottom: 1px solid var(--amber-800);
+flex-shrink: 0;
+align-items: center;
+}
+.tab {
+padding: 0 16px; display: flex; align-items: center; background: transparent;
+color: var(--amber-300); border-right: 1px solid var(--amber-800); font-size: 13px; font-weight: 500;
+cursor: pointer; white-space: nowrap; gap: 8px; transition: background var(--transition-speed), color var(--transition-speed);
+height: 100%;
+}
+.tab:hover { background: var(--amber-800); color: var(--amber-100); }
+.tab.active { background: var(--amber-950); color: var(--amber-50); border-top: 3px solid var(--amber-400); }
+.tab .close-tab {
+margin-left: 8px; opacity: 0.5; font-size: 14px; color: var(--danger);
+transition: opacity var(--transition-speed);
+}
+.tab .close-tab:hover { opacity: 1; }
+.editor-container {
+flex: 1;
+display: flex;
+overflow: hidden;
+position: relative;
+background: var(--amber-950);
+}
+.line-numbers {
+width: 50px;
+background: var(--amber-900);
+color: var(--amber-600);
+text-align: right;
+padding: 24px 12px 24px 4px;
+font-family: 'Fira Code', monospace;
+font-size: 15px;
+line-height: 1.6;
+overflow: hidden;
+user-select: none;
+border-right: 1px solid var(--amber-800);
+flex-shrink: 0;
+}
+.code-area {
+flex: 1; background: var(--amber-950); color: var(--amber-100);
+font-family: 'Fira Code', monospace; font-size: 15px; line-height: 1.6;
+padding: 24px; border: none; resize: none; outline: none; tab-size: 4;
+white-space: pre; overflow: auto; caret-color: var(--amber-400);
+}
+.settings-panel, .shortcuts-panel {
+flex: 1; background: var(--amber-950); padding: 24px; overflow-y: auto;
+color: var(--amber-100); display: none;
+}
+.settings-panel.active, .shortcuts-panel.active { display: block; }
+.settings-group { margin-bottom: 28px; }
+.settings-group label { display: block; margin-bottom: 12px; color: var(--amber-300); font-weight: 600; font-size: 14px; letter-spacing: 0.5px; }
+.settings-group input[type="text"] {
+width: 100%; background: var(--amber-950); border: 1px solid var(--amber-600);
+color: var(--amber-50); padding: 14px 20px; border-radius: 12px; outline: none; font-size: 15px;
+transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+}
+.settings-group input:focus { border-color: var(--amber-400); box-shadow: 0 0 15px var(--accent-glow); }
+.settings-group .checkbox-label {
+display: flex; align-items: center; gap: 12px; cursor: pointer;
+}
+.settings-group input[type="checkbox"] {
+width: 20px; height: 20px; accent-color: var(--amber-500);
+}
+.settings-actions { display: flex; gap: 12px; justify-content: flex-end; }
+.settings-actions button {
+padding: 12px 24px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer; transition: background var(--transition-speed), box-shadow var(--transition-speed);
+font-size: 14px;
+background: var(--amber-500); color: var(--amber-950);
+}
+.settings-actions button:hover { background: var(--amber-400); box-shadow: 0 4px 15px var(--accent-glow); }
+.shortcut-list { list-style: none; margin-bottom: 28px; max-height: 400px; overflow-y: auto; padding-right: 10px; }
+.shortcut-list li {
+display: flex; justify-content: space-between; align-items: center; padding: 12px 0;
+border-bottom: 1px solid var(--amber-800); color: var(--amber-100);
+}
+.shortcut-list .key {
+color: var(--amber-950); font-family: 'Fira Code', monospace; background: var(--amber-400); font-weight: 600;
+padding: 6px 12px; border-radius: 8px; font-size: 12px;
+}
+.find-overlay {
+position: absolute; top: 60px; right: 24px;
+background: var(--glass-bg); backdrop-filter: blur(16px);
+border: 1px solid var(--glass-border); border-radius: 16px; padding: 12px 16px;
+display: none; align-items: center; gap: 12px; z-index: 50; box-shadow: var(--shadow);
+}
+.find-overlay input {
+background: var(--amber-950); border: 1px solid var(--amber-600); color: var(--amber-50);
+padding: 10px 16px; border-radius: 8px; width: 220px; outline: none; font-size: 14px;
+transition: border-color var(--transition-speed);
+}
+.find-overlay input:focus { border-color: var(--amber-400); box-shadow: 0 0 10px var(--accent-glow); }
+.find-overlay button {
+background: var(--amber-800); border: 1px solid var(--amber-600); color: var(--amber-200); font-size: 14px;
+cursor: pointer; width: 32px; height: 32px; border-radius: 8px;
+display: flex; align-items: center; justify-content: center; transition: background var(--transition-speed), color var(--transition-speed);
+}
+.find-overlay button:hover { background: var(--amber-500); color: var(--amber-50); }
+.find-count { color: var(--amber-300); font-size: 13px; font-weight: 600; min-width: 45px; text-align: center; }
+.preview-header {
+background: var(--amber-900); height: 48px; padding: 0 20px;
+display: flex; align-items: center; justify-content: space-between;
+border-bottom: 1px solid var(--amber-800); color: var(--amber-200); font-size: 13px; font-weight: 600;
+letter-spacing: 1px;
+flex-shrink: 0;
+}
+.preview-controls { display: flex; gap: 10px; align-items: center; }
+.preview-controls select {
+background: var(--amber-950); border: 1px solid var(--amber-600); color: var(--amber-100);
+padding: 6px 14px; border-radius: 8px; font-size: 13px; outline: none; cursor: pointer;
+transition: border-color var(--transition-speed);
+}
+.preview-controls select:focus { border-color: var(--amber-400); }
+.preview-controls button {
+background: var(--amber-800); border: 1px solid var(--amber-600); color: var(--amber-200); font-size: 14px;
+cursor: pointer; width: 32px; height: 32px; border-radius: 8px;
+display: flex; align-items: center; justify-content: center; transition: background var(--transition-speed), color var(--transition-speed);
+}
+.preview-controls button:hover { background: var(--amber-500); color: var(--amber-50); }
+iframe { width: 100%; flex: 1; border: none; background: var(--amber-50); min-height: 0; }
+.console-panel {
+background: var(--amber-950); border-top: 2px solid var(--amber-600);
+height: 220px; display: flex; flex-direction: column; transition: height var(--transition-speed);
+flex-shrink: 0;
+}
+.console-header {
+height: 38px; display: flex; align-items: center; justify-content: space-between;
+padding: 0 20px; background: var(--amber-900); border-bottom: 1px solid var(--amber-800);
+font-size: 12px; font-weight: 700; color: var(--amber-400); letter-spacing: 1px;
+}
+.console-actions button {
+background: transparent; border: none; color: var(--amber-400); margin-left: 12px; cursor: pointer; font-size: 14px; transition: color var(--transition-speed), transform var(--transition-speed);
+}
+.console-actions button:hover { color: var(--amber-100); transform: scale(1.1); }
+.console-logs {
+flex: 1; overflow-y: auto; padding: 12px 16px; font-family: 'Fira Code', monospace;
+font-size: 13px; background: rgba(23, 12, 6, 0.4); color: var(--amber-100);
+}
+.log-item { padding: 6px 0; border-bottom: 1px solid var(--amber-900); display: flex; gap: 12px; }
+.log-item.error { color: #ff7a5c; }
+.log-item.warn { color: #f0b584; }
+.log-item.info { color: #a1d1f7; }
+.log-item .log-icon { width: 24px; opacity: 0.8; }
+.modal-overlay {
+display: none; position: fixed; top:0; left:0; width:100%; height:100%;
+background: rgba(10, 5, 2, 0.85); backdrop-filter: blur(8px);
+align-items: center; justify-content: center; z-index: 200;
+}
+.modal {
+background: var(--amber-900); border: 1px solid var(--amber-600);
+border-radius: 24px; padding: 36px; width: 480px; max-width: 90%;
+box-shadow: var(--shadow); color: var(--amber-50);
+}
+.modal h3 { margin-bottom: 24px; font-size: 20px; font-weight: 600; color: var(--amber-300); display: flex; align-items: center; gap: 8px; }
+.modal-input {
+width: 100%; background: var(--amber-950); border: 1px solid var(--amber-600);
+color: var(--amber-50); padding: 14px 20px; border-radius: 12px; margin-bottom: 24px; outline: none; font-size: 15px;
+transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+}
+.modal-input:focus { border-color: var(--amber-400); box-shadow: 0 0 15px var(--accent-glow); }
+.modal-actions { display: flex; justify-content: flex-end; gap: 12px; }
+.modal-actions button {
+padding: 12px 24px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer; transition: background var(--transition-speed), box-shadow var(--transition-speed);
+font-size: 14px;
+}
+.modal-actions .cancel { background: transparent; border: 1px solid var(--amber-600); color: var(--amber-200); }
+.modal-actions .cancel:hover { background: var(--amber-800); }
+.modal-actions .confirm, .modal-actions .create { background: var(--amber-500); color: var(--amber-950); }
+.modal-actions .confirm:hover, .modal-actions .create:hover { background: var(--amber-400); box-shadow: 0 4px 15px var(--accent-glow); }
+.preset-grid {
+display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px;
+}
+.preset-btn {
+background: var(--amber-800); border: 1px solid var(--amber-600); color: var(--amber-200);
+padding: 16px 10px; border-radius: 12px; cursor: pointer; text-align: center; transition: transform var(--transition-speed), border-color var(--transition-speed), background var(--transition-speed);
+font-weight: 500;
+}
+.preset-btn:hover { border-color: var(--amber-400); background: var(--amber-700); color: var(--amber-50); transform: translateY(-2px); }
+</style>
+</head>
+<body>
+<div class="activity-bar" id="activityBar">
+<i class="fas fa-file-code activity-icon fa-icon" onclick="switchToFile('index.html')" title="Home (index.html)"></i>
+<i class="fas fa-cog activity-icon fa-icon" onclick="openSettingsTab()" title="Settings"></i>
+<i class="fas fa-keyboard activity-icon fa-icon" onclick="openShortcutsTab()" title="Shortcuts"></i>
+</div>
+<div class="sidebar" id="sidebar">
+<div class="project-header">
+<input type="text" class="project-name" value="Visual Proof" spellcheck="false" id="projectNameInput">
+</div>
+<div class="sidebar-title">
+<span><i class="fas fa-crown" style="margin-right:8px; color:var(--amber-400);"></i>FILES</span>
+<span class="add-file-btn" onclick="showCreateFileModal()" title="New File"><i class="fas fa-plus"></i></span>
+</div>
+<ul class="file-list" id="fileList"></ul>
+<div class="import-export">
+<button onclick="document.getElementById('zipInput').click()"><i class="fas fa-file-import"></i> IMPORT</button>
+<button onclick="exportProject()"><i class="fas fa-file-export"></i> EXPORT</button>
+<input type="file" id="zipInput" accept=".zip" style="display:none;" onchange="importZip(event)">
+</div>
+</div>
+<div class="workspace layout-row" id="workspace">
+<div class="editor-section" id="editorSection">
+<div class="tabs" id="tabsArea"></div>
+<div class="editor-container">
+<div class="line-numbers" id="lineNumbers"></div>
+<textarea id="codeEditor" class="code-area" spellcheck="false" wrap="off"></textarea>
+<div class="settings-panel" id="settingsPanel">
+<h3 style="color:var(--amber-300); margin-bottom:24px;"><i class="fas fa-cog"></i> Settings</h3>
+<div class="settings-group" id="hotkeySettings"></div>
+<div class="settings-group">
+<label>Performance Mode</label>
+<label class="checkbox-label">
+<input type="checkbox" id="performanceModeCheckbox"> Disable animations & transitions (for low-end devices)
+</label>
+</div>
+<div class="settings-actions">
+<button onclick="saveSettingsFromPanel()">Save Hotkeys</button>
+</div>
+</div>
+<div class="shortcuts-panel" id="shortcutsPanel">
+<h3 style="color:var(--amber-300); margin-bottom:24px;"><i class="fas fa-keyboard"></i> Keyboard Shortcuts</h3>
+<ul class="shortcut-list" id="shortcutsList"></ul>
+<div class="settings-actions">
+<button onclick="exitShortcutsMode()">Close</button>
+</div>
+</div>
+</div>
+<div class="find-overlay" id="findOverlay">
+<input type="text" id="findInput" placeholder="Find in file...">
+<span class="find-count" id="findCount">0/0</span>
+<button id="findPrev" title="Previous"><i class="fas fa-chevron-up"></i></button>
+<button id="findNext" title="Next"><i class="fas fa-chevron-down"></i></button>
+<button class="close-btn" onclick="hideFind()"><i class="fas fa-times"></i></button>
+</div>
+</div>
+<div class="splitter" id="splitter"></div>
+<div class="preview-section" id="previewSection">
+<div class="preview-header">
+<span><i class="fas fa-eye" style="color:var(--amber-400); margin-right:8px;"></i>PREVIEW</span>
+<div class="preview-controls">
+<select id="htmlPreviewSelect" onchange="changePreviewHtml()"></select>
+<button onclick="swapPanels()" title="Swap Editor/Preview"><i class="fas fa-arrows-left-right"></i></button>
+<button onclick="togglePreview()" title="Toggle Fullscreen Editor"><i class="fas fa-toggle-on"></i></button>
+<button onclick="openNewTab()" title="Open in New Tab"><i class="fas fa-external-link-alt"></i></button>
+</div>
+</div>
+<iframe id="previewFrame"></iframe>
+<div class="console-panel" id="consolePanel">
+<div class="console-header">
+<span><i class="fas fa-terminal" style="margin-right:8px;"></i>CONSOLE</span>
+<div class="console-actions">
+<button onclick="clearConsole()" title="Clear Logs"><i class="fas fa-trash-alt"></i></button>
+<button onclick="toggleConsole()" title="Minimize/Expand"><i class="fas fa-chevron-down"></i></button>
+</div>
+</div>
+<div class="console-logs" id="consoleLogs"></div>
+</div>
+</div>
+</div>
+<div class="modal-overlay" id="fileModal">
+<div class="modal">
+<h3><i class="fas fa-file-signature"></i> Create New File</h3>
+<div class="preset-grid">
+<div class="preset-btn" data-filename="index.html" data-icon="fab fa-html5" data-content='<!DOCTYPE html>\n<html>\n<head>\n <title>Sandbox</title>\n <link rel="stylesheet" href="style.css">\n</head>\n<body>\n <div class="card">\n <h1>🚀 Sandbox Editor</h1>\n <p>made by devs for devs</p>\n <button id="actionBtn">Click me</button>\n </div>\n <script src="script.js"><\/script>\n</body>\n</html>'>HTML</div>
+<div class="preset-btn" data-filename="style.css" data-icon="fab fa-css3-alt" data-content='body {\n background: #0a0502;\n color: #f7d4b7;\n font-family: \"Inter\", sans-serif;\n display: flex;\n justify-content: center;\n align-items: center;\n height: 100vh;\n margin: 0;\n}\n.card {\n background: #170c06;\n border: 2px solid #854823;\n border-radius: 30px;\n padding: 50px;\n box-shadow: 0 20px 50px rgba(133, 72, 35, 0.2);\n text-align: center;\n animation: glowPulse 3s infinite;\n}\n@keyframes glowPulse {\n 0% { box-shadow: 0 20px 50px rgba(133, 72, 35, 0.2); }\n 50% { box-shadow: 0 20px 70px rgba(171, 94, 46, 0.6); }\n 100% { box-shadow: 0 20px 50px rgba(133, 72, 35, 0.2); }\n}\nh1 { color: #ab5e2e; font-size: 2.5em; margin-bottom: 10px; }\np { color: #d17834; margin-bottom: 30px; }\nbutton {\n background: #854823;\n border: none;\n color: #0a0502;\n padding: 14px 28px;\n border-radius: 12px;\n font-weight: bold;\n font-size: 16px;\n cursor: pointer;\n transition: all 0.2s;\n}\nbutton:hover {\n background: #ab5e2e;\n transform: translateY(-2px);\n box-shadow: 0 10px 20px rgba(171, 94, 46, 0.3);\n}'>CSS</div>
+<div class="preset-btn" data-filename="script.js" data-icon="fab fa-js" data-content='console.log(\"Sandbox ready!\");\n\ndocument.getElementById(\"actionBtn\").addEventListener(\"click\", function() {\n    console.log(\"Button clicked!\");\n    alert(\"Welcome to the sandbox!\");\n});'>JS</div>
+<div class="preset-btn" data-filename="data.json" data-icon="fas fa-file-code" data-content='{ "sandbox": true }'>JSON</div>
+<div class="preset-btn" data-filename="README.md" data-icon="fab fa-markdown" data-content='# Sandbox Editor'>Markdown</div>
+<div class="preset-btn" data-filename="server.py" data-icon="fab fa-python" data-content='print(\"Hello from sandbox\")'>Python</div>
+</div>
+<div style="display:flex; gap:12px; margin-bottom:24px;">
+<input type="text" id="customFileName" class="modal-input" style="margin-bottom:0;" placeholder="Custom file name...">
+<select id="customExt" style="background:var(--amber-950); border:1px solid var(--amber-600); color:white; border-radius:12px; padding:0 16px; outline:none;">
+<option value=".html">.html</option>
+<option value=".css">.css</option>
+<option value=".js">.js</option>
+<option value=".json">.json</option>
+<option value=".md">.md</option>
+<option value=".py">.py</option>
+<option value="">(none)</option>
+</select>
+</div>
+<div class="modal-actions">
+<button class="cancel" onclick="hideModal('fileModal')">Cancel</button>
+<button class="create" onclick="createCustomFile()">Create</button>
+</div>
+</div>
+</div>
+<div class="modal-overlay" id="confirmModal">
+<div class="modal" style="width: 400px;">
+<h3><i class="fas fa-exclamation-triangle" style="color:var(--amber-400);"></i> Confirm Action</h3>
+<p id="confirmMessage" style="margin-bottom:28px; color: var(--amber-100); font-size: 15px;"></p>
+<div class="modal-actions">
+<button class="cancel" id="confirmCancel">Cancel</button>
+<button class="confirm" id="confirmOk">Proceed</button>
+</div>
+</div>
+</div>
+<div class="modal-overlay" id="shortcutsModal">
+<div class="modal">
+<h3><i class="fas fa-keyboard"></i> Quick Shortcuts</h3>
+<ul class="shortcut-list" id="shortcutListModal"></ul>
+<div class="modal-actions">
+<button class="confirm" onclick="hideShortcutsModal()">Close</button>
+</div>
+</div>
+</div>
+<script>
+let files = {
+'index.html': { icon: 'fab fa-html5', content: `<!DOCTYPE html>\n<html>\n<head>\n <title>Sandbox</title>\n <link rel="stylesheet" href="style.css">\n</head>\n<body>\n <div class="card">\n <h1>🚀 Sandbox Editor</h1>\n <p>made by devs for devs</p>\n <button id="actionBtn">Click me</button>\n </div>\n <script src="script.js"><\/script>\n</body>\n</html>` },
+'style.css': { icon: 'fab fa-css3-alt', content: `body {\n background: #0a0502;\n color: #f7d4b7;\n font-family: "Inter", sans-serif;\n display: flex;\n justify-content: center;\n align-items: center;\n height: 100vh;\n margin: 0;\n}\n.card {\n background: #170c06;\n border: 2px solid #854823;\n border-radius: 30px;\n padding: 50px;\n box-shadow: 0 20px 50px rgba(133, 72, 35, 0.2);\n text-align: center;\n animation: glowPulse 3s infinite;\n}\n@keyframes glowPulse {\n 0% { box-shadow: 0 20px 50px rgba(133, 72, 35, 0.2); }\n 50% { box-shadow: 0 20px 70px rgba(171, 94, 46, 0.6); }\n 100% { box-shadow: 0 20px 50px rgba(133, 72, 35, 0.2); }\n}\nh1 { color: #ab5e2e; font-size: 2.5em; margin-bottom: 10px; }\np { color: #d17834; margin-bottom: 30px; }\nbutton {\n background: #854823;\n border: none;\n color: #0a0502;\n padding: 14px 28px;\n border-radius: 12px;\n font-weight: bold;\n font-size: 16px;\n cursor: pointer;\n transition: all 0.2s;\n}\nbutton:hover {\n background: #ab5e2e;\n transform: translateY(-2px);\n box-shadow: 0 10px 20px rgba(171, 94, 46, 0.3);\n}` },
+'script.js': { icon: 'fab fa-js', content: `console.log("Sandbox ready!");\n\ndocument.getElementById("actionBtn").addEventListener("click", function() {\n    console.log("Button clicked!");\n    alert("Welcome to the sandbox!");\n});` }
+};
+let currentFile = 'index.html';
+let previewHtmlFile = 'index.html';
+let previewVisible = true;
+let consoleVisible = true;
+let panelsSwapped = false;
+let openedFiles = ['index.html', 'style.css', 'script.js']; 
+let settingsMode = false;
+let shortcutsMode = false;
+let sidebarVisible = true;
+let editorRatio = 0.5; 
+let performanceMode = false;
+let hotkeys = {
+'save': { desc: 'Save / Update Preview', current: 'Ctrl+S' },
+'find': { desc: 'Find in Code', current: 'Ctrl+F' },
+'newFile': { desc: 'New File', current: 'Ctrl+N' },
+'togglePreview': { desc: 'Toggle Fullscreen Editor', current: 'Ctrl+Shift+P' },
+'clearConsole': { desc: 'Clear Console', current: 'Ctrl+L' },
+'toggleConsole': { desc: 'Minimize/Expand Console', current: 'Ctrl+~' },
+'shortcuts': { desc: 'View Shortcuts Modal', current: 'Ctrl+?' },
+'swapPanels': { desc: 'Swap Editor/Preview', current: 'Ctrl+Shift+S' },
+'nextTab': { desc: 'Next Tab', current: 'Ctrl+Tab' },
+'prevTab': { desc: 'Previous Tab', current: 'Ctrl+Shift+Tab' },
+'closeTab': { desc: 'Close Current Tab', current: 'Ctrl+W' },
+'toggleSidebar': { desc: 'Hide/Show Sidebar', current: 'Ctrl+B' },
+'duplicateLine': { desc: 'Duplicate Line', current: 'Ctrl+D' },
+'toggleComment': { desc: 'Toggle Line Comment', current: 'Ctrl+/' }
+};
+const fileListEl = document.getElementById('fileList');
+const codeEditor = document.getElementById('codeEditor');
+const lineNumbersEl = document.getElementById('lineNumbers');
+const tabsArea = document.getElementById('tabsArea');
+const previewFrame = document.getElementById('previewFrame');
+const fileModal = document.getElementById('fileModal');
+const shortcutsModal = document.getElementById('shortcutsModal');
+const findOverlay = document.getElementById('findOverlay');
+const findInput = document.getElementById('findInput');
+const findCount = document.getElementById('findCount');
+const htmlPreviewSelect = document.getElementById('htmlPreviewSelect');
+const consoleLogs = document.getElementById('consoleLogs');
+const workspace = document.getElementById('workspace');
+const splitter = document.getElementById('splitter');
+const editorSection = document.getElementById('editorSection');
+const previewSection = document.getElementById('previewSection');
+const projectNameInput = document.getElementById('projectNameInput');
+const settingsPanel = document.getElementById('settingsPanel');
+const shortcutsPanel = document.getElementById('shortcutsPanel');
+const hotkeySettings = document.getElementById('hotkeySettings');
+const shortcutsList = document.getElementById('shortcutsList');
+const shortcutListModal = document.getElementById('shortcutListModal');
+const sidebar = document.getElementById('sidebar');
+const activityBar = document.getElementById('activityBar');
+const performanceCheckbox = document.getElementById('performanceModeCheckbox');
+let findMatches = [], findIndex = -1;
+function getFileIconClass(f) {
+if (f.endsWith('.html')) return 'fab fa-html5';
+if (f.endsWith('.css')) return 'fab fa-css3-alt';
+if (f.endsWith('.js')) return 'fab fa-js';
+if (f.endsWith('.json')) return 'fas fa-file-code';
+if (f.endsWith('.md')) return 'fab fa-markdown';
+if (f.endsWith('.py')) return 'fab fa-python';
+return 'fas fa-file';
+}
+function renderSidebarAndTabs() {
+fileListEl.innerHTML = '';
+for (let n in files) {
+let li = document.createElement('li');
+let isActive = (n === currentFile && !settingsMode && !shortcutsMode);
+li.className = `file-item ${isActive ? 'active' : ''}`;
+li.innerHTML = `<div class="file-left" onclick="switchToFile('${n}')"><i class="${files[n].icon}"></i> ${n}</div>${Object.keys(files).length>1?`<button class="delete-btn" onclick="deleteFile('${n}')" title="Delete File"><i class="fas fa-trash"></i></button>`:''}`;
+fileListEl.appendChild(li);
+}
+renderTabs();
+}
+function renderTabs() {
+tabsArea.innerHTML = '';
+if (settingsMode) {
+let t = document.createElement('div'); t.className = 'tab active'; t.innerHTML = '<i class="fas fa-cog"></i> Settings'; tabsArea.appendChild(t);
+return;
+}
+if (shortcutsMode) {
+let t = document.createElement('div'); t.className = 'tab active'; t.innerHTML = '<i class="fas fa-keyboard"></i> Shortcuts'; tabsArea.appendChild(t);
+return;
+}
+for (let f of openedFiles) {
+if (!files[f]) continue; 
+let t = document.createElement('div'); 
+t.className = `tab ${f === currentFile ? 'active' : ''}`;
+t.innerHTML = `<i class="${files[f].icon}"></i> ${f}`;
+if (openedFiles.length > 1) {
+t.innerHTML += `<span class="close-tab" onclick="closeTab('${f}', event)"><i class="fas fa-times"></i></span>`;
+}
+t.onclick = (e) => { if (!e.target.classList.contains('close-tab') && !e.target.closest('.close-tab')) switchToFile(f); };
+tabsArea.appendChild(t);
+}
+}
+function closeTab(filename, event) {
+event.stopPropagation();
+if (openedFiles.length <= 1) return; 
+let index = openedFiles.indexOf(filename);
+if (index !== -1) {
+openedFiles.splice(index, 1);
+if (currentFile === filename) {
+currentFile = openedFiles[0] || Object.keys(files)[0];
+codeEditor.value = files[currentFile]?.content || '';
+}
+if (settingsMode || shortcutsMode) exitSpecialModes();
+renderSidebarAndTabs();
+updateLineNumbers();
+}
+}
+function switchToFile(n) {
+if (!files[n]) return;
+if (settingsMode || shortcutsMode) exitSpecialModes();
+if (files[currentFile] && !settingsMode && !shortcutsMode) files[currentFile].content = codeEditor.value;
+currentFile = n;
+if (!openedFiles.includes(n)) openedFiles.push(n);
+codeEditor.value = files[n].content;
+renderSidebarAndTabs();
+updateLineNumbers();
+}
+function openSettingsTab() {
+if (settingsMode) return;
+if (shortcutsMode) {
+shortcutsMode = false;
+settingsMode = true;
+codeEditor.style.display = 'none';
+lineNumbersEl.style.display = 'none';
+shortcutsPanel.classList.remove('active');
+settingsPanel.classList.add('active');
+renderHotkeySettings();
+renderSidebarAndTabs();
+return;
+}
+if (!settingsMode && !shortcutsMode) {
+if (files[currentFile]) files[currentFile].content = codeEditor.value;
+settingsMode = true;
+codeEditor.style.display = 'none';
+lineNumbersEl.style.display = 'none';
+settingsPanel.classList.add('active');
+renderHotkeySettings();
+renderSidebarAndTabs();
+}
+}
+function openShortcutsTab() {
+if (shortcutsMode) return;
+if (settingsMode) {
+settingsMode = false;
+shortcutsMode = true;
+codeEditor.style.display = 'none';
+lineNumbersEl.style.display = 'none';
+settingsPanel.classList.remove('active');
+shortcutsPanel.classList.add('active');
+renderShortcutsPanel();
+renderSidebarAndTabs();
+return;
+}
+if (!shortcutsMode && !settingsMode) {
+if (files[currentFile]) files[currentFile].content = codeEditor.value;
+shortcutsMode = true;
+codeEditor.style.display = 'none';
+lineNumbersEl.style.display = 'none';
+shortcutsPanel.classList.add('active');
+renderShortcutsPanel();
+renderSidebarAndTabs();
+}
+}
+function exitSpecialModes() {
+settingsMode = false;
+shortcutsMode = false;
+codeEditor.style.display = 'block';
+lineNumbersEl.style.display = 'block';
+settingsPanel.classList.remove('active');
+shortcutsPanel.classList.remove('active');
+if (files[currentFile]) codeEditor.value = files[currentFile].content;
+renderSidebarAndTabs();
+updateLineNumbers();
+}
+function exitShortcutsMode() { exitSpecialModes(); }
+function renderHotkeySettings() {
+hotkeySettings.innerHTML = '<label style="margin-bottom:16px; display:block;">Custom Hotkeys</label>';
+for (let k in hotkeys) {
+let d = document.createElement('div'); d.style.marginBottom = '16px';
+d.innerHTML = `<div style="display:flex; align-items:center; gap:12px;">
+<span style="width:180px; color:var(--amber-200);">${hotkeys[k].desc}</span>
+<input type="text" value="${hotkeys[k].current}" data-key="${k}" style="flex:1; background:var(--amber-950); border:1px solid var(--amber-600); color:var(--amber-50); padding:10px 16px; border-radius:8px;">
+</div>`;
+hotkeySettings.appendChild(d);
+}
+performanceCheckbox.checked = performanceMode;
+}
+function renderShortcutsPanel() {
+shortcutsList.innerHTML = '';
+for (let k in hotkeys) {
+let li = document.createElement('li'); li.innerHTML = `<span>${hotkeys[k].desc}</span> <span class="key">${hotkeys[k].current}</span>`;
+shortcutsList.appendChild(li);
+}
+}
+function saveSettingsFromPanel() {
+document.querySelectorAll('#hotkeySettings input').forEach(inp => {
+let k = inp.dataset.key;
+if (k) hotkeys[k].current = inp.value.toUpperCase();
+});
+performanceMode = performanceCheckbox.checked;
+if (performanceMode) {
+document.body.classList.add('performance-mode');
+} else {
+document.body.classList.remove('performance-mode');
+}
+exitSpecialModes();
+}
+function updateLineNumbers() {
+const lines = codeEditor.value.split('\n').length;
+lineNumbersEl.innerHTML = Array.from({length: lines}, (_, i) => i + 1).join('<br>');
+}
+codeEditor.addEventListener('scroll', () => { lineNumbersEl.scrollTop = codeEditor.scrollTop; });
+function deleteFile(n) { 
+showConfirmDialog(`Are you sure you want to delete ${n}?`,()=>{ 
+delete files[n]; 
+let idx = openedFiles.indexOf(n);
+if (idx !== -1) openedFiles.splice(idx,1);
+if (previewHtmlFile===n && n.endsWith('.html')) { let h=Object.keys(files).filter(f=>f.endsWith('.html')); previewHtmlFile=h.length?h[0]:null; } 
+if (currentFile===n) { currentFile=Object.keys(files)[0]||''; codeEditor.value=files[currentFile]?.content||''; } 
+if (settingsMode || shortcutsMode) exitSpecialModes();
+renderSidebarAndTabs(); updateLineNumbers(); updatePreviewHtmlSelect(); updatePreview(); 
+}); 
+}
+function createPreset(fn,ic,cont) {
+if (files[fn]) { showConfirmDialog(`Overwrite existing ${fn}?`,()=>{ 
+if(files[currentFile] && !settingsMode && !shortcutsMode)files[currentFile].content=codeEditor.value; 
+files[fn]={icon:ic,content:cont}; currentFile=fn; 
+if (!openedFiles.includes(fn)) openedFiles.push(fn);
+codeEditor.value=cont; 
+if (settingsMode || shortcutsMode) exitSpecialModes();
+renderSidebarAndTabs(); updateLineNumbers(); updatePreviewHtmlSelect(); updatePreview(); hideModal('fileModal'); 
+}); }
+else { 
+if(files[currentFile] && !settingsMode && !shortcutsMode)files[currentFile].content=codeEditor.value; 
+files[fn]={icon:ic,content:cont}; currentFile=fn; 
+if (!openedFiles.includes(fn)) openedFiles.push(fn);
+codeEditor.value=cont; 
+if (settingsMode || shortcutsMode) exitSpecialModes();
+renderSidebarAndTabs(); updateLineNumbers(); updatePreviewHtmlSelect(); updatePreview(); hideModal('fileModal'); 
+}
+}
+document.querySelectorAll('.preset-btn').forEach(b=>b.addEventListener('click',()=>createPreset(b.dataset.filename,b.dataset.icon,b.dataset.content)));
+function createCustomFile() {
+let base=document.getElementById('customFileName').value.trim(); let ext=document.getElementById('customExt').value; if(!base){ return; }
+let full=base+(ext&&!base.endsWith(ext)?ext:''); full=full.replace(/[\\/]/g,''); if(!full)return;
+if(files[full]){ showConfirmDialog(`Overwrite ${full}?`,()=>{ 
+if(files[currentFile] && !settingsMode && !shortcutsMode)files[currentFile].content=codeEditor.value; 
+files[full]={icon:getFileIconClass(full),content:''}; currentFile=full; 
+if (!openedFiles.includes(full)) openedFiles.push(full);
+codeEditor.value=''; 
+if (settingsMode || shortcutsMode) exitSpecialModes();
+renderSidebarAndTabs(); updateLineNumbers(); updatePreviewHtmlSelect(); updatePreview(); hideModal('fileModal'); 
+}); }
+else { 
+if(files[currentFile] && !settingsMode && !shortcutsMode)files[currentFile].content=codeEditor.value; 
+files[full]={icon:getFileIconClass(full),content:''}; currentFile=full; 
+if (!openedFiles.includes(full)) openedFiles.push(full);
+codeEditor.value=''; 
+if (settingsMode || shortcutsMode) exitSpecialModes();
+renderSidebarAndTabs(); updateLineNumbers(); updatePreviewHtmlSelect(); updatePreview(); hideModal('fileModal'); 
+}
+}
+function showCreateFileModal() { fileModal.style.display='flex'; document.getElementById('customFileName').focus(); }
+function hideModal(id) { document.getElementById(id).style.display='none'; }
+function showConfirmDialog(msg,onOk,onCancel) {
+let m=document.getElementById('confirmModal'); document.getElementById('confirmMessage').innerText=msg; m.style.display='flex';
+let ok=document.getElementById('confirmOk'), cancel=document.getElementById('confirmCancel');
+let done=()=>{ m.style.display='none'; ok.removeEventListener('click',okHandler); cancel.removeEventListener('click',cancelHandler); };
+let okHandler=()=>{ done(); if(onOk)onOk(); };
+let cancelHandler=()=>{ done(); if(onCancel)onCancel(); };
+ok.addEventListener('click',okHandler); cancel.addEventListener('click',cancelHandler);
+m.addEventListener('click',function f(e){ if(e.target===m){ cancelHandler(); m.removeEventListener('click',f); } });
+}
+function updatePreviewHtmlSelect() {
+let h=Object.keys(files).filter(f=>f.endsWith('.html')); htmlPreviewSelect.innerHTML='';
+if(!h.length){ htmlPreviewSelect.innerHTML='<option>No HTML Output</option>'; previewHtmlFile=null; }
+else { h.forEach(f=>{ let o=document.createElement('option'); o.value=f; o.text=f; if(f===previewHtmlFile)o.selected=true; htmlPreviewSelect.appendChild(o); }); if(!previewHtmlFile||!h.includes(previewHtmlFile)) previewHtmlFile=h[0]; }
+}
+function changePreviewHtml() { previewHtmlFile=htmlPreviewSelect.value; updatePreview(); }
+function togglePreview() { 
+previewVisible = !previewVisible; 
+previewSection.classList.toggle('hidden', !previewVisible);
+splitter.classList.toggle('hidden', !previewVisible);
+if (!previewVisible) {
+editorSection.style.flex = '1 1 auto';
+previewSection.style.flex = '0 0 0';
+} else {
+// Restore ratio, default to 0.5 if not set
+const total = workspace.clientWidth - (splitter.clientWidth || 8);
+const editorWidth = total * (editorRatio || 0.5);
+const previewWidth = total - editorWidth;
+editorSection.style.flex = `0 0 ${editorWidth}px`;
+previewSection.style.flex = `0 0 ${previewWidth}px`;
+}
+}
+function swapPanels() {
+panelsSwapped = !panelsSwapped;
+if (panelsSwapped) {
+editorSection.style.order = '3';
+splitter.style.order = '2';
+previewSection.style.order = '1';
+} else {
+editorSection.style.order = '1';
+splitter.style.order = '2';
+previewSection.style.order = '3';
+}
+}
+function toggleSidebar() {
+sidebarVisible = !sidebarVisible;
+sidebar.classList.toggle('hidden', !sidebarVisible);
+activityBar.classList.toggle('hidden', !sidebarVisible);
+// Trigger a resize to adjust preview ratio if needed
+if (previewVisible) {
+const total = workspace.clientWidth - (splitter.clientWidth || 8);
+const editorWidth = total * (editorRatio || 0.5);
+const previewWidth = total - editorWidth;
+editorSection.style.flex = `0 0 ${editorWidth}px`;
+previewSection.style.flex = `0 0 ${previewWidth}px`;
+}
+}
+function getCompiledCode() {
+if(files[currentFile] && !settingsMode && !shortcutsMode) files[currentFile].content=codeEditor.value;
+let html=previewHtmlFile&&files[previewHtmlFile]?files[previewHtmlFile].content:(Object.keys(files).find(f=>f.endsWith('.html'))?files[Object.keys(files).find(f=>f.endsWith('.html'))].content:'<!DOCTYPE html><html><head></head><body></body></html>');
+let css='',js=''; for(let f in files){ if(f.endsWith('.css')) css+=files[f].content+'\n'; if(f.endsWith('.js')) js+=files[f].content+'\n'; }
+let styleTag=css?`<style>${css}</style>`:'', scriptTag=js?`<script>${js}<\/script>`:'';
+if(html.includes('</head>')) html=html.replace('</head>',styleTag+'</head>'); else html=styleTag+html;
+if(html.includes('</body>')) html=html.replace('</body>',scriptTag+'</body>'); else html+=scriptTag;
+return html;
+}
+function updatePreview() { previewFrame.srcdoc = getCompiledCode(); }
+function openNewTab() { window.open().document.write(getCompiledCode()); }
+function showFind() { findOverlay.style.display='flex'; findInput.focus(); findInput.select(); updateFindCount(); }
+function hideFind() { findOverlay.style.display='none'; codeEditor.focus(); }
+function updateFindCount() {
+let term=findInput.value; if(!term){ findCount.innerText='0/0'; findMatches=[]; return; }
+let content=codeEditor.value; findMatches=[]; let pos=0;
+while((pos=content.indexOf(term,pos))!==-1){ findMatches.push(pos); pos+=term.length; }
+findMatches.term=term; findIndex=findMatches.length?0:-1;
+findCount.innerText=findMatches.length?`${findIndex+1}/${findMatches.length}`:'0/0';
+}
+function findNext() { if(!findMatches.length) updateFindCount(); if(!findMatches.length) return; findIndex=(findIndex+1)%findMatches.length; let pos=findMatches[findIndex]; codeEditor.focus(); codeEditor.setSelectionRange(pos,pos+findInput.value.length); findCount.innerText=`${findIndex+1}/${findMatches.length}`; }
+function findPrev() { if(!findMatches.length) updateFindCount(); if(!findMatches.length) return; findIndex=(findIndex-1+findMatches.length)%findMatches.length; let pos=findMatches[findIndex]; codeEditor.focus(); codeEditor.setSelectionRange(pos,pos+findInput.value.length); findCount.innerText=`${findIndex-1+findMatches.length+1}/${findMatches.length}`; }
+findInput.addEventListener('input',updateFindCount);
+findInput.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); if(e.shiftKey) findPrev(); else findNext(); } if(e.key==='Escape') hideFind(); });
+document.getElementById('findNext').addEventListener('click',findNext);
+document.getElementById('findPrev').addEventListener('click',findPrev);
+function showShortcutsModal() {
+let list=document.getElementById('shortcutListModal'); list.innerHTML='';
+for(let k in hotkeys) { let li=document.createElement('li'); li.innerHTML=`<span>${hotkeys[k].desc}</span> <span class="key">${hotkeys[k].current}</span>`; list.appendChild(li); }
+shortcutsModal.style.display='flex';
+}
+function hideShortcutsModal() { shortcutsModal.style.display='none'; }
+async function importZip(e) {
+let file=e.target.files[0]; if(!file)return;
+try{ let zip=new JSZip(); let contents=await zip.loadAsync(file); let newFiles={}; let promises=[];
+contents.forEach((path,entry)=>{ if(!entry.dir) promises.push(entry.async('string').then(c=>{ let name=path.split('/').pop(); if(name) newFiles[name]={icon:getFileIconClass(name),content:c}; })); });
+await Promise.all(promises);
+if(Object.keys(newFiles).length) showConfirmDialog('Replace current environment?',()=>{ files=newFiles; openedFiles = Object.keys(files).filter(f=>f.endsWith('.html')||f.endsWith('.css')||f.endsWith('.js')); if(!openedFiles.length) openedFiles = [Object.keys(files)[0]]; currentFile=openedFiles[0]; codeEditor.value=files[currentFile]?.content||''; previewHtmlFile=Object.keys(files).find(f=>f.endsWith('.html'))||null; if (settingsMode||shortcutsMode) exitSpecialModes(); renderSidebarAndTabs(); updateLineNumbers(); updatePreviewHtmlSelect(); updatePreview(); });
+e.target.value='';
+} catch{ alert('Import failed.'); }
+}
+function exportProject() { 
+if(files[currentFile] && !settingsMode && !shortcutsMode) files[currentFile].content=codeEditor.value; 
+let zip=new JSZip(); 
+for(let [n,d] of Object.entries(files)) zip.file(n,d.content); 
+let projectName = projectNameInput.value.trim() || 'visual_proof';
+zip.generateAsync({type:'blob'}).then(b=>saveAs(b, projectName + '.zip')); 
+}
+function captureConsole() {
+let win=previewFrame.contentWindow; if(!win)return;
+let oldLog=win.console.log, oldWarn=win.console.warn, oldError=win.console.error, oldInfo=win.console.info;
+win.console.log=function(...a){ addLog('log',...a); oldLog.apply(win.console,a); };
+win.console.warn=function(...a){ addLog('warn',...a); oldWarn.apply(win.console,a); };
+win.console.error=function(...a){ addLog('error',...a); oldError.apply(win.console,a); };
+win.console.info=function(...a){ addLog('info',...a); oldInfo.apply(win.console,a); };
+win.addEventListener('error', (e) => addLog('error', e.message));
+}
+function addLog(t,...a) { let el=document.createElement('div'); el.className=`log-item ${t}`; let icon={log:'📋',warn:'⚠️',error:'❌',info:'ℹ️'}[t]||'📄'; el.innerHTML=`<span class="log-icon">${icon}</span><span>${a.map(x=>typeof x==='string'?x:JSON.stringify(x)).join(' ')}</span>`; consoleLogs.appendChild(el); consoleLogs.scrollTop=consoleLogs.scrollHeight; }
+function clearConsole() { consoleLogs.innerHTML=''; }
+function toggleConsole() { let p=document.getElementById('consolePanel'); consoleVisible=!consoleVisible; p.style.height=consoleVisible?'220px':'38px'; }
+previewFrame.addEventListener('load',captureConsole);
+function duplicateLine() {
+let start = codeEditor.selectionStart;
+let val = codeEditor.value;
+let lineStart = val.lastIndexOf('\n', start-1) + 1;
+let lineEnd = val.indexOf('\n', start);
+if (lineEnd === -1) lineEnd = val.length;
+let line = val.substring(lineStart, lineEnd);
+codeEditor.value = val.substring(0, lineEnd) + '\n' + line + val.substring(lineEnd);
+codeEditor.selectionStart = lineEnd + 1;
+codeEditor.selectionEnd = lineEnd + 1;
+files[currentFile].content = codeEditor.value;
+updateLineNumbers();
+updatePreview();
+}
+function toggleComment() {
+let start = codeEditor.selectionStart;
+let val = codeEditor.value;
+let lineStart = val.lastIndexOf('\n', start-1) + 1;
+let lineEnd = val.indexOf('\n', start);
+if (lineEnd === -1) lineEnd = val.length;
+let line = val.substring(lineStart, lineEnd);
+if (line.trim().startsWith('//')) {
+line = line.replace('//', '');
+} else {
+line = '//' + line;
+}
+codeEditor.value = val.substring(0, lineStart) + line + val.substring(lineEnd);
+codeEditor.selectionStart = lineStart;
+codeEditor.selectionEnd = lineStart + line.length;
+files[currentFile].content = codeEditor.value;
+updateLineNumbers();
+updatePreview();
+}
+function checkHotkey(e, shortcutString) {
+if (!shortcutString) return false;
+let keys = shortcutString.toLowerCase().split('+');
+let needsCtrl = keys.includes('ctrl') || keys.includes('cmd');
+let needsShift = keys.includes('shift');
+let needsAlt = keys.includes('alt');
+let key = keys[keys.length - 1];
+if (key === 'space') key = ' ';
+if (key === '~' || key === '`') key = '`';
+return (!!e.ctrlKey === needsCtrl) && (!!e.shiftKey === needsShift) && (!!e.altKey === needsAlt) && (e.key.toLowerCase() === key || e.code.toLowerCase().endsWith(key));
+}
+codeEditor.value=files[currentFile].content; renderSidebarAndTabs(); updateLineNumbers(); updatePreviewHtmlSelect(); updatePreview();
+let timeout; codeEditor.addEventListener('input',()=>{ if(!settingsMode && !shortcutsMode) { updateLineNumbers(); clearTimeout(timeout); timeout=setTimeout(updatePreview,400); } });
+codeEditor.addEventListener('keydown', e => {
+if (e.ctrlKey && e.key === 'z') return; // let browser handle undo
+if (e.ctrlKey && e.key === 'y') return; // redo
+if(settingsMode || shortcutsMode) return;
+if(e.key==='Tab' && !e.ctrlKey && !e.shiftKey && document.activeElement === codeEditor){ e.preventDefault(); let s=codeEditor.selectionStart; codeEditor.value=codeEditor.value.substring(0,s)+'  '+codeEditor.value.substring(codeEditor.selectionEnd); codeEditor.selectionStart=codeEditor.selectionEnd=s+2; files[currentFile].content=codeEditor.value; updateLineNumbers(); updatePreview(); return; }
+const pairs = { '(': ')', '{': '}', '[': ']', '"': '"', "'": "'" };
+if (pairs[e.key] && document.activeElement === codeEditor) {
+let s = codeEditor.selectionStart, end = codeEditor.selectionEnd;
+if (s !== end) { e.preventDefault(); let val = codeEditor.value; codeEditor.value = val.substring(0,s) + e.key + val.substring(s,end) + pairs[e.key] + val.substring(end); codeEditor.selectionStart = s+1; codeEditor.selectionEnd = end+1; files[currentFile].content = codeEditor.value; updateLineNumbers(); updatePreview(); } 
+else { e.preventDefault(); let val = codeEditor.value; codeEditor.value = val.substring(0,s) + e.key + pairs[e.key] + val.substring(end); codeEditor.selectionStart = codeEditor.selectionEnd = s+1; files[currentFile].content = codeEditor.value; updatePreview(); }
+}
+if (checkHotkey(e, hotkeys.save.current)) { e.preventDefault(); updatePreview(); }
+if (checkHotkey(e, hotkeys.find.current)) { e.preventDefault(); showFind(); }
+if (checkHotkey(e, hotkeys.newFile.current)) { e.preventDefault(); showCreateFileModal(); }
+if (checkHotkey(e, hotkeys.togglePreview.current)) { e.preventDefault(); togglePreview(); }
+if (checkHotkey(e, hotkeys.clearConsole.current)) { e.preventDefault(); clearConsole(); }
+if (checkHotkey(e, hotkeys.toggleConsole.current)) { e.preventDefault(); toggleConsole(); }
+if (checkHotkey(e, hotkeys.shortcuts.current)) { e.preventDefault(); showShortcutsModal(); }
+if (checkHotkey(e, hotkeys.swapPanels.current)) { e.preventDefault(); swapPanels(); }
+if (checkHotkey(e, hotkeys.nextTab.current)) { e.preventDefault(); cycleTab(1); }
+if (checkHotkey(e, hotkeys.prevTab.current)) { e.preventDefault(); cycleTab(-1); }
+if (checkHotkey(e, hotkeys.closeTab.current)) { e.preventDefault(); if (!settingsMode && !shortcutsMode && openedFiles.length > 1) closeTab(currentFile, new Event('click')); }
+if (checkHotkey(e, hotkeys.toggleSidebar.current)) { e.preventDefault(); toggleSidebar(); }
+if (checkHotkey(e, hotkeys.duplicateLine.current)) { e.preventDefault(); duplicateLine(); }
+if (checkHotkey(e, hotkeys.toggleComment.current)) { e.preventDefault(); toggleComment(); }
+});
+function cycleTab(direction) {
+if (settingsMode || shortcutsMode) return;
+let idx = openedFiles.indexOf(currentFile);
+let newIdx = (idx + direction + openedFiles.length) % openedFiles.length;
+switchToFile(openedFiles[newIdx]);
+}
+fileModal.addEventListener('click',e=>{ if(e.target===fileModal) hideModal('fileModal'); });
+shortcutsModal.addEventListener('click',e=>{ if(e.target===shortcutsModal) hideShortcutsModal(); });
+let isDragging = false; let startX = 0;
+splitter.addEventListener('mousedown', (e) => { 
+e.preventDefault(); 
+isDragging = true; 
+startX = e.clientX; 
+const editorWidth = editorSection.getBoundingClientRect().width; 
+const total = workspace.clientWidth - (splitter.clientWidth || 8);
+editorRatio = editorWidth / total; // store ratio
+splitter.classList.add('dragging'); 
+document.body.style.cursor = 'col-resize'; 
+});
+window.addEventListener('mousemove', (e) => { 
+if (!isDragging) return; 
+e.preventDefault(); 
+const dx = e.clientX - startX; 
+const total = workspace.clientWidth - (splitter.clientWidth || 8);
+const newEditorWidth = total * editorRatio + dx;
+const newPreviewWidth = total - newEditorWidth;
+if (newEditorWidth > 200 && newPreviewWidth > 200) { 
+editorSection.style.flex = '0 0 ' + newEditorWidth + 'px'; 
+previewSection.style.flex = '0 0 ' + newPreviewWidth + 'px'; 
+} 
+});
+window.addEventListener('mouseup', () => { 
+if (isDragging) { 
+isDragging = false; 
+splitter.classList.remove('dragging'); 
+document.body.style.cursor = ''; 
+const editorWidth = editorSection.getBoundingClientRect().width; 
+const total = workspace.clientWidth - (splitter.clientWidth || 8);
+editorRatio = editorWidth / total; 
+} 
+});
+</script>
+</body>
+</html>
