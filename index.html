@@ -175,6 +175,11 @@ background: var(--amber-950);
 letter-spacing: 0.5px;
 }
 .credit i { color: var(--amber-400); margin: 0 4px; }
+.credit .version {
+color: var(--amber-300);
+font-family: 'Fira Code', monospace;
+margin-left: 8px;
+}
 .workspace {
 flex: 1; display: flex; overflow: hidden;
 background: var(--amber-950);
@@ -253,12 +258,18 @@ color: var(--amber-100); display: none;
 .settings-panel.active, .shortcuts-panel.active { display: block; }
 .settings-group { margin-bottom: 28px; }
 .settings-group label { display: block; margin-bottom: 12px; color: var(--amber-300); font-weight: 600; font-size: 14px; letter-spacing: 0.5px; }
-.settings-group input[type="text"] {
+.settings-group input[type="text"], .settings-group input[type="number"], .settings-group select {
 width: 100%; background: var(--amber-950); border: 1px solid var(--amber-600);
-color: var(--amber-50); padding: 14px 20px; border-radius: 12px; outline: none; font-size: 15px;
+color: var(--amber-50); padding: 10px 16px; border-radius: 8px; outline: none; font-size: 14px;
 transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
 }
-.settings-group input:focus { border-color: var(--amber-400); box-shadow: 0 0 15px var(--accent-glow); }
+.settings-group input:focus, .settings-group select:focus { border-color: var(--amber-400); box-shadow: 0 0 10px var(--accent-glow); }
+.settings-group .checkbox-label {
+display: flex; align-items: center; gap: 12px; cursor: pointer;
+}
+.settings-group input[type="checkbox"] {
+width: 18px; height: 18px; accent-color: var(--amber-500);
+}
 .settings-actions { display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap; }
 .settings-actions button {
 padding: 12px 24px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer; transition: background var(--transition-speed), box-shadow var(--transition-speed);
@@ -469,7 +480,7 @@ box-shadow: 0 0 10px var(--accent-glow);
 <input type="file" id="zipInput" accept=".zip" style="display:none;" onchange="importZip(event)">
 </div>
 <div class="credit">
-made with <i class="fas fa-heart"></i> by <strong>Chip Hill</strong>
+made with <i class="fas fa-heart"></i> by <strong>Chip Hill</strong> <span class="version">v1.1</span>
 </div>
 </div>
 <div class="workspace layout-row" id="workspace">
@@ -482,13 +493,44 @@ made with <i class="fas fa-heart"></i> by <strong>Chip Hill</strong>
 <h3 style="color:var(--amber-300); margin-bottom:24px;"><i class="fas fa-cog"></i> Settings</h3>
 <div class="settings-group" id="hotkeySettings"></div>
 <div class="settings-group">
+<label>Editor</label>
+<div style="margin-bottom:12px;">
+<label class="custom-checkbox" style="margin-bottom:8px;">
+<input type="checkbox" id="livePreviewCheckbox"> Live Preview (auto-update)
+</label>
+</div>
+<div style="display:flex; gap:12px; margin-bottom:12px;">
+<div style="flex:1;">
+<label style="font-size:12px; color:var(--amber-300);">Font Size</label>
+<input type="number" id="fontSizeInput" min="10" max="30" step="1" value="15">
+</div>
+<div style="flex:1;">
+<label style="font-size:12px; color:var(--amber-300);">Tab Size</label>
+<select id="tabSizeSelect">
+<option value="2">2 spaces</option>
+<option value="4" selected>4 spaces</option>
+</select>
+</div>
+</div>
+<div style="margin-bottom:12px;">
+<label class="custom-checkbox">
+<input type="checkbox" id="wordWrapCheckbox"> Word Wrap
+</label>
+</div>
+<div style="margin-bottom:12px;">
+<label class="custom-checkbox">
+<input type="checkbox" id="showLineNumbersCheckbox" checked> Show Line Numbers
+</label>
+</div>
+</div>
+<div class="settings-group">
 <label>Performance Mode</label>
 <label class="custom-checkbox">
-<input type="checkbox" id="performanceModeCheckbox"> Disable animations & transitions (for low-end devices)
+<input type="checkbox" id="performanceModeCheckbox"> Disable animations & transitions
 </label>
 </div>
 <div class="settings-actions">
-<button onclick="saveSettingsFromPanel()">Save Hotkeys</button>
+<button onclick="saveSettingsFromPanel()">Save Settings</button>
 <button class="reset" onclick="resetHotkeys()">Reset Shortcuts</button>
 </div>
 </div>
@@ -610,6 +652,14 @@ const defaultHotkeys = {
 'toggleComment': { desc: 'Toggle Line Comment', current: 'Ctrl+/' }
 };
 let hotkeys = JSON.parse(JSON.stringify(defaultHotkeys));
+let editorSettings = {
+livePreview: true,
+fontSize: 15,
+tabSize: 4,
+wordWrap: false,
+showLineNumbers: true,
+performanceMode: false
+};
 const fileListEl = document.getElementById('fileList');
 const codeEditor = document.getElementById('codeEditor');
 const lineNumbersEl = document.getElementById('lineNumbers');
@@ -635,6 +685,11 @@ const shortcutListModal = document.getElementById('shortcutListModal');
 const sidebar = document.getElementById('sidebar');
 const activityBar = document.getElementById('activityBar');
 const performanceCheckbox = document.getElementById('performanceModeCheckbox');
+const livePreviewCheckbox = document.getElementById('livePreviewCheckbox');
+const fontSizeInput = document.getElementById('fontSizeInput');
+const tabSizeSelect = document.getElementById('tabSizeSelect');
+const wordWrapCheckbox = document.getElementById('wordWrapCheckbox');
+const showLineNumbersCheckbox = document.getElementById('showLineNumbersCheckbox');
 let findMatches = [], findIndex = -1;
 let standaloneMode = false;
 const standaloneCheckbox = document.getElementById('standaloneCheckbox');
@@ -764,7 +819,8 @@ function exitSpecialModes() {
 settingsMode = false;
 shortcutsMode = false;
 codeEditor.style.display = 'block';
-lineNumbersEl.style.display = 'block';
+if (editorSettings.showLineNumbers) lineNumbersEl.style.display = 'block';
+else lineNumbersEl.style.display = 'none';
 settingsPanel.classList.remove('active');
 shortcutsPanel.classList.remove('active');
 if (files[currentFile]) codeEditor.value = files[currentFile].content;
@@ -783,6 +839,11 @@ d.innerHTML = `<div style="display:flex; align-items:center; gap:12px;">
 hotkeySettings.appendChild(d);
 }
 performanceCheckbox.checked = performanceMode;
+livePreviewCheckbox.checked = editorSettings.livePreview;
+fontSizeInput.value = editorSettings.fontSize;
+tabSizeSelect.value = editorSettings.tabSize;
+wordWrapCheckbox.checked = editorSettings.wordWrap;
+showLineNumbersCheckbox.checked = editorSettings.showLineNumbers;
 }
 function renderShortcutsPanel() {
 shortcutsList.innerHTML = '';
@@ -802,12 +863,25 @@ document.body.classList.add('performance-mode');
 } else {
 document.body.classList.remove('performance-mode');
 }
+editorSettings.livePreview = livePreviewCheckbox.checked;
+editorSettings.fontSize = parseInt(fontSizeInput.value, 10) || 15;
+editorSettings.tabSize = parseInt(tabSizeSelect.value, 10) || 4;
+editorSettings.wordWrap = wordWrapCheckbox.checked;
+editorSettings.showLineNumbers = showLineNumbersCheckbox.checked;
+applyEditorSettings();
 exitSpecialModes();
 }
 function resetHotkeys() {
 hotkeys = JSON.parse(JSON.stringify(defaultHotkeys));
 renderHotkeySettings();
 renderShortcutsPanel();
+}
+function applyEditorSettings() {
+codeEditor.style.fontSize = editorSettings.fontSize + 'px';
+codeEditor.style.tabSize = editorSettings.tabSize;
+codeEditor.style.whiteSpace = editorSettings.wordWrap ? 'pre-wrap' : 'pre';
+lineNumbersEl.style.display = editorSettings.showLineNumbers ? 'block' : 'none';
+updateLineNumbers();
 }
 function updateLineNumbers() {
 const lines = codeEditor.value.split('\n').length;
@@ -1053,8 +1127,17 @@ if (key === 'space') key = ' ';
 if (key === '~' || key === '`') key = '`';
 return (!!e.ctrlKey === needsCtrl) && (!!e.shiftKey === needsShift) && (!!e.altKey === needsAlt) && (e.key.toLowerCase() === key || e.code.toLowerCase().endsWith(key));
 }
+applyEditorSettings();
 codeEditor.value=files[currentFile].content; renderSidebarAndTabs(); updateLineNumbers(); updatePreviewHtmlSelect(); updatePreview();
-let timeout; codeEditor.addEventListener('input',()=>{ if(!settingsMode && !shortcutsMode) { updateLineNumbers(); clearTimeout(timeout); timeout=setTimeout(updatePreview,400); } });
+let timeout; codeEditor.addEventListener('input',()=>{
+if(!settingsMode && !shortcutsMode) {
+updateLineNumbers();
+if (editorSettings.livePreview) {
+clearTimeout(timeout);
+timeout=setTimeout(updatePreview,400);
+}
+}
+});
 codeEditor.addEventListener('keydown', e => {
 if (e.ctrlKey && e.key === 'z') return;
 if (e.ctrlKey && e.key === 'y') return;
