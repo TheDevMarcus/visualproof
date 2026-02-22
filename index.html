@@ -795,7 +795,6 @@ if (!previewVisible) {
 editorSection.style.flex = '1 1 auto';
 previewSection.style.flex = '0 0 0';
 } else {
-// Restore ratio, default to 0.5 if not set
 const total = workspace.clientWidth - (splitter.clientWidth || 8);
 const editorWidth = total * (editorRatio || 0.5);
 const previewWidth = total - editorWidth;
@@ -819,7 +818,6 @@ function toggleSidebar() {
 sidebarVisible = !sidebarVisible;
 sidebar.classList.toggle('hidden', !sidebarVisible);
 activityBar.classList.toggle('hidden', !sidebarVisible);
-// Trigger a resize to adjust preview ratio if needed
 if (previewVisible) {
 const total = workspace.clientWidth - (splitter.clientWidth || 8);
 const editorWidth = total * (editorRatio || 0.5);
@@ -936,8 +934,8 @@ return (!!e.ctrlKey === needsCtrl) && (!!e.shiftKey === needsShift) && (!!e.altK
 codeEditor.value=files[currentFile].content; renderSidebarAndTabs(); updateLineNumbers(); updatePreviewHtmlSelect(); updatePreview();
 let timeout; codeEditor.addEventListener('input',()=>{ if(!settingsMode && !shortcutsMode) { updateLineNumbers(); clearTimeout(timeout); timeout=setTimeout(updatePreview,400); } });
 codeEditor.addEventListener('keydown', e => {
-if (e.ctrlKey && e.key === 'z') return; // let browser handle undo
-if (e.ctrlKey && e.key === 'y') return; // redo
+if (e.ctrlKey && e.key === 'z') return;  
+if (e.ctrlKey && e.key === 'y') return; 
 if(settingsMode || shortcutsMode) return;
 if(e.key==='Tab' && !e.ctrlKey && !e.shiftKey && document.activeElement === codeEditor){ e.preventDefault(); let s=codeEditor.selectionStart; codeEditor.value=codeEditor.value.substring(0,s)+'  '+codeEditor.value.substring(codeEditor.selectionEnd); codeEditor.selectionStart=codeEditor.selectionEnd=s+2; files[currentFile].content=codeEditor.value; updateLineNumbers(); updatePreview(); return; }
 const pairs = { '(': ')', '{': '}', '[': ']', '"': '"', "'": "'" };
@@ -976,7 +974,7 @@ isDragging = true;
 startX = e.clientX; 
 const editorWidth = editorSection.getBoundingClientRect().width; 
 const total = workspace.clientWidth - (splitter.clientWidth || 8);
-editorRatio = editorWidth / total; // store ratio
+editorRatio = editorWidth / total;
 splitter.classList.add('dragging'); 
 document.body.style.cursor = 'col-resize'; 
 });
