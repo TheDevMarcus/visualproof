@@ -165,6 +165,16 @@ font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-c
 transition: background var(--transition-speed), color var(--transition-speed), box-shadow var(--transition-speed);
 }
 .import-export button:hover { background: var(--amber-600); color: var(--amber-50); box-shadow: 0 4px 15px var(--accent-glow); }
+.credit {
+text-align: center;
+padding: 16px 20px;
+font-size: 13px;
+color: var(--amber-500);
+border-top: 1px solid var(--amber-800);
+background: var(--amber-950);
+letter-spacing: 0.5px;
+}
+.credit i { color: var(--amber-400); margin: 0 4px; }
 .workspace {
 flex: 1; display: flex; overflow: hidden;
 background: var(--amber-950);
@@ -249,19 +259,19 @@ color: var(--amber-50); padding: 14px 20px; border-radius: 12px; outline: none; 
 transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
 }
 .settings-group input:focus { border-color: var(--amber-400); box-shadow: 0 0 15px var(--accent-glow); }
-.settings-group .checkbox-label {
-display: flex; align-items: center; gap: 12px; cursor: pointer;
-}
-.settings-group input[type="checkbox"] {
-width: 20px; height: 20px; accent-color: var(--amber-500);
-}
-.settings-actions { display: flex; gap: 12px; justify-content: flex-end; }
+.settings-actions { display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap; }
 .settings-actions button {
 padding: 12px 24px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer; transition: background var(--transition-speed), box-shadow var(--transition-speed);
 font-size: 14px;
 background: var(--amber-500); color: var(--amber-950);
 }
 .settings-actions button:hover { background: var(--amber-400); box-shadow: 0 4px 15px var(--accent-glow); }
+.settings-actions button.reset {
+background: var(--amber-800);
+color: var(--amber-200);
+border: 1px solid var(--amber-600);
+}
+.settings-actions button.reset:hover { background: var(--amber-700); color: var(--amber-50); }
 .shortcut-list { list-style: none; margin-bottom: 28px; max-height: 400px; overflow-y: auto; padding-right: 10px; }
 .shortcut-list li {
 display: flex; justify-content: space-between; align-items: center; padding: 12px 0;
@@ -299,11 +309,23 @@ flex-shrink: 0;
 }
 .preview-controls { display: flex; gap: 10px; align-items: center; }
 .preview-controls select {
-background: var(--amber-950); border: 1px solid var(--amber-600); color: var(--amber-100);
-padding: 6px 14px; border-radius: 8px; font-size: 13px; outline: none; cursor: pointer;
-transition: border-color var(--transition-speed);
+background: var(--amber-950);
+border: 1px solid var(--amber-600);
+color: var(--amber-100);
+padding: 6px 30px 6px 14px;
+border-radius: 8px;
+font-size: 13px;
+outline: none;
+cursor: pointer;
+transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+-webkit-appearance: none;
+appearance: none;
+background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ab5e2e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+background-repeat: no-repeat;
+background-position: right 8px center;
+background-size: 16px;
 }
-.preview-controls select:focus { border-color: var(--amber-400); }
+.preview-controls select:focus { border-color: var(--amber-400); box-shadow: 0 0 10px var(--accent-glow); }
 .preview-controls button {
 background: var(--amber-800); border: 1px solid var(--amber-600); color: var(--amber-200); font-size: 14px;
 cursor: pointer; width: 32px; height: 32px; border-radius: 8px;
@@ -351,6 +373,24 @@ color: var(--amber-50); padding: 14px 20px; border-radius: 12px; margin-bottom: 
 transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
 }
 .modal-input:focus { border-color: var(--amber-400); box-shadow: 0 0 15px var(--accent-glow); }
+.modal select {
+background: var(--amber-950);
+border: 1px solid var(--amber-600);
+color: var(--amber-100);
+padding: 6px 30px 6px 14px;
+border-radius: 8px;
+font-size: 13px;
+outline: none;
+cursor: pointer;
+transition: border-color var(--transition-speed);
+-webkit-appearance: none;
+appearance: none;
+background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ab5e2e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+background-repeat: no-repeat;
+background-position: right 8px center;
+background-size: 16px;
+}
+.modal select:focus { border-color: var(--amber-400); box-shadow: 0 0 10px var(--accent-glow); }
 .modal-actions { display: flex; justify-content: flex-end; gap: 12px; }
 .modal-actions button {
 padding: 12px 24px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer; transition: background var(--transition-speed), box-shadow var(--transition-speed);
@@ -369,6 +409,43 @@ padding: 16px 10px; border-radius: 12px; cursor: pointer; text-align: center; tr
 font-weight: 500;
 }
 .preset-btn:hover { border-color: var(--amber-400); background: var(--amber-700); color: var(--amber-50); transform: translateY(-2px); }
+.custom-checkbox {
+display: flex;
+align-items: center;
+gap: 8px;
+cursor: pointer;
+color: var(--amber-200);
+font-size: 13px;
+}
+.custom-checkbox input[type="checkbox"] {
+appearance: none;
+-webkit-appearance: none;
+width: 18px;
+height: 18px;
+background: var(--amber-950);
+border: 2px solid var(--amber-600);
+border-radius: 4px;
+outline: none;
+cursor: pointer;
+transition: background var(--transition-speed), border-color var(--transition-speed);
+position: relative;
+}
+.custom-checkbox input[type="checkbox"]:checked {
+background: var(--amber-500);
+border-color: var(--amber-400);
+}
+.custom-checkbox input[type="checkbox"]:checked::after {
+content: "✓";
+position: absolute;
+color: var(--amber-950);
+font-size: 14px;
+font-weight: bold;
+left: 2px;
+top: -2px;
+}
+.custom-checkbox input[type="checkbox"]:focus {
+box-shadow: 0 0 10px var(--accent-glow);
+}
 </style>
 </head>
 <body>
@@ -391,6 +468,9 @@ font-weight: 500;
 <button onclick="exportProject()"><i class="fas fa-file-export"></i> EXPORT</button>
 <input type="file" id="zipInput" accept=".zip" style="display:none;" onchange="importZip(event)">
 </div>
+<div class="credit">
+made with <i class="fas fa-heart"></i> by <strong>Chip Hill</strong>
+</div>
 </div>
 <div class="workspace layout-row" id="workspace">
 <div class="editor-section" id="editorSection">
@@ -403,12 +483,13 @@ font-weight: 500;
 <div class="settings-group" id="hotkeySettings"></div>
 <div class="settings-group">
 <label>Performance Mode</label>
-<label class="checkbox-label">
+<label class="custom-checkbox">
 <input type="checkbox" id="performanceModeCheckbox"> Disable animations & transitions (for low-end devices)
 </label>
 </div>
 <div class="settings-actions">
 <button onclick="saveSettingsFromPanel()">Save Hotkeys</button>
+<button class="reset" onclick="resetHotkeys()">Reset Shortcuts</button>
 </div>
 </div>
 <div class="shortcuts-panel" id="shortcutsPanel">
@@ -433,7 +514,7 @@ font-weight: 500;
 <span><i class="fas fa-eye" style="color:var(--amber-400); margin-right:8px;"></i>PREVIEW</span>
 <div class="preview-controls">
 <select id="htmlPreviewSelect" onchange="changePreviewHtml()"></select>
-<label style="color:var(--amber-200); font-size:13px; display:flex; align-items:center; gap:4px;">
+<label class="custom-checkbox">
 <input type="checkbox" id="standaloneCheckbox"> Standalone
 </label>
 <button onclick="swapPanels()" title="Swap Editor/Preview"><i class="fas fa-arrows-left-right"></i></button>
@@ -460,7 +541,7 @@ font-weight: 500;
 <div class="preset-grid" id="presetGrid"></div>
 <div style="display:flex; gap:12px; margin-bottom:24px;">
 <input type="text" id="customFileName" class="modal-input" style="margin-bottom:0;" placeholder="Custom file name...">
-<select id="customExt" style="background:var(--amber-950); border:1px solid var(--amber-600); color:white; border-radius:12px; padding:0 16px; outline:none;">
+<select id="customExt">
 <option value=".html">.html</option>
 <option value=".css">.css</option>
 <option value=".js">.js</option>
@@ -512,7 +593,7 @@ let shortcutsMode = false;
 let sidebarVisible = true;
 let editorRatio = 0.5;
 let performanceMode = false;
-let hotkeys = {
+const defaultHotkeys = {
 'save': { desc: 'Save / Update Preview', current: 'Ctrl+S' },
 'find': { desc: 'Find in Code', current: 'Ctrl+F' },
 'newFile': { desc: 'New File', current: 'Ctrl+N' },
@@ -524,10 +605,11 @@ let hotkeys = {
 'nextTab': { desc: 'Next Tab', current: 'Ctrl+Tab' },
 'prevTab': { desc: 'Previous Tab', current: 'Ctrl+Shift+Tab' },
 'closeTab': { desc: 'Close Current Tab', current: 'Ctrl+W' },
-'toggleSidebar': { desc: 'Hide/Show Sidebar', current: 'Ctrl+B' },
+'toggleSidebar': { desc: 'Hide/Show Sidebar', current: 'Ctrl+Shift+H' },
 'duplicateLine': { desc: 'Duplicate Line', current: 'Ctrl+D' },
 'toggleComment': { desc: 'Toggle Line Comment', current: 'Ctrl+/' }
 };
+let hotkeys = JSON.parse(JSON.stringify(defaultHotkeys));
 const fileListEl = document.getElementById('fileList');
 const codeEditor = document.getElementById('codeEditor');
 const lineNumbersEl = document.getElementById('lineNumbers');
@@ -722,6 +804,11 @@ document.body.classList.remove('performance-mode');
 }
 exitSpecialModes();
 }
+function resetHotkeys() {
+hotkeys = JSON.parse(JSON.stringify(defaultHotkeys));
+renderHotkeySettings();
+renderShortcutsPanel();
+}
 function updateLineNumbers() {
 const lines = codeEditor.value.split('\n').length;
 lineNumbersEl.innerHTML = Array.from({length: lines}, (_, i) => i + 1).join('<br>');
@@ -797,16 +884,7 @@ function togglePreview() {
 previewVisible = !previewVisible; 
 previewSection.classList.toggle('hidden', !previewVisible);
 splitter.classList.toggle('hidden', !previewVisible);
-if (!previewVisible) {
-editorSection.style.flex = '1 1 auto';
-previewSection.style.flex = '0 0 0';
-} else {
-const total = workspace.clientWidth - (splitter.clientWidth || 8);
-const editorWidth = total * (editorRatio || 0.5);
-const previewWidth = total - editorWidth;
-editorSection.style.flex = `0 0 ${editorWidth}px`;
-previewSection.style.flex = `0 0 ${previewWidth}px`;
-}
+adjustLayoutAfterSidebarToggle();
 }
 function swapPanels() {
 panelsSwapped = !panelsSwapped;
@@ -824,12 +902,17 @@ function toggleSidebar() {
 sidebarVisible = !sidebarVisible;
 sidebar.classList.toggle('hidden', !sidebarVisible);
 activityBar.classList.toggle('hidden', !sidebarVisible);
+adjustLayoutAfterSidebarToggle();
+}
+function adjustLayoutAfterSidebarToggle() {
 if (previewVisible) {
 const total = workspace.clientWidth - (splitter.clientWidth || 8);
 const editorWidth = total * (editorRatio || 0.5);
 const previewWidth = total - editorWidth;
 editorSection.style.flex = `0 0 ${editorWidth}px`;
 previewSection.style.flex = `0 0 ${previewWidth}px`;
+} else {
+editorSection.style.flex = '1 1 auto';
 }
 }
 function getCompiledCode() {
