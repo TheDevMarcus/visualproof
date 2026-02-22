@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Visual Proof</title>
+<title>Visual Proof · Sandbox</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
@@ -433,6 +433,9 @@ font-weight: 500;
 <span><i class="fas fa-eye" style="color:var(--amber-400); margin-right:8px;"></i>PREVIEW</span>
 <div class="preview-controls">
 <select id="htmlPreviewSelect" onchange="changePreviewHtml()"></select>
+<label style="color:var(--amber-200); font-size:13px; display:flex; align-items:center; gap:4px;">
+<input type="checkbox" id="standaloneCheckbox"> Standalone
+</label>
 <button onclick="swapPanels()" title="Swap Editor/Preview"><i class="fas fa-arrows-left-right"></i></button>
 <button onclick="togglePreview()" title="Toggle Fullscreen Editor"><i class="fas fa-toggle-on"></i></button>
 <button onclick="openNewTab()" title="Open in New Tab"><i class="fas fa-external-link-alt"></i></button>
@@ -454,14 +457,7 @@ font-weight: 500;
 <div class="modal-overlay" id="fileModal">
 <div class="modal">
 <h3><i class="fas fa-file-signature"></i> Create New File</h3>
-<div class="preset-grid">
-<div class="preset-btn" data-filename="index.html" data-icon="fab fa-html5" data-content='<!DOCTYPE html>\n<html>\n<head>\n <title>Sandbox</title>\n <link rel="stylesheet" href="style.css">\n</head>\n<body>\n <div class="card">\n <h1>🚀 Sandbox Editor</h1>\n <p>made by devs for devs</p>\n <button id="actionBtn">Click me</button>\n </div>\n <script src="script.js"><\/script>\n</body>\n</html>'>HTML</div>
-<div class="preset-btn" data-filename="style.css" data-icon="fab fa-css3-alt" data-content='body {\n background: #0a0502;\n color: #f7d4b7;\n font-family: \"Inter\", sans-serif;\n display: flex;\n justify-content: center;\n align-items: center;\n height: 100vh;\n margin: 0;\n}\n.card {\n background: #170c06;\n border: 2px solid #854823;\n border-radius: 30px;\n padding: 50px;\n box-shadow: 0 20px 50px rgba(133, 72, 35, 0.2);\n text-align: center;\n animation: glowPulse 3s infinite;\n}\n@keyframes glowPulse {\n 0% { box-shadow: 0 20px 50px rgba(133, 72, 35, 0.2); }\n 50% { box-shadow: 0 20px 70px rgba(171, 94, 46, 0.6); }\n 100% { box-shadow: 0 20px 50px rgba(133, 72, 35, 0.2); }\n}\nh1 { color: #ab5e2e; font-size: 2.5em; margin-bottom: 10px; }\np { color: #d17834; margin-bottom: 30px; }\nbutton {\n background: #854823;\n border: none;\n color: #0a0502;\n padding: 14px 28px;\n border-radius: 12px;\n font-weight: bold;\n font-size: 16px;\n cursor: pointer;\n transition: all 0.2s;\n}\nbutton:hover {\n background: #ab5e2e;\n transform: translateY(-2px);\n box-shadow: 0 10px 20px rgba(171, 94, 46, 0.3);\n}'>CSS</div>
-<div class="preset-btn" data-filename="script.js" data-icon="fab fa-js" data-content='console.log(\"Sandbox ready!\");\n\ndocument.getElementById(\"actionBtn\").addEventListener(\"click\", function() {\n    console.log(\"Button clicked!\");\n    alert(\"Welcome to the sandbox!\");\n});'>JS</div>
-<div class="preset-btn" data-filename="data.json" data-icon="fas fa-file-code" data-content='{ "sandbox": true }'>JSON</div>
-<div class="preset-btn" data-filename="README.md" data-icon="fab fa-markdown" data-content='# Sandbox Editor'>Markdown</div>
-<div class="preset-btn" data-filename="server.py" data-icon="fab fa-python" data-content='print(\"Hello from sandbox\")'>Python</div>
-</div>
+<div class="preset-grid" id="presetGrid"></div>
 <div style="display:flex; gap:12px; margin-bottom:24px;">
 <input type="text" id="customFileName" class="modal-input" style="margin-bottom:0;" placeholder="Custom file name...">
 <select id="customExt" style="background:var(--amber-950); border:1px solid var(--amber-600); color:white; border-radius:12px; padding:0 16px; outline:none;">
@@ -514,7 +510,7 @@ let openedFiles = ['index.html', 'style.css', 'script.js'];
 let settingsMode = false;
 let shortcutsMode = false;
 let sidebarVisible = true;
-let editorRatio = 0.5; 
+let editorRatio = 0.5;
 let performanceMode = false;
 let hotkeys = {
 'save': { desc: 'Save / Update Preview', current: 'Ctrl+S' },
@@ -558,6 +554,12 @@ const sidebar = document.getElementById('sidebar');
 const activityBar = document.getElementById('activityBar');
 const performanceCheckbox = document.getElementById('performanceModeCheckbox');
 let findMatches = [], findIndex = -1;
+let standaloneMode = false;
+const standaloneCheckbox = document.getElementById('standaloneCheckbox');
+standaloneCheckbox.addEventListener('change', (e) => {
+  standaloneMode = e.target.checked;
+  updatePreview();
+});
 function getFileIconClass(f) {
 if (f.endsWith('.html')) return 'fab fa-html5';
 if (f.endsWith('.css')) return 'fab fa-css3-alt';
@@ -567,13 +569,17 @@ if (f.endsWith('.md')) return 'fab fa-markdown';
 if (f.endsWith('.py')) return 'fab fa-python';
 return 'fas fa-file';
 }
+function escapeFileName(name) {
+  return name.replace(/'/g, "\\'");
+}
 function renderSidebarAndTabs() {
 fileListEl.innerHTML = '';
 for (let n in files) {
 let li = document.createElement('li');
 let isActive = (n === currentFile && !settingsMode && !shortcutsMode);
+let escapedN = escapeFileName(n);
 li.className = `file-item ${isActive ? 'active' : ''}`;
-li.innerHTML = `<div class="file-left" onclick="switchToFile('${n}')"><i class="${files[n].icon}"></i> ${n}</div>${Object.keys(files).length>1?`<button class="delete-btn" onclick="deleteFile('${n}')" title="Delete File"><i class="fas fa-trash"></i></button>`:''}`;
+li.innerHTML = `<div class="file-left" onclick="switchToFile('${escapedN}')"><i class="${files[n].icon}"></i> ${n}</div>${Object.keys(files).length>1?`<button class="delete-btn" onclick="deleteFile('${escapedN}')" title="Delete File"><i class="fas fa-trash"></i></button>`:''}`;
 fileListEl.appendChild(li);
 }
 renderTabs();
@@ -594,7 +600,8 @@ let t = document.createElement('div');
 t.className = `tab ${f === currentFile ? 'active' : ''}`;
 t.innerHTML = `<i class="${files[f].icon}"></i> ${f}`;
 if (openedFiles.length > 1) {
-t.innerHTML += `<span class="close-tab" onclick="closeTab('${f}', event)"><i class="fas fa-times"></i></span>`;
+let escapedF = escapeFileName(f);
+t.innerHTML += `<span class="close-tab" onclick="closeTab('${escapedF}', event)"><i class="fas fa-times"></i></span>`;
 }
 t.onclick = (e) => { if (!e.target.classList.contains('close-tab') && !e.target.closest('.close-tab')) switchToFile(f); };
 tabsArea.appendChild(t);
@@ -705,7 +712,7 @@ shortcutsList.appendChild(li);
 function saveSettingsFromPanel() {
 document.querySelectorAll('#hotkeySettings input').forEach(inp => {
 let k = inp.dataset.key;
-if (k) hotkeys[k].current = inp.value.toUpperCase();
+if (k) hotkeys[k].current = inp.value.replace(/\s+/g, '').toUpperCase();
 });
 performanceMode = performanceCheckbox.checked;
 if (performanceMode) {
@@ -749,7 +756,6 @@ if (settingsMode || shortcutsMode) exitSpecialModes();
 renderSidebarAndTabs(); updateLineNumbers(); updatePreviewHtmlSelect(); updatePreview(); hideModal('fileModal'); 
 }
 }
-document.querySelectorAll('.preset-btn').forEach(b=>b.addEventListener('click',()=>createPreset(b.dataset.filename,b.dataset.icon,b.dataset.content)));
 function createCustomFile() {
 let base=document.getElementById('customFileName').value.trim(); let ext=document.getElementById('customExt').value; if(!base){ return; }
 let full=base+(ext&&!base.endsWith(ext)?ext:''); full=full.replace(/[\\/]/g,''); if(!full)return;
@@ -827,16 +833,49 @@ previewSection.style.flex = `0 0 ${previewWidth}px`;
 }
 }
 function getCompiledCode() {
-if(files[currentFile] && !settingsMode && !shortcutsMode) files[currentFile].content=codeEditor.value;
-let html=previewHtmlFile&&files[previewHtmlFile]?files[previewHtmlFile].content:(Object.keys(files).find(f=>f.endsWith('.html'))?files[Object.keys(files).find(f=>f.endsWith('.html'))].content:'<!DOCTYPE html><html><head></head><body></body></html>');
-let css='',js=''; for(let f in files){ if(f.endsWith('.css')) css+=files[f].content+'\n'; if(f.endsWith('.js')) js+=files[f].content+'\n'; }
-let styleTag=css?`<style>${css}</style>`:'', scriptTag=js?`<script>${js}<\/script>`:'';
-if(html.includes('</head>')) html=html.replace('</head>',styleTag+'</head>'); else html=styleTag+html;
-if(html.includes('</body>')) html=html.replace('</body>',scriptTag+'</body>'); else html+=scriptTag;
-return html;
+if(files[currentFile] && !settingsMode && !shortcutsMode) files[currentFile].content = codeEditor.value;
+let htmlFile = previewHtmlFile;
+if (!htmlFile || !files[htmlFile]) return '<!DOCTYPE html><html><head></head><body></body></html>';
+let htmlContent = files[htmlFile].content;
+if (standaloneMode) {
+return htmlContent;
+} else {
+let css = '', js = '';
+for (let f in files) {
+if (f.endsWith('.css')) css += files[f].content + '\n';
+if (f.endsWith('.js')) js += files[f].content + '\n';
 }
-function updatePreview() { previewFrame.srcdoc = getCompiledCode(); }
-function openNewTab() { window.open().document.write(getCompiledCode()); }
+let styleTag = css ? `<style>${css}</style>` : '';
+let scriptTag = js ? `<script>${js}<\/script>` : '';
+if (htmlContent.includes('</head>')) {
+htmlContent = htmlContent.replace('</head>', styleTag + '</head>');
+} else {
+htmlContent = styleTag + htmlContent;
+}
+if (htmlContent.includes('</body>')) {
+htmlContent = htmlContent.replace('</body>', scriptTag + '</body>');
+} else {
+htmlContent += scriptTag;
+}
+return htmlContent;
+}
+}
+function updatePreview() {
+const compiled = getCompiledCode();
+const blob = new Blob([compiled], { type: 'text/html' });
+const url = URL.createObjectURL(blob);
+previewFrame.src = url;
+previewFrame.onload = () => {
+URL.revokeObjectURL(url);
+captureConsole();
+};
+}
+function openNewTab() {
+const compiled = getCompiledCode();
+const win = window.open();
+win.document.write(compiled);
+win.document.close();
+}
 function showFind() { findOverlay.style.display='flex'; findInput.focus(); findInput.select(); updateFindCount(); }
 function hideFind() { findOverlay.style.display='none'; codeEditor.focus(); }
 function updateFindCount() {
@@ -847,7 +886,7 @@ findMatches.term=term; findIndex=findMatches.length?0:-1;
 findCount.innerText=findMatches.length?`${findIndex+1}/${findMatches.length}`:'0/0';
 }
 function findNext() { if(!findMatches.length) updateFindCount(); if(!findMatches.length) return; findIndex=(findIndex+1)%findMatches.length; let pos=findMatches[findIndex]; codeEditor.focus(); codeEditor.setSelectionRange(pos,pos+findInput.value.length); findCount.innerText=`${findIndex+1}/${findMatches.length}`; }
-function findPrev() { if(!findMatches.length) updateFindCount(); if(!findMatches.length) return; findIndex=(findIndex-1+findMatches.length)%findMatches.length; let pos=findMatches[findIndex]; codeEditor.focus(); codeEditor.setSelectionRange(pos,pos+findInput.value.length); findCount.innerText=`${findIndex-1+findMatches.length+1}/${findMatches.length}`; }
+function findPrev() { if(!findMatches.length) updateFindCount(); if(!findMatches.length) return; findIndex=(findIndex-1+findMatches.length)%findMatches.length; let pos=findMatches[findIndex]; codeEditor.focus(); codeEditor.setSelectionRange(pos,pos+findInput.value.length); findCount.innerText=`${findIndex+1}/${findMatches.length}`; }
 findInput.addEventListener('input',updateFindCount);
 findInput.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); if(e.shiftKey) findPrev(); else findNext(); } if(e.key==='Escape') hideFind(); });
 document.getElementById('findNext').addEventListener('click',findNext);
@@ -863,7 +902,7 @@ let file=e.target.files[0]; if(!file)return;
 try{ let zip=new JSZip(); let contents=await zip.loadAsync(file); let newFiles={}; let promises=[];
 contents.forEach((path,entry)=>{ if(!entry.dir) promises.push(entry.async('string').then(c=>{ let name=path.split('/').pop(); if(name) newFiles[name]={icon:getFileIconClass(name),content:c}; })); });
 await Promise.all(promises);
-if(Object.keys(newFiles).length) showConfirmDialog('Replace current environment?',()=>{ files=newFiles; openedFiles = Object.keys(files).filter(f=>f.endsWith('.html')||f.endsWith('.css')||f.endsWith('.js')); if(!openedFiles.length) openedFiles = [Object.keys(files)[0]]; currentFile=openedFiles[0]; codeEditor.value=files[currentFile]?.content||''; previewHtmlFile=Object.keys(files).find(f=>f.endsWith('.html'))||null; if (settingsMode||shortcutsMode) exitSpecialModes(); renderSidebarAndTabs(); updateLineNumbers(); updatePreviewHtmlSelect(); updatePreview(); });
+if(Object.keys(newFiles).length) showConfirmDialog('Replace current environment?',()=>{ files=newFiles; openedFiles = Object.keys(newFiles).filter(f=>f.endsWith('.html')||f.endsWith('.css')||f.endsWith('.js')); if (openedFiles.length === 0) openedFiles = Object.keys(newFiles); currentFile=openedFiles[0]||Object.keys(newFiles)[0]; codeEditor.value=files[currentFile]?.content||''; previewHtmlFile=Object.keys(newFiles).find(f=>f.endsWith('.html'))||null; if (settingsMode||shortcutsMode) exitSpecialModes(); renderSidebarAndTabs(); updateLineNumbers(); updatePreviewHtmlSelect(); updatePreview(); });
 e.target.value='';
 } catch{ alert('Import failed.'); }
 }
@@ -883,7 +922,7 @@ win.console.error=function(...a){ addLog('error',...a); oldError.apply(win.conso
 win.console.info=function(...a){ addLog('info',...a); oldInfo.apply(win.console,a); };
 win.addEventListener('error', (e) => addLog('error', e.message));
 }
-function addLog(t,...a) { let el=document.createElement('div'); el.className=`log-item ${t}`; let icon={log:'📋',warn:'⚠️',error:'❌',info:'ℹ️'}[t]||'📄'; el.innerHTML=`<span class="log-icon">${icon}</span><span>${a.map(x=>typeof x==='string'?x:JSON.stringify(x)).join(' ')}</span>`; consoleLogs.appendChild(el); consoleLogs.scrollTop=consoleLogs.scrollHeight; }
+function addLog(t,...a) { let el=document.createElement('div'); el.className=`log-item ${t}`; let icon={log:'📋',warn:'⚠️',error:'❌',info:'ℹ️'}[t]||'📄'; let msg = a.map(x => { try { return typeof x === 'string' ? x : JSON.stringify(x); } catch { return String(x); } }).join(' '); el.innerHTML=`<span class="log-icon">${icon}</span><span>${msg}</span>`; consoleLogs.appendChild(el); consoleLogs.scrollTop=consoleLogs.scrollHeight; }
 function clearConsole() { consoleLogs.innerHTML=''; }
 function toggleConsole() { let p=document.getElementById('consolePanel'); consoleVisible=!consoleVisible; p.style.height=consoleVisible?'220px':'38px'; }
 previewFrame.addEventListener('load',captureConsole);
@@ -922,7 +961,7 @@ updatePreview();
 }
 function checkHotkey(e, shortcutString) {
 if (!shortcutString) return false;
-let keys = shortcutString.toLowerCase().split('+');
+let keys = shortcutString.toLowerCase().split('+').map(s => s.trim());
 let needsCtrl = keys.includes('ctrl') || keys.includes('cmd');
 let needsShift = keys.includes('shift');
 let needsAlt = keys.includes('alt');
@@ -934,8 +973,8 @@ return (!!e.ctrlKey === needsCtrl) && (!!e.shiftKey === needsShift) && (!!e.altK
 codeEditor.value=files[currentFile].content; renderSidebarAndTabs(); updateLineNumbers(); updatePreviewHtmlSelect(); updatePreview();
 let timeout; codeEditor.addEventListener('input',()=>{ if(!settingsMode && !shortcutsMode) { updateLineNumbers(); clearTimeout(timeout); timeout=setTimeout(updatePreview,400); } });
 codeEditor.addEventListener('keydown', e => {
-if (e.ctrlKey && e.key === 'z') return;  
-if (e.ctrlKey && e.key === 'y') return; 
+if (e.ctrlKey && e.key === 'z') return;
+if (e.ctrlKey && e.key === 'y') return;
 if(settingsMode || shortcutsMode) return;
 if(e.key==='Tab' && !e.ctrlKey && !e.shiftKey && document.activeElement === codeEditor){ e.preventDefault(); let s=codeEditor.selectionStart; codeEditor.value=codeEditor.value.substring(0,s)+'  '+codeEditor.value.substring(codeEditor.selectionEnd); codeEditor.selectionStart=codeEditor.selectionEnd=s+2; files[currentFile].content=codeEditor.value; updateLineNumbers(); updatePreview(); return; }
 const pairs = { '(': ')', '{': '}', '[': ']', '"': '"', "'": "'" };
@@ -997,8 +1036,24 @@ splitter.classList.remove('dragging');
 document.body.style.cursor = ''; 
 const editorWidth = editorSection.getBoundingClientRect().width; 
 const total = workspace.clientWidth - (splitter.clientWidth || 8);
-editorRatio = editorWidth / total; 
+editorRatio = editorWidth / total;
 } 
+});
+const presets = [
+  { label: 'HTML', filename: 'index.html', icon: 'fab fa-html5', content: '<!DOCTYPE html>\n<html>\n<head>\n <title>Sandbox</title>\n <link rel="stylesheet" href="style.css">\n</head>\n<body>\n <div class="card">\n <h1>🚀 Sandbox Editor</h1>\n <p>made by devs for devs</p>\n <button id="actionBtn">Click me</button>\n </div>\n <script src="script.js"><\/script>\n</body>\n</html>' },
+  { label: 'CSS', filename: 'style.css', icon: 'fab fa-css3-alt', content: 'body {\n background: #0a0502;\n color: #f7d4b7;\n font-family: "Inter", sans-serif;\n display: flex;\n justify-content: center;\n align-items: center;\n height: 100vh;\n margin: 0;\n}\n.card {\n background: #170c06;\n border: 2px solid #854823;\n border-radius: 30px;\n padding: 50px;\n box-shadow: 0 20px 50px rgba(133, 72, 35, 0.2);\n text-align: center;\n animation: glowPulse 3s infinite;\n}\n@keyframes glowPulse {\n 0% { box-shadow: 0 20px 50px rgba(133, 72, 35, 0.2); }\n 50% { box-shadow: 0 20px 70px rgba(171, 94, 46, 0.6); }\n 100% { box-shadow: 0 20px 50px rgba(133, 72, 35, 0.2); }\n}\nh1 { color: #ab5e2e; font-size: 2.5em; margin-bottom: 10px; }\np { color: #d17834; margin-bottom: 30px; }\nbutton {\n background: #854823;\n border: none;\n color: #0a0502;\n padding: 14px 28px;\n border-radius: 12px;\n font-weight: bold;\n font-size: 16px;\n cursor: pointer;\n transition: all 0.2s;\n}\nbutton:hover {\n background: #ab5e2e;\n transform: translateY(-2px);\n box-shadow: 0 10px 20px rgba(171, 94, 46, 0.3);\n}' },
+  { label: 'JS', filename: 'script.js', icon: 'fab fa-js', content: 'console.log("Sandbox ready!");\n\ndocument.getElementById("actionBtn").addEventListener("click", function() {\n    console.log("Button clicked!");\n    alert("Welcome to the sandbox!");\n});' },
+  { label: 'JSON', filename: 'data.json', icon: 'fas fa-file-code', content: '{ "sandbox": true }' },
+  { label: 'Markdown', filename: 'README.md', icon: 'fab fa-markdown', content: '# Sandbox Editor' },
+  { label: 'Python', filename: 'server.py', icon: 'fab fa-python', content: 'print("Hello from sandbox")' }
+];
+const presetGrid = document.getElementById('presetGrid');
+presets.forEach(p => {
+  const btn = document.createElement('div');
+  btn.className = 'preset-btn';
+  btn.textContent = p.label;
+  btn.addEventListener('click', () => createPreset(p.filename, p.icon, p.content));
+  presetGrid.appendChild(btn);
 });
 </script>
 </body>
