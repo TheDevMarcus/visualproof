@@ -35,6 +35,122 @@ font-family: 'Inter', sans-serif;
 --text-light: #f7d4b7;
 --danger: #ff7a5c;
 --transition-speed: 0.2s;
+--activity-bar-bg: var(--amber-900);
+--sidebar-bg: var(--amber-900);
+--editor-bg: var(--amber-950);
+--preview-bg: var(--amber-50);
+--tab-bg: var(--amber-900);
+--tab-active-bg: var(--amber-950);
+--line-numbers-bg: var(--amber-900);
+--line-numbers-color: var(--amber-600);
+--console-bg: var(--amber-950);
+--console-header-bg: var(--amber-900);
+--border-color: var(--amber-800);
+}
+[data-theme="green"] {
+--amber-950: #0a1405;
+--amber-900: #14260a;
+--amber-800: #1f3a10;
+--amber-700: #2c4f16;
+--amber-600: #3f6e1f;
+--amber-500: #568f2a;
+--amber-400: #6db037;
+--amber-300: #8bd144;
+--amber-200: #abe76e;
+--amber-100: #c5f095;
+--amber-50: #dcfabb;
+--accent: #6db037;
+--accent-glow: rgba(109, 176, 55, 0.4);
+--glass-bg: rgba(20, 38, 10, 0.85);
+--glass-border: rgba(109, 176, 55, 0.3);
+--shadow: 0 12px 40px rgba(5, 15, 2, 0.9);
+--text-light: #dcfabb;
+--danger: #a0ff7a;
+--border-color: #2c4f16;
+}
+[data-theme="amber"] {
+--amber-950: #0a0502;
+--amber-900: #170c06;
+--amber-800: #29150a;
+--amber-700: #3d2110;
+--amber-600: #5c3218;
+--amber-500: #854823;
+--amber-400: #ab5e2e;
+--amber-300: #d17834;
+--amber-200: #e69655;
+--amber-100: #f0b584;
+--amber-50: #f7d4b7;
+--accent: #ab5e2e;
+--accent-glow: rgba(171, 94, 46, 0.4);
+--glass-bg: rgba(23, 12, 6, 0.85);
+--glass-border: rgba(171, 94, 46, 0.3);
+--shadow: 0 12px 40px rgba(10, 5, 2, 0.9);
+--text-light: #f7d4b7;
+--danger: #ff7a5c;
+--border-color: #29150a;
+}
+[data-theme="cyber"] {
+--amber-950: #03050f;
+--amber-900: #0a0d1f;
+--amber-800: #121832;
+--amber-700: #1b2347;
+--amber-600: #263161;
+--amber-500: #324281;
+--amber-400: #4a61c4;
+--amber-300: #6b8aff;
+--amber-200: #9bb1ff;
+--amber-100: #c2d1ff;
+--amber-50: #e0e8ff;
+--accent: #4a61c4;
+--accent-glow: rgba(74, 97, 196, 0.4);
+--glass-bg: rgba(10, 13, 31, 0.85);
+--glass-border: rgba(74, 97, 196, 0.3);
+--shadow: 0 12px 40px rgba(2, 5, 15, 0.9);
+--text-light: #e0e8ff;
+--danger: #7aa5ff;
+--border-color: #1b2347;
+}
+[data-theme="hacker"] {
+--amber-950: #0c0f0c;
+--amber-900: #1a2b1a;
+--amber-800: #2a402a;
+--amber-700: #3c5e3c;
+--amber-600: #4f7a4f;
+--amber-500: #619861;
+--amber-400: #7cb87c;
+--amber-300: #9cd89c;
+--amber-200: #bdf0bd;
+--amber-100: #d9f7d9;
+--amber-50: #f0fff0;
+--accent: #2e8b57;
+--accent-glow: rgba(46, 139, 86, 0.4);
+--glass-bg: rgba(26, 43, 26, 0.85);
+--glass-border: rgba(46, 139, 86, 0.3);
+--shadow: 0 12px 40px rgba(10, 15, 10, 0.9);
+--text-light: #f0fff0;
+--danger: #98fb98;
+--border-color: #3c5e3c;
+}
+[data-theme="vscode"] {
+--amber-950: #1e1e1e;
+--amber-900: #252526;
+--amber-800: #2d2d30;
+--amber-700: #3e3e42;
+--amber-600: #55555a;
+--amber-500: #6d6d78;
+--amber-400: #858591;
+--amber-300: #9e9eab;
+--amber-200: #b7b7c5;
+--amber-100: #d0d0df;
+--amber-50: #eaeaf2;
+--accent: #007acc;
+--accent-glow: rgba(0, 122, 204, 0.4);
+--glass-bg: rgba(37, 37, 38, 0.85);
+--glass-border: rgba(0, 122, 204, 0.3);
+--shadow: 0 12px 40px rgba(0, 0, 0, 0.9);
+--text-light: #eaeaf2;
+--danger: #f48771;
+--border-color: #3e3e42;
 }
 body.performance-mode {
 --transition-speed: 0s;
@@ -60,8 +176,8 @@ overflow: hidden;
 ::-webkit-scrollbar-thumb:hover { background: var(--amber-500); }
 .activity-bar {
 width: 72px;
-background: var(--amber-900);
-border-right: 1px solid var(--amber-800);
+background: var(--activity-bar-bg, var(--amber-900));
+border-right: 1px solid var(--border-color);
 display: flex;
 flex-direction: column;
 align-items: center;
@@ -88,8 +204,8 @@ font-size: 28px;
 .activity-icon.fa-icon:hover { opacity: 1; color: var(--amber-200); transform: translateY(-3px) scale(1.1); filter: drop-shadow(0 4px 10px var(--accent-glow)); }
 .sidebar {
 width: 300px;
-background: var(--amber-900);
-border-right: 1px solid var(--amber-800);
+background: var(--sidebar-bg, var(--amber-900));
+border-right: 1px solid var(--border-color);
 display: flex;
 flex-direction: column;
 box-shadow: 2px 0 25px rgba(10, 5, 2, 0.7);
@@ -98,7 +214,7 @@ transition: width var(--transition-speed);
 white-space: nowrap;
 }
 .sidebar.hidden { width: 0; overflow: hidden; padding: 0; }
-.project-header { padding: 24px 20px; border-bottom: 1px solid var(--amber-800); }
+.project-header { padding: 24px 20px; border-bottom: 1px solid var(--border-color); }
 .project-name {
 background: var(--amber-950);
 border: 1px solid var(--amber-700);
@@ -156,7 +272,7 @@ transition: opacity var(--transition-speed), background var(--transition-speed);
 .delete-btn:hover { background: rgba(255,122,92,0.15); }
 .file-item:hover .delete-btn { opacity: 1; }
 .import-export {
-display: flex; gap: 10px; padding: 20px; border-top: 1px solid var(--amber-800);
+display: flex; gap: 10px; padding: 20px; border-top: 1px solid var(--border-color);
 }
 .import-export button {
 flex: 1; background: var(--amber-800); border: 1px solid var(--amber-600);
@@ -170,7 +286,7 @@ text-align: center;
 padding: 16px 20px;
 font-size: 13px;
 color: var(--amber-500);
-border-top: 1px solid var(--amber-800);
+border-top: 1px solid var(--border-color);
 background: var(--amber-950);
 letter-spacing: 0.5px;
 }
@@ -186,8 +302,8 @@ background: var(--amber-950);
 }
 .editor-section {
 flex: 1 1 0; display: flex; flex-direction: column; min-width: 200px;
-border: 1px solid var(--amber-800); position: relative;
-background: var(--amber-950);
+border: 1px solid var(--border-color); position: relative;
+background: var(--editor-bg, var(--amber-950));
 }
 .splitter {
 width: 8px;
@@ -200,25 +316,25 @@ z-index: 10;
 .splitter:hover, .splitter.dragging { background: var(--amber-500); }
 .preview-section {
 flex: 1 1 0; display: flex; flex-direction: column; min-width: 200px;
-background: var(--amber-50); position: relative;
-border: 1px solid var(--amber-800);
+background: var(--preview-bg, var(--amber-50)); position: relative;
+border: 1px solid var(--border-color);
 }
 .preview-section.hidden { display: none; }
 .splitter.hidden { display: none; }
 .tabs {
-display: flex; background: var(--amber-900); height: 48px; overflow-x: auto;
-border-bottom: 1px solid var(--amber-800);
+display: flex; background: var(--tab-bg, var(--amber-900)); height: 48px; overflow-x: auto;
+border-bottom: 1px solid var(--border-color);
 flex-shrink: 0;
 align-items: center;
 }
 .tab {
 padding: 0 16px; display: flex; align-items: center; background: transparent;
-color: var(--amber-300); border-right: 1px solid var(--amber-800); font-size: 13px; font-weight: 500;
+color: var(--amber-300); border-right: 1px solid var(--border-color); font-size: 13px; font-weight: 500;
 cursor: pointer; white-space: nowrap; gap: 8px; transition: background var(--transition-speed), color var(--transition-speed);
 height: 100%;
 }
 .tab:hover { background: var(--amber-800); color: var(--amber-100); }
-.tab.active { background: var(--amber-950); color: var(--amber-50); border-top: 3px solid var(--amber-400); }
+.tab.active { background: var(--tab-active-bg, var(--amber-950)); color: var(--amber-50); border-top: 3px solid var(--amber-400); }
 .tab .close-tab {
 margin-left: 8px; opacity: 0.5; font-size: 14px; color: var(--danger);
 transition: opacity var(--transition-speed);
@@ -229,12 +345,12 @@ flex: 1;
 display: flex;
 overflow: hidden;
 position: relative;
-background: var(--amber-950);
+background: var(--editor-bg, var(--amber-950));
 }
 .line-numbers {
 width: 50px;
-background: var(--amber-900);
-color: var(--amber-600);
+background: var(--line-numbers-bg, var(--amber-900));
+color: var(--line-numbers-color, var(--amber-600));
 text-align: right;
 padding: 24px 12px 24px 4px;
 font-family: 'Fira Code', monospace;
@@ -242,17 +358,17 @@ font-size: 15px;
 line-height: 1.6;
 overflow: hidden;
 user-select: none;
-border-right: 1px solid var(--amber-800);
+border-right: 1px solid var(--border-color);
 flex-shrink: 0;
 }
 .code-area {
-flex: 1; background: var(--amber-950); color: var(--amber-100);
+flex: 1; background: var(--editor-bg, var(--amber-950)); color: var(--amber-100);
 font-family: 'Fira Code', monospace; font-size: 15px; line-height: 1.6;
 padding: 24px; border: none; resize: none; outline: none; tab-size: 4;
 white-space: pre; overflow: auto; caret-color: var(--amber-400);
 }
 .settings-panel, .shortcuts-panel {
-flex: 1; background: var(--amber-950); padding: 24px; overflow-y: auto;
+flex: 1; background: var(--editor-bg, var(--amber-950)); padding: 24px; overflow-y: auto;
 color: var(--amber-100); display: none;
 }
 .settings-panel.active, .shortcuts-panel.active { display: block; }
@@ -286,7 +402,7 @@ border: 1px solid var(--amber-600);
 .shortcut-list { list-style: none; margin-bottom: 28px; max-height: 400px; overflow-y: auto; padding-right: 10px; }
 .shortcut-list li {
 display: flex; justify-content: space-between; align-items: center; padding: 12px 0;
-border-bottom: 1px solid var(--amber-800); color: var(--amber-100);
+border-bottom: 1px solid var(--border-color); color: var(--amber-100);
 }
 .shortcut-list .key {
 color: var(--amber-950); font-family: 'Fira Code', monospace; background: var(--amber-400); font-weight: 600;
@@ -314,7 +430,7 @@ display: flex; align-items: center; justify-content: center; transition: backgro
 .preview-header {
 background: var(--amber-900); height: 48px; padding: 0 20px;
 display: flex; align-items: center; justify-content: space-between;
-border-bottom: 1px solid var(--amber-800); color: var(--amber-200); font-size: 13px; font-weight: 600;
+border-bottom: 1px solid var(--border-color); color: var(--amber-200); font-size: 13px; font-weight: 600;
 letter-spacing: 1px;
 flex-shrink: 0;
 }
@@ -343,15 +459,15 @@ cursor: pointer; width: 32px; height: 32px; border-radius: 8px;
 display: flex; align-items: center; justify-content: center; transition: background var(--transition-speed), color var(--transition-speed);
 }
 .preview-controls button:hover { background: var(--amber-500); color: var(--amber-50); }
-iframe { width: 100%; flex: 1; border: none; background: var(--amber-50); min-height: 0; }
+iframe { width: 100%; flex: 1; border: none; background: var(--preview-bg, var(--amber-50)); min-height: 0; }
 .console-panel {
-background: var(--amber-950); border-top: 2px solid var(--amber-600);
+background: var(--console-bg, var(--amber-950)); border-top: 2px solid var(--amber-600);
 height: 220px; display: flex; flex-direction: column; transition: height var(--transition-speed);
 flex-shrink: 0;
 }
 .console-header {
 height: 38px; display: flex; align-items: center; justify-content: space-between;
-padding: 0 20px; background: var(--amber-900); border-bottom: 1px solid var(--amber-800);
+padding: 0 20px; background: var(--console-header-bg, var(--amber-900)); border-bottom: 1px solid var(--border-color);
 font-size: 12px; font-weight: 700; color: var(--amber-400); letter-spacing: 1px;
 }
 .console-actions button {
@@ -493,6 +609,16 @@ made with <i class="fas fa-heart"></i> by <strong>Chip Hill</strong> <span class
 <h3 style="color:var(--amber-300); margin-bottom:24px;"><i class="fas fa-cog"></i> Settings</h3>
 <div class="settings-group" id="hotkeySettings"></div>
 <div class="settings-group">
+<label>Theme</label>
+<select id="themeSelector" onchange="applyTheme(this.value)">
+<option value="amber">Amber (Default)</option>
+<option value="green">Green Forest</option>
+<option value="cyber">Cyber Blue</option>
+<option value="hacker">Hacker Matrix</option>
+<option value="vscode">VS Code Dark</option>
+</select>
+</div>
+<div class="settings-group">
 <label>Editor</label>
 <div style="margin-bottom:12px;">
 <label class="custom-checkbox" style="margin-bottom:8px;">
@@ -620,16 +746,293 @@ made with <i class="fas fa-heart"></i> by <strong>Chip Hill</strong> <span class
 </div>
 <script>
 let files = {
-'index.html': { icon: 'fab fa-html5', content: `<!DOCTYPE html>\n<html>\n<head>\n <title>Sandbox</title>\n <link rel="stylesheet" href="style.css">\n</head>\n<body>\n <div class="card">\n <h1>🚀 Sandbox Editor</h1>\n <p>made by devs for devs</p>\n <button id="actionBtn">Click me</button>\n </div>\n <script src="script.js"><\/script>\n</body>\n</html>` },
-'style.css': { icon: 'fab fa-css3-alt', content: `body {\n background: #0a0502;\n color: #f7d4b7;\n font-family: "Inter", sans-serif;\n display: flex;\n justify-content: center;\n align-items: center;\n height: 100vh;\n margin: 0;\n}\n.card {\n background: #170c06;\n border: 2px solid #854823;\n border-radius: 30px;\n padding: 50px;\n box-shadow: 0 20px 50px rgba(133, 72, 35, 0.2);\n text-align: center;\n animation: glowPulse 3s infinite;\n}\n@keyframes glowPulse {\n 0% { box-shadow: 0 20px 50px rgba(133, 72, 35, 0.2); }\n 50% { box-shadow: 0 20px 70px rgba(171, 94, 46, 0.6); }\n 100% { box-shadow: 0 20px 50px rgba(133, 72, 35, 0.2); }\n}\nh1 { color: #ab5e2e; font-size: 2.5em; margin-bottom: 10px; }\np { color: #d17834; margin-bottom: 30px; }\nbutton {\n background: #854823;\n border: none;\n color: #0a0502;\n padding: 14px 28px;\n border-radius: 12px;\n font-weight: bold;\n font-size: 16px;\n cursor: pointer;\n transition: all 0.2s;\n}\nbutton:hover {\n background: #ab5e2e;\n transform: translateY(-2px);\n box-shadow: 0 10px 20px rgba(171, 94, 46, 0.3);\n}` },
-'script.js': { icon: 'fab fa-js', content: `console.log("Sandbox ready!");\n\ndocument.getElementById("actionBtn").addEventListener("click", function() {\n    console.log("Button clicked!");\n    alert("Welcome to the sandbox!");\n});` }
+'index.html': { icon: 'fab fa-html5', content: `<!DOCTYPE html>
+<html>
+<head>
+    <title>Visual Proof Sandbox</title>
+    <style>
+        body {
+            background: #0a0502;
+            color: #f7d4b7;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .welcome-card {
+            background: #170c06;
+            border: 2px solid #854823;
+            border-radius: 30px;
+            padding: 40px;
+            max-width: 800px;
+            box-shadow: 0 20px 50px rgba(133, 72, 35, 0.3);
+        }
+        h1 {
+            color: #ab5e2e;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .tagline {
+            color: #d17834;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            border-left: 4px solid #854823;
+            padding-left: 20px;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .feature-item {
+            background: #29150a;
+            border: 1px solid #5c3218;
+            border-radius: 16px;
+            padding: 20px;
+            transition: transform 0.2s;
+        }
+        .feature-item:hover {
+            transform: translateY(-2px);
+            border-color: #ab5e2e;
+            box-shadow: 0 10px 20px rgba(171, 94, 46, 0.2);
+        }
+        .feature-icon {
+            color: #ab5e2e;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .feature-title {
+            color: #e69655;
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .feature-desc {
+            color: #f0b584;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+        .philosophy {
+            background: #3d2110;
+            border-radius: 16px;
+            padding: 20px;
+            margin: 30px 0;
+            color: #f7d4b7;
+            font-size: 1.1em;
+            border: 1px solid #854823;
+        }
+        .shortcuts-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .shortcut-badge {
+            background: #29150a;
+            border: 1px solid #5c3218;
+            border-radius: 12px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .shortcut-key {
+            background: #854823;
+            color: #0a0502;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9em;
+        }
+        .footer-note {
+            margin-top: 30px;
+            text-align: center;
+            color: #5c3218;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-card">
+        <h1>
+            <i class="fas fa-crown" style="color: #ab5e2e;"></i>
+            Visual Proof Sandbox
+        </h1>
+        <div class="tagline">
+            Built by devs, for devs — because not every dev is rich.
+        </div>
+        
+        <div class="feature-grid">
+            <div class="feature-item">
+                <div class="feature-icon"><i class="fas fa-code"></i></div>
+                <div class="feature-title">Multi-Language Editor</div>
+                <div class="feature-desc">HTML, CSS, JavaScript, Python, Markdown, JSON — all in one place with syntax highlighting.</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon"><i class="fas fa-eye"></i></div>
+                <div class="feature-title">Live Preview</div>
+                <div class="feature-desc">See your changes in real-time with the built-in preview panel. Toggle standalone mode for full control.</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon"><i class="fas fa-terminal"></i></div>
+                <div class="feature-title">Integrated Console</div>
+                <div class="feature-desc">Catch logs, errors, and warnings from your JavaScript code directly in the editor.</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon"><i class="fas fa-palette"></i></div>
+                <div class="feature-title">Multiple Themes</div>
+                <div class="feature-desc">Amber, Green Forest, Cyber Blue, Hacker Matrix, and VS Code Dark — pick your vibe.</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon"><i class="fas fa-keyboard"></i></div>
+                <div class="feature-title">Keyboard Shortcuts</div>
+                <div class="feature-desc">Everything has a shortcut. Press Ctrl+? to see them all. Work faster, not harder.</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon"><i class="fas fa-file-export"></i></div>
+                <div class="feature-title">Import/Export</div>
+                <div class="feature-desc">Save your work as a ZIP file or import existing projects. Your work, your control.</div>
+            </div>
+        </div>
+
+        <div class="philosophy">
+            <i class="fas fa-quote-left" style="color: #ab5e2e; margin-right: 10px;"></i>
+            We believe great tools shouldn't cost a fortune. Every developer deserves a powerful sandbox to learn, experiment, and build. No subscriptions, no hidden costs — just pure, open creativity.
+        </div>
+
+        <div class="shortcuts-preview">
+            <div class="shortcut-badge">
+                <span class="shortcut-key">Ctrl+S</span>
+                <span>Save/Preview</span>
+            </div>
+            <div class="shortcut-badge">
+                <span class="shortcut-key">Ctrl+F</span>
+                <span>Find</span>
+            </div>
+            <div class="shortcut-badge">
+                <span class="shortcut-key">Ctrl+N</span>
+                <span>New File</span>
+            </div>
+            <div class="shortcut-badge">
+                <span class="shortcut-key">Ctrl+Shift+P</span>
+                <span>Toggle Preview</span>
+            </div>
+            <div class="shortcut-badge">
+                <span class="shortcut-key">Ctrl+D</span>
+                <span>Duplicate Line</span>
+            </div>
+        </div>
+
+        <div class="footer-note">
+            <i class="fas fa-heart" style="color: #ab5e2e;"></i> Start coding — the only limit is your imagination
+        </div>
+    </div>
+</body>
+</html>` },
+'WELCOME.md': { icon: 'fab fa-markdown', content: `# Welcome to Visual Proof Sandbox 👋
+
+## Built by devs, for devs — because not every dev is rich.
+
+### 🎯 Our Philosophy
+Great tools shouldn't cost a fortune. Every developer deserves a powerful sandbox to learn, experiment, and build. No subscriptions, no hidden costs — just pure, open creativity.
+
+---
+
+## ✨ Features Breakdown
+
+### 1. Multi-Language Editor
+- **HTML** - Structure your web pages
+- **CSS** - Style with precision
+- **JavaScript** - Add interactivity
+- **Python** - Backend logic
+- **Markdown** - Beautiful documentation
+- **JSON** - Data configuration
+
+All with syntax highlighting and smart indentation.
+
+### 2. Live Preview
+Watch your changes come to life in real-time. The preview panel updates automatically (toggle with Ctrl+Shift+P). Use "Standalone" mode for isolated testing.
+
+### 3. Integrated Console
+No more switching to browser devtools! View console.logs, errors, and warnings directly in the editor. Press Ctrl+L to clear.
+
+### 4. Themes
+Choose your vibe:
+- **Amber** (Default) - Warm and earthy
+- **Green Forest** - Calm and natural
+- **Cyber Blue** - Futuristic and sharp
+- **Hacker Matrix** - Classic green-on-black
+- **VS Code Dark** - Familiar and professional
+
+### 5. Keyboard Shortcuts
+Everything has a shortcut:
+| Shortcut | Action |
+|----------|--------|
+| Ctrl+S | Save/Update Preview |
+| Ctrl+F | Find in file |
+| Ctrl+N | New file |
+| Ctrl+Shift+P | Toggle preview |
+| Ctrl+~ | Toggle console |
+| Ctrl+? | View all shortcuts |
+| Ctrl+Shift+S | Swap panels |
+| Ctrl+Tab | Next tab |
+| Ctrl+Shift+Tab | Previous tab |
+| Ctrl+W | Close tab |
+| Ctrl+Shift+H | Hide/show sidebar |
+| Ctrl+D | Duplicate line |
+| Ctrl+/ | Toggle comment |
+
+### 6. File Management
+- Create files with presets (HTML, CSS, JS, etc.)
+- Import/export projects as ZIP
+- Delete files with one click
+- Multiple tabs for easy navigation
+
+### 7. Split View
+Drag the divider between editor and preview to resize. Swap their positions with Ctrl+Shift+S.
+
+### 8. Performance Mode
+Toggle off animations for maximum speed on older machines.
+
+---
+
+## 🚀 Getting Started
+1. Open an existing file from the sidebar
+2. Create a new file with the + button
+3. Start coding!
+4. Watch the preview update
+5. Check the console for output
+6. Export your project when done
+
+## 💡 Pro Tips
+- Use Ctrl+D to quickly duplicate lines
+- Auto-closing brackets and quotes save time
+- Find overlay (Ctrl+F) supports prev/next navigation
+- The console captures all browser logs
+- Themes persist across sessions
+
+## 🤝 Community
+This sandbox is open source and community-driven. Found a bug? Want a feature? The code is yours to improve.
+
+Remember: The best code is written when tools don't get in the way. Happy coding! 🎉
+
+---
+
+*Visual Proof v1.1 — Crafted with ❤️ by Chip Hill*` }
 };
 let currentFile = 'index.html';
 let previewHtmlFile = 'index.html';
 let previewVisible = true;
 let consoleVisible = true;
 let panelsSwapped = false;
-let openedFiles = ['index.html', 'style.css', 'script.js']; 
+let openedFiles = ['index.html', 'WELCOME.md']; 
 let settingsMode = false;
 let shortcutsMode = false;
 let sidebarVisible = true;
@@ -658,7 +1061,8 @@ fontSize: 15,
 tabSize: 4,
 wordWrap: false,
 showLineNumbers: true,
-performanceMode: false
+performanceMode: false,
+theme: 'amber'
 };
 const fileListEl = document.getElementById('fileList');
 const codeEditor = document.getElementById('codeEditor');
@@ -690,6 +1094,7 @@ const fontSizeInput = document.getElementById('fontSizeInput');
 const tabSizeSelect = document.getElementById('tabSizeSelect');
 const wordWrapCheckbox = document.getElementById('wordWrapCheckbox');
 const showLineNumbersCheckbox = document.getElementById('showLineNumbersCheckbox');
+const themeSelector = document.getElementById('themeSelector');
 let findMatches = [], findIndex = -1;
 let standaloneMode = false;
 const standaloneCheckbox = document.getElementById('standaloneCheckbox');
@@ -697,6 +1102,11 @@ standaloneCheckbox.addEventListener('change', (e) => {
   standaloneMode = e.target.checked;
   updatePreview();
 });
+function applyTheme(theme) {
+document.documentElement.setAttribute('data-theme', theme);
+editorSettings.theme = theme;
+themeSelector.value = theme;
+}
 function getFileIconClass(f) {
 if (f.endsWith('.html')) return 'fab fa-html5';
 if (f.endsWith('.css')) return 'fab fa-css3-alt';
@@ -844,6 +1254,7 @@ fontSizeInput.value = editorSettings.fontSize;
 tabSizeSelect.value = editorSettings.tabSize;
 wordWrapCheckbox.checked = editorSettings.wordWrap;
 showLineNumbersCheckbox.checked = editorSettings.showLineNumbers;
+themeSelector.value = editorSettings.theme;
 }
 function renderShortcutsPanel() {
 shortcutsList.innerHTML = '';
@@ -868,6 +1279,8 @@ editorSettings.fontSize = parseInt(fontSizeInput.value, 10) || 15;
 editorSettings.tabSize = parseInt(tabSizeSelect.value, 10) || 4;
 editorSettings.wordWrap = wordWrapCheckbox.checked;
 editorSettings.showLineNumbers = showLineNumbersCheckbox.checked;
+editorSettings.theme = themeSelector.value;
+applyTheme(editorSettings.theme);
 applyEditorSettings();
 exitSpecialModes();
 }
@@ -1059,7 +1472,7 @@ let file=e.target.files[0]; if(!file)return;
 try{ let zip=new JSZip(); let contents=await zip.loadAsync(file); let newFiles={}; let promises=[];
 contents.forEach((path,entry)=>{ if(!entry.dir) promises.push(entry.async('string').then(c=>{ let name=path.split('/').pop(); if(name) newFiles[name]={icon:getFileIconClass(name),content:c}; })); });
 await Promise.all(promises);
-if(Object.keys(newFiles).length) showConfirmDialog('Replace current environment?',()=>{ files=newFiles; openedFiles = Object.keys(newFiles).filter(f=>f.endsWith('.html')||f.endsWith('.css')||f.endsWith('.js')); if (openedFiles.length === 0) openedFiles = Object.keys(newFiles); currentFile=openedFiles[0]||Object.keys(newFiles)[0]; codeEditor.value=files[currentFile]?.content||''; previewHtmlFile=Object.keys(newFiles).find(f=>f.endsWith('.html'))||null; if (settingsMode||shortcutsMode) exitSpecialModes(); renderSidebarAndTabs(); updateLineNumbers(); updatePreviewHtmlSelect(); updatePreview(); });
+if(Object.keys(newFiles).length) showConfirmDialog('Replace current environment?',()=>{ files=newFiles; openedFiles = Object.keys(newFiles).filter(f=>f.endsWith('.html')||f.endsWith('.css')||f.endsWith('.js')||f.endsWith('.md')); if (openedFiles.length === 0) openedFiles = Object.keys(newFiles); currentFile=openedFiles[0]||Object.keys(newFiles)[0]; codeEditor.value=files[currentFile]?.content||''; previewHtmlFile=Object.keys(newFiles).find(f=>f.endsWith('.html'))||null; if (settingsMode||shortcutsMode) exitSpecialModes(); renderSidebarAndTabs(); updateLineNumbers(); updatePreviewHtmlSelect(); updatePreview(); });
 e.target.value='';
 } catch{ alert('Import failed.'); }
 }
@@ -1127,6 +1540,7 @@ if (key === 'space') key = ' ';
 if (key === '~' || key === '`') key = '`';
 return (!!e.ctrlKey === needsCtrl) && (!!e.shiftKey === needsShift) && (!!e.altKey === needsAlt) && (e.key.toLowerCase() === key || e.code.toLowerCase().endsWith(key));
 }
+applyTheme(editorSettings.theme);
 applyEditorSettings();
 codeEditor.value=files[currentFile].content; renderSidebarAndTabs(); updateLineNumbers(); updatePreviewHtmlSelect(); updatePreview();
 let timeout; codeEditor.addEventListener('input',()=>{
@@ -1206,12 +1620,12 @@ editorRatio = editorWidth / total;
 } 
 });
 const presets = [
-  { label: 'HTML', filename: 'index.html', icon: 'fab fa-html5', content: '<!DOCTYPE html>\n<html>\n<head>\n <title>Sandbox</title>\n <link rel="stylesheet" href="style.css">\n</head>\n<body>\n <div class="card">\n <h1>🚀 Sandbox Editor</h1>\n <p>made by devs for devs</p>\n <button id="actionBtn">Click me</button>\n </div>\n <script src="script.js"><\/script>\n</body>\n</html>' },
-  { label: 'CSS', filename: 'style.css', icon: 'fab fa-css3-alt', content: 'body {\n background: #0a0502;\n color: #f7d4b7;\n font-family: "Inter", sans-serif;\n display: flex;\n justify-content: center;\n align-items: center;\n height: 100vh;\n margin: 0;\n}\n.card {\n background: #170c06;\n border: 2px solid #854823;\n border-radius: 30px;\n padding: 50px;\n box-shadow: 0 20px 50px rgba(133, 72, 35, 0.2);\n text-align: center;\n animation: glowPulse 3s infinite;\n}\n@keyframes glowPulse {\n 0% { box-shadow: 0 20px 50px rgba(133, 72, 35, 0.2); }\n 50% { box-shadow: 0 20px 70px rgba(171, 94, 46, 0.6); }\n 100% { box-shadow: 0 20px 50px rgba(133, 72, 35, 0.2); }\n}\nh1 { color: #ab5e2e; font-size: 2.5em; margin-bottom: 10px; }\np { color: #d17834; margin-bottom: 30px; }\nbutton {\n background: #854823;\n border: none;\n color: #0a0502;\n padding: 14px 28px;\n border-radius: 12px;\n font-weight: bold;\n font-size: 16px;\n cursor: pointer;\n transition: all 0.2s;\n}\nbutton:hover {\n background: #ab5e2e;\n transform: translateY(-2px);\n box-shadow: 0 10px 20px rgba(171, 94, 46, 0.3);\n}' },
-  { label: 'JS', filename: 'script.js', icon: 'fab fa-js', content: 'console.log("Sandbox ready!");\n\ndocument.getElementById("actionBtn").addEventListener("click", function() {\n    console.log("Button clicked!");\n    alert("Welcome to the sandbox!");\n});' },
-  { label: 'JSON', filename: 'data.json', icon: 'fas fa-file-code', content: '{ "sandbox": true }' },
-  { label: 'Markdown', filename: 'README.md', icon: 'fab fa-markdown', content: '# Sandbox Editor' },
-  { label: 'Python', filename: 'server.py', icon: 'fab fa-python', content: 'print("Hello from sandbox")' }
+  { label: 'HTML', filename: 'index.html', icon: 'fab fa-html5', content: '<!DOCTYPE html>\n<html>\n<head>\n    <title>New Page</title>\n</head>\n<body>\n    <h1>Hello World</h1>\n</body>\n</html>' },
+  { label: 'CSS', filename: 'style.css', icon: 'fab fa-css3-alt', content: 'body {\n    margin: 0;\n    padding: 20px;\n    font-family: sans-serif;\n}' },
+  { label: 'JS', filename: 'script.js', icon: 'fab fa-js', content: 'console.log("Hello from JavaScript!");' },
+  { label: 'JSON', filename: 'data.json', icon: 'fas fa-file-code', content: '{\n    "name": "project",\n    "version": "1.0.0"\n}' },
+  { label: 'Markdown', filename: 'README.md', icon: 'fab fa-markdown', content: '# Project Title\n\nDescription goes here.' },
+  { label: 'Python', filename: 'main.py', icon: 'fab fa-python', content: 'print("Hello from Python!")' }
 ];
 const presetGrid = document.getElementById('presetGrid');
 presets.forEach(p => {
