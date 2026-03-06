@@ -4,1637 +4,1462 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Visual Proof · Sandbox</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&display=swap');
-* {
-margin: 0;
-padding: 0;
-box-sizing: border-box;
-font-family: 'Inter', sans-serif;
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg0:#080401;--bg1:#0e0602;--bg2:#150902;--bg3:#1d0f05;--bg4:#261508;--bg5:#311c0a;--bg6:#3d240e;
+--bdr:#251208;--bdr2:#341a0a;--bdr3:#4a2510;--bdr4:#6a3818;
+--t0:#f8e0c0;--t1:#d4a870;--t2:#8a5e30;--t3:#5a3a18;--t4:#3a2410;
+--acc:#d4812a;--acc2:#e89c3a;--acc3:#f0b050;--acc-dim:#c47020;
+--accg:rgba(212,129,42,0.28);--accg2:rgba(212,129,42,0.12);
+--red:#e05545;--yelw:#e8b030;--grn:#5ab880;--blu:#5a9fd4;
+--mono:'JetBrains Mono',monospace;--ui:'Syne',sans-serif;
+--spd:0.18s;--spd2:0.28s;
+--bar:50px;--side:236px;--tabh:40px;--sbh:24px;
 }
-:root {
---amber-950: #0a0502;
---amber-900: #170c06;
---amber-800: #29150a;
---amber-700: #3d2110;
---amber-600: #5c3218;
---amber-500: #854823;
---amber-400: #ab5e2e;
---amber-300: #d17834;
---amber-200: #e69655;
---amber-100: #f0b584;
---amber-50: #f7d4b7;
---accent: #ab5e2e;
---accent-glow: rgba(171, 94, 46, 0.4);
---glass-bg: rgba(23, 12, 6, 0.85);
---glass-border: rgba(171, 94, 46, 0.3);
---shadow: 0 12px 40px rgba(10, 5, 2, 0.9);
---text-light: #f7d4b7;
---danger: #ff7a5c;
---transition-speed: 0.2s;
---activity-bar-bg: var(--amber-900);
---sidebar-bg: var(--amber-900);
---editor-bg: var(--amber-950);
---preview-bg: var(--amber-50);
---tab-bg: var(--amber-900);
---tab-active-bg: var(--amber-950);
---line-numbers-bg: var(--amber-900);
---line-numbers-color: var(--amber-600);
---console-bg: var(--amber-950);
---console-header-bg: var(--amber-900);
---border-color: var(--amber-800);
+[data-theme="dark"]{
+--bg0:#080810;--bg1:#0d0d18;--bg2:#121220;--bg3:#181828;--bg4:#1e1e32;--bg5:#252540;--bg6:#2c2c50;
+--bdr:#1a1a2a;--bdr2:#242438;--bdr3:#323248;--bdr4:#484868;
+--t0:#e8e8ff;--t1:#9898c8;--t2:#525280;--t3:#323260;--t4:#202040;
+--acc:#7c6af5;--acc2:#9880ff;--acc3:#b8a8ff;--acc-dim:#6050d0;
+--accg:rgba(124,106,245,0.28);--accg2:rgba(124,106,245,0.12);
 }
-[data-theme="green"] {
---amber-950: #0a1405;
---amber-900: #14260a;
---amber-800: #1f3a10;
---amber-700: #2c4f16;
---amber-600: #3f6e1f;
---amber-500: #568f2a;
---amber-400: #6db037;
---amber-300: #8bd144;
---amber-200: #abe76e;
---amber-100: #c5f095;
---amber-50: #dcfabb;
---accent: #6db037;
---accent-glow: rgba(109, 176, 55, 0.4);
---glass-bg: rgba(20, 38, 10, 0.85);
---glass-border: rgba(109, 176, 55, 0.3);
---shadow: 0 12px 40px rgba(5, 15, 2, 0.9);
---text-light: #dcfabb;
---danger: #a0ff7a;
---border-color: #2c4f16;
+[data-theme="nord"]{
+--bg0:#141820;--bg1:#181e2a;--bg2:#1e2436;--bg3:#242c42;--bg4:#2a3450;--bg5:#303c5e;--bg6:#36446c;
+--bdr:#1e2838;--bdr2:#283446;--bdr3:#344460;--bdr4:#485e80;
+--t0:#cdd6f4;--t1:#8aaae8;--t2:#4a6090;--t3:#2e4068;--t4:#1e2e50;
+--acc:#7aa2f7;--acc2:#88b0ff;--acc3:#a8caff;--acc-dim:#5880d0;
+--accg:rgba(122,162,247,0.28);--accg2:rgba(122,162,247,0.12);
 }
-[data-theme="amber"] {
---amber-950: #0a0502;
---amber-900: #170c06;
---amber-800: #29150a;
---amber-700: #3d2110;
---amber-600: #5c3218;
---amber-500: #854823;
---amber-400: #ab5e2e;
---amber-300: #d17834;
---amber-200: #e69655;
---amber-100: #f0b584;
---amber-50: #f7d4b7;
---accent: #ab5e2e;
---accent-glow: rgba(171, 94, 46, 0.4);
---glass-bg: rgba(23, 12, 6, 0.85);
---glass-border: rgba(171, 94, 46, 0.3);
---shadow: 0 12px 40px rgba(10, 5, 2, 0.9);
---text-light: #f7d4b7;
---danger: #ff7a5c;
---border-color: #29150a;
+[data-theme="catppuccin"]{
+--bg0:#181825;--bg1:#1e1e2e;--bg2:#242436;--bg3:#2a2a40;--bg4:#31314c;--bg5:#383858;--bg6:#404068;
+--bdr:#252535;--bdr2:#313148;--bdr3:#404060;--bdr4:#585880;
+--t0:#cdd6f4;--t1:#a0a8d0;--t2:#606090;--t3:#404068;--t4:#282848;
+--acc:#cba6f7;--acc2:#d8b8ff;--acc3:#e8d0ff;--acc-dim:#a880d8;
+--accg:rgba(203,166,247,0.28);--accg2:rgba(203,166,247,0.12);
 }
-[data-theme="cyber"] {
---amber-950: #03050f;
---amber-900: #0a0d1f;
---amber-800: #121832;
---amber-700: #1b2347;
---amber-600: #263161;
---amber-500: #324281;
---amber-400: #4a61c4;
---amber-300: #6b8aff;
---amber-200: #9bb1ff;
---amber-100: #c2d1ff;
---amber-50: #e0e8ff;
---accent: #4a61c4;
---accent-glow: rgba(74, 97, 196, 0.4);
---glass-bg: rgba(10, 13, 31, 0.85);
---glass-border: rgba(74, 97, 196, 0.3);
---shadow: 0 12px 40px rgba(2, 5, 15, 0.9);
---text-light: #e0e8ff;
---danger: #7aa5ff;
---border-color: #1b2347;
+[data-theme="green"]{
+--bg0:#040a00;--bg1:#080f00;--bg2:#0c1600;--bg3:#111e00;--bg4:#172800;--bg5:#1e3400;--bg6:#254000;
+--bdr:#101800;--bdr2:#182400;--bdr3:#243200;--bdr4:#384800;
+--t0:#c0f080;--t1:#80c040;--t2:#406018;--t3:#284010;--t4:#182808;
+--acc:#70e030;--acc2:#88f040;--acc3:#a8ff60;--acc-dim:#50b820;
+--accg:rgba(112,224,48,0.28);--accg2:rgba(112,224,48,0.12);
 }
-[data-theme="hacker"] {
---amber-950: #0c0f0c;
---amber-900: #1a2b1a;
---amber-800: #2a402a;
---amber-700: #3c5e3c;
---amber-600: #4f7a4f;
---amber-500: #619861;
---amber-400: #7cb87c;
---amber-300: #9cd89c;
---amber-200: #bdf0bd;
---amber-100: #d9f7d9;
---amber-50: #f0fff0;
---accent: #2e8b57;
---accent-glow: rgba(46, 139, 86, 0.4);
---glass-bg: rgba(26, 43, 26, 0.85);
---glass-border: rgba(46, 139, 86, 0.3);
---shadow: 0 12px 40px rgba(10, 15, 10, 0.9);
---text-light: #f0fff0;
---danger: #98fb98;
---border-color: #3c5e3c;
+[data-theme="rose"]{
+--bg0:#100408;--bg1:#160608;--bg2:#1c0a0e;--bg3:#240e14;--bg4:#2e121c;--bg5:#3a1824;--bg6:#48202e;
+--bdr:#200810;--bdr2:#2c1018;--bdr3:#3c1828;--bdr4:#582438;
+--t0:#f0d0e0;--t1:#d090b0;--t2:#904868;--t3:#602848;--t4:#401830;
+--acc:#e05890;--acc2:#f06ca0;--acc3:#ff88b8;--acc-dim:#c04070;
+--accg:rgba(224,88,144,0.28);--accg2:rgba(224,88,144,0.12);
 }
-[data-theme="vscode"] {
---amber-950: #1e1e1e;
---amber-900: #252526;
---amber-800: #2d2d30;
---amber-700: #3e3e42;
---amber-600: #55555a;
---amber-500: #6d6d78;
---amber-400: #858591;
---amber-300: #9e9eab;
---amber-200: #b7b7c5;
---amber-100: #d0d0df;
---amber-50: #eaeaf2;
---accent: #007acc;
---accent-glow: rgba(0, 122, 204, 0.4);
---glass-bg: rgba(37, 37, 38, 0.85);
---glass-border: rgba(0, 122, 204, 0.3);
---shadow: 0 12px 40px rgba(0, 0, 0, 0.9);
---text-light: #eaeaf2;
---danger: #f48771;
---border-color: #3e3e42;
-}
-body.performance-mode {
---transition-speed: 0s;
-}
-body.performance-mode * {
-transition: none !important;
-animation: none !important;
-}
-::selection {
-background: var(--amber-600);
-color: var(--amber-50);
-}
-body {
-background: var(--amber-950);
-color: var(--text-light);
-height: 100vh;
-display: flex;
-overflow: hidden;
-}
-::-webkit-scrollbar { width: 12px; height: 12px; }
-::-webkit-scrollbar-track { background: var(--amber-950); }
-::-webkit-scrollbar-thumb { background: var(--amber-700); border-radius: 20px; border: 3px solid var(--amber-950); }
-::-webkit-scrollbar-thumb:hover { background: var(--amber-500); }
-.activity-bar {
-width: 72px;
-background: var(--activity-bar-bg, var(--amber-900));
-border-right: 1px solid var(--border-color);
-display: flex;
-flex-direction: column;
-align-items: center;
-padding-top: 28px;
-box-shadow: 4px 0 20px rgba(10, 5, 2, 0.8);
-z-index: 30;
-transition: width var(--transition-speed);
-white-space: nowrap;
-}
-.activity-bar.hidden { width: 0; overflow: hidden; padding: 0; }
-.activity-icon {
-width: 34px;
-height: 34px;
-display: flex;
-align-items: center;
-justify-content: center;
-margin-bottom: 30px;
-cursor: pointer;
-transition: transform var(--transition-speed), opacity var(--transition-speed), color var(--transition-speed);
-opacity: 0.7;
-color: var(--amber-400);
-font-size: 28px;
-}
-.activity-icon.fa-icon:hover { opacity: 1; color: var(--amber-200); transform: translateY(-3px) scale(1.1); filter: drop-shadow(0 4px 10px var(--accent-glow)); }
-.sidebar {
-width: 300px;
-background: var(--sidebar-bg, var(--amber-900));
-border-right: 1px solid var(--border-color);
-display: flex;
-flex-direction: column;
-box-shadow: 2px 0 25px rgba(10, 5, 2, 0.7);
-z-index: 20;
-transition: width var(--transition-speed);
-white-space: nowrap;
-}
-.sidebar.hidden { width: 0; overflow: hidden; padding: 0; }
-.project-header { padding: 24px 20px; border-bottom: 1px solid var(--border-color); }
-.project-name {
-background: var(--amber-950);
-border: 1px solid var(--amber-700);
-color: var(--amber-100);
-font-size: 16px;
-font-weight: 600;
-width: 100%;
-padding: 14px 20px;
-outline: none;
-border-radius: 16px;
-transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
-text-align: center;
-}
-.project-name:focus { border-color: var(--amber-400); box-shadow: 0 0 20px var(--accent-glow); }
-.sidebar-title {
-padding: 24px 20px 12px;
-color: var(--amber-400);
-font-size: 12px;
-font-weight: 700;
-letter-spacing: 1.5px;
-display: flex;
-justify-content: space-between;
-align-items: center;
-text-transform: uppercase;
-}
-.add-file-btn {
-width: 32px; height: 32px;
-display: flex; align-items: center; justify-content: center;
-border-radius: 10px;
-background: var(--amber-800);
-border: 1px solid var(--amber-600);
-color: var(--amber-200);
-cursor: pointer;
-transition: background var(--transition-speed), color var(--transition-speed), transform var(--transition-speed);
-}
-.add-file-btn:hover { background: var(--amber-500); color: var(--amber-950); border-color: var(--amber-400); transform: scale(1.05); }
-.file-list { list-style: none; flex: 1; overflow-y: auto; padding: 0 12px; }
-.file-item {
-padding: 12px 16px; margin: 4px 0; border-radius: 12px;
-display: flex; align-items: center; justify-content: space-between;
-cursor: pointer; transition: background var(--transition-speed), color var(--transition-speed);
-font-size: 14px;
-color: var(--amber-200);
-}
-.file-item:hover { background: var(--amber-800); color: var(--amber-50); }
-.file-item.active { background: var(--amber-700); color: var(--amber-50); font-weight: 600; border-left: 4px solid var(--amber-400); }
-.file-left { display: flex; align-items: center; gap: 12px; width: 100%; }
-.file-left i { width: 20px; text-align: center; }
-.delete-btn {
-opacity: 0; background: none; border: none; color: var(--danger); font-size: 18px;
-cursor: pointer; width: 28px; height: 28px; border-radius: 8px;
-display: flex; align-items: center; justify-content: center;
-transition: opacity var(--transition-speed), background var(--transition-speed);
-}
-.delete-btn:hover { background: rgba(255,122,92,0.15); }
-.file-item:hover .delete-btn { opacity: 1; }
-.import-export {
-display: flex; gap: 10px; padding: 20px; border-top: 1px solid var(--border-color);
-}
-.import-export button {
-flex: 1; background: var(--amber-800); border: 1px solid var(--amber-600);
-color: var(--amber-200); padding: 12px 0; border-radius: 12px; cursor: pointer;
-font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;
-transition: background var(--transition-speed), color var(--transition-speed), box-shadow var(--transition-speed);
-}
-.import-export button:hover { background: var(--amber-600); color: var(--amber-50); box-shadow: 0 4px 15px var(--accent-glow); }
-.credit {
-text-align: center;
-padding: 16px 20px;
-font-size: 13px;
-color: var(--amber-500);
-border-top: 1px solid var(--border-color);
-background: var(--amber-950);
-letter-spacing: 0.5px;
-}
-.credit i { color: var(--amber-400); margin: 0 4px; }
-.credit .version {
-color: var(--amber-300);
-font-family: 'Fira Code', monospace;
-margin-left: 8px;
-}
-.workspace {
-flex: 1; display: flex; overflow: hidden;
-background: var(--amber-950);
-}
-.editor-section {
-flex: 1 1 0; display: flex; flex-direction: column; min-width: 200px;
-border: 1px solid var(--border-color); position: relative;
-background: var(--editor-bg, var(--amber-950));
-}
-.splitter {
-width: 8px;
-background: var(--amber-800);
-cursor: col-resize;
-transition: background var(--transition-speed);
-user-select: none;
-z-index: 10;
-}
-.splitter:hover, .splitter.dragging { background: var(--amber-500); }
-.preview-section {
-flex: 1 1 0; display: flex; flex-direction: column; min-width: 200px;
-background: var(--preview-bg, var(--amber-50)); position: relative;
-border: 1px solid var(--border-color);
-}
-.preview-section.hidden { display: none; }
-.splitter.hidden { display: none; }
-.tabs {
-display: flex; background: var(--tab-bg, var(--amber-900)); height: 48px; overflow-x: auto;
-border-bottom: 1px solid var(--border-color);
-flex-shrink: 0;
-align-items: center;
-}
-.tab {
-padding: 0 16px; display: flex; align-items: center; background: transparent;
-color: var(--amber-300); border-right: 1px solid var(--border-color); font-size: 13px; font-weight: 500;
-cursor: pointer; white-space: nowrap; gap: 8px; transition: background var(--transition-speed), color var(--transition-speed);
-height: 100%;
-}
-.tab:hover { background: var(--amber-800); color: var(--amber-100); }
-.tab.active { background: var(--tab-active-bg, var(--amber-950)); color: var(--amber-50); border-top: 3px solid var(--amber-400); }
-.tab .close-tab {
-margin-left: 8px; opacity: 0.5; font-size: 14px; color: var(--danger);
-transition: opacity var(--transition-speed);
-}
-.tab .close-tab:hover { opacity: 1; }
-.editor-container {
-flex: 1;
-display: flex;
-overflow: hidden;
-position: relative;
-background: var(--editor-bg, var(--amber-950));
-}
-.line-numbers {
-width: 50px;
-background: var(--line-numbers-bg, var(--amber-900));
-color: var(--line-numbers-color, var(--amber-600));
-text-align: right;
-padding: 24px 12px 24px 4px;
-font-family: 'Fira Code', monospace;
-font-size: 15px;
-line-height: 1.6;
-overflow: hidden;
-user-select: none;
-border-right: 1px solid var(--border-color);
-flex-shrink: 0;
-}
-.code-area {
-flex: 1; background: var(--editor-bg, var(--amber-950)); color: var(--amber-100);
-font-family: 'Fira Code', monospace; font-size: 15px; line-height: 1.6;
-padding: 24px; border: none; resize: none; outline: none; tab-size: 4;
-white-space: pre; overflow: auto; caret-color: var(--amber-400);
-}
-.settings-panel, .shortcuts-panel {
-flex: 1; background: var(--editor-bg, var(--amber-950)); padding: 24px; overflow-y: auto;
-color: var(--amber-100); display: none;
-}
-.settings-panel.active, .shortcuts-panel.active { display: block; }
-.settings-group { margin-bottom: 28px; }
-.settings-group label { display: block; margin-bottom: 12px; color: var(--amber-300); font-weight: 600; font-size: 14px; letter-spacing: 0.5px; }
-.settings-group input[type="text"], .settings-group input[type="number"], .settings-group select {
-width: 100%; background: var(--amber-950); border: 1px solid var(--amber-600);
-color: var(--amber-50); padding: 10px 16px; border-radius: 8px; outline: none; font-size: 14px;
-transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
-}
-.settings-group input:focus, .settings-group select:focus { border-color: var(--amber-400); box-shadow: 0 0 10px var(--accent-glow); }
-.settings-group .checkbox-label {
-display: flex; align-items: center; gap: 12px; cursor: pointer;
-}
-.settings-group input[type="checkbox"] {
-width: 18px; height: 18px; accent-color: var(--amber-500);
-}
-.settings-actions { display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap; }
-.settings-actions button {
-padding: 12px 24px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer; transition: background var(--transition-speed), box-shadow var(--transition-speed);
-font-size: 14px;
-background: var(--amber-500); color: var(--amber-950);
-}
-.settings-actions button:hover { background: var(--amber-400); box-shadow: 0 4px 15px var(--accent-glow); }
-.settings-actions button.reset {
-background: var(--amber-800);
-color: var(--amber-200);
-border: 1px solid var(--amber-600);
-}
-.settings-actions button.reset:hover { background: var(--amber-700); color: var(--amber-50); }
-.shortcut-list { list-style: none; margin-bottom: 28px; max-height: 400px; overflow-y: auto; padding-right: 10px; }
-.shortcut-list li {
-display: flex; justify-content: space-between; align-items: center; padding: 12px 0;
-border-bottom: 1px solid var(--border-color); color: var(--amber-100);
-}
-.shortcut-list .key {
-color: var(--amber-950); font-family: 'Fira Code', monospace; background: var(--amber-400); font-weight: 600;
-padding: 6px 12px; border-radius: 8px; font-size: 12px;
-}
-.find-overlay {
-position: absolute; top: 60px; right: 24px;
-background: var(--glass-bg); backdrop-filter: blur(16px);
-border: 1px solid var(--glass-border); border-radius: 16px; padding: 12px 16px;
-display: none; align-items: center; gap: 12px; z-index: 50; box-shadow: var(--shadow);
-}
-.find-overlay input {
-background: var(--amber-950); border: 1px solid var(--amber-600); color: var(--amber-50);
-padding: 10px 16px; border-radius: 8px; width: 220px; outline: none; font-size: 14px;
-transition: border-color var(--transition-speed);
-}
-.find-overlay input:focus { border-color: var(--amber-400); box-shadow: 0 0 10px var(--accent-glow); }
-.find-overlay button {
-background: var(--amber-800); border: 1px solid var(--amber-600); color: var(--amber-200); font-size: 14px;
-cursor: pointer; width: 32px; height: 32px; border-radius: 8px;
-display: flex; align-items: center; justify-content: center; transition: background var(--transition-speed), color var(--transition-speed);
-}
-.find-overlay button:hover { background: var(--amber-500); color: var(--amber-50); }
-.find-count { color: var(--amber-300); font-size: 13px; font-weight: 600; min-width: 45px; text-align: center; }
-.preview-header {
-background: var(--amber-900); height: 48px; padding: 0 20px;
-display: flex; align-items: center; justify-content: space-between;
-border-bottom: 1px solid var(--border-color); color: var(--amber-200); font-size: 13px; font-weight: 600;
-letter-spacing: 1px;
-flex-shrink: 0;
-}
-.preview-controls { display: flex; gap: 10px; align-items: center; }
-.preview-controls select {
-background: var(--amber-950);
-border: 1px solid var(--amber-600);
-color: var(--amber-100);
-padding: 6px 30px 6px 14px;
-border-radius: 8px;
-font-size: 13px;
-outline: none;
-cursor: pointer;
-transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
--webkit-appearance: none;
-appearance: none;
-background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ab5e2e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
-background-repeat: no-repeat;
-background-position: right 8px center;
-background-size: 16px;
-}
-.preview-controls select:focus { border-color: var(--amber-400); box-shadow: 0 0 10px var(--accent-glow); }
-.preview-controls button {
-background: var(--amber-800); border: 1px solid var(--amber-600); color: var(--amber-200); font-size: 14px;
-cursor: pointer; width: 32px; height: 32px; border-radius: 8px;
-display: flex; align-items: center; justify-content: center; transition: background var(--transition-speed), color var(--transition-speed);
-}
-.preview-controls button:hover { background: var(--amber-500); color: var(--amber-50); }
-iframe { width: 100%; flex: 1; border: none; background: var(--preview-bg, var(--amber-50)); min-height: 0; }
-.console-panel {
-background: var(--console-bg, var(--amber-950)); border-top: 2px solid var(--amber-600);
-height: 220px; display: flex; flex-direction: column; transition: height var(--transition-speed);
-flex-shrink: 0;
-}
-.console-header {
-height: 38px; display: flex; align-items: center; justify-content: space-between;
-padding: 0 20px; background: var(--console-header-bg, var(--amber-900)); border-bottom: 1px solid var(--border-color);
-font-size: 12px; font-weight: 700; color: var(--amber-400); letter-spacing: 1px;
-}
-.console-actions button {
-background: transparent; border: none; color: var(--amber-400); margin-left: 12px; cursor: pointer; font-size: 14px; transition: color var(--transition-speed), transform var(--transition-speed);
-}
-.console-actions button:hover { color: var(--amber-100); transform: scale(1.1); }
-.console-logs {
-flex: 1; overflow-y: auto; padding: 12px 16px; font-family: 'Fira Code', monospace;
-font-size: 13px; background: rgba(23, 12, 6, 0.4); color: var(--amber-100);
-}
-.log-item { padding: 6px 0; border-bottom: 1px solid var(--amber-900); display: flex; gap: 12px; }
-.log-item.error { color: #ff7a5c; }
-.log-item.warn { color: #f0b584; }
-.log-item.info { color: #a1d1f7; }
-.log-item .log-icon { width: 24px; opacity: 0.8; }
-.modal-overlay {
-display: none; position: fixed; top:0; left:0; width:100%; height:100%;
-background: rgba(10, 5, 2, 0.85); backdrop-filter: blur(8px);
-align-items: center; justify-content: center; z-index: 200;
-}
-.modal {
-background: var(--amber-900); border: 1px solid var(--amber-600);
-border-radius: 24px; padding: 36px; width: 480px; max-width: 90%;
-box-shadow: var(--shadow); color: var(--amber-50);
-}
-.modal h3 { margin-bottom: 24px; font-size: 20px; font-weight: 600; color: var(--amber-300); display: flex; align-items: center; gap: 8px; }
-.modal-input {
-width: 100%; background: var(--amber-950); border: 1px solid var(--amber-600);
-color: var(--amber-50); padding: 14px 20px; border-radius: 12px; margin-bottom: 24px; outline: none; font-size: 15px;
-transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
-}
-.modal-input:focus { border-color: var(--amber-400); box-shadow: 0 0 15px var(--accent-glow); }
-.modal select {
-background: var(--amber-950);
-border: 1px solid var(--amber-600);
-color: var(--amber-100);
-padding: 6px 30px 6px 14px;
-border-radius: 8px;
-font-size: 13px;
-outline: none;
-cursor: pointer;
-transition: border-color var(--transition-speed);
--webkit-appearance: none;
-appearance: none;
-background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ab5e2e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
-background-repeat: no-repeat;
-background-position: right 8px center;
-background-size: 16px;
-}
-.modal select:focus { border-color: var(--amber-400); box-shadow: 0 0 10px var(--accent-glow); }
-.modal-actions { display: flex; justify-content: flex-end; gap: 12px; }
-.modal-actions button {
-padding: 12px 24px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer; transition: background var(--transition-speed), box-shadow var(--transition-speed);
-font-size: 14px;
-}
-.modal-actions .cancel { background: transparent; border: 1px solid var(--amber-600); color: var(--amber-200); }
-.modal-actions .cancel:hover { background: var(--amber-800); }
-.modal-actions .confirm, .modal-actions .create { background: var(--amber-500); color: var(--amber-950); }
-.modal-actions .confirm:hover, .modal-actions .create:hover { background: var(--amber-400); box-shadow: 0 4px 15px var(--accent-glow); }
-.preset-grid {
-display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px;
-}
-.preset-btn {
-background: var(--amber-800); border: 1px solid var(--amber-600); color: var(--amber-200);
-padding: 16px 10px; border-radius: 12px; cursor: pointer; text-align: center; transition: transform var(--transition-speed), border-color var(--transition-speed), background var(--transition-speed);
-font-weight: 500;
-}
-.preset-btn:hover { border-color: var(--amber-400); background: var(--amber-700); color: var(--amber-50); transform: translateY(-2px); }
-.custom-checkbox {
-display: flex;
-align-items: center;
-gap: 8px;
-cursor: pointer;
-color: var(--amber-200);
-font-size: 13px;
-}
-.custom-checkbox input[type="checkbox"] {
-appearance: none;
--webkit-appearance: none;
-width: 18px;
-height: 18px;
-background: var(--amber-950);
-border: 2px solid var(--amber-600);
-border-radius: 4px;
-outline: none;
-cursor: pointer;
-transition: background var(--transition-speed), border-color var(--transition-speed);
-position: relative;
-}
-.custom-checkbox input[type="checkbox"]:checked {
-background: var(--amber-500);
-border-color: var(--amber-400);
-}
-.custom-checkbox input[type="checkbox"]:checked::after {
-content: "✓";
-position: absolute;
-color: var(--amber-950);
-font-size: 14px;
-font-weight: bold;
-left: 2px;
-top: -2px;
-}
-.custom-checkbox input[type="checkbox"]:focus {
-box-shadow: 0 0 10px var(--accent-glow);
-}
+::selection{background:var(--acc);color:var(--bg0)}
+body{background:var(--bg0);color:var(--t0);font-family:var(--ui);height:100vh;display:flex;flex-direction:column;overflow:hidden;font-size:13px}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bdr4);border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:var(--t2)}
+@keyframes fadeSlideIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tabIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+@keyframes tabOut{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(8px)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+@keyframes ripple{0%{transform:scale(0);opacity:0.5}100%{transform:scale(4);opacity:0}}
+@keyframes glow{0%,100%{box-shadow:0 0 8px var(--accg)}50%{box-shadow:0 0 22px var(--accg),0 0 44px var(--accg2)}}
+@keyframes switchIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+@keyframes switchOut{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(10px)}}
+@keyframes badgePop{0%{transform:scale(0)}70%{transform:scale(1.2)}100%{transform:scale(1)}}
+@keyframes logSlideIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:translateX(0)}}
+.app{display:flex;flex:1;overflow:hidden;min-height:0}
+.activity-bar{width:var(--bar);background:var(--bg1);border-right:1px solid var(--bdr);display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:2px;z-index:30;flex-shrink:0;transition:width var(--spd2) cubic-bezier(.4,0,.2,1);overflow:hidden}
+.activity-bar.hidden{width:0}
+.act-logo{width:30px;height:30px;background:linear-gradient(135deg,var(--acc),var(--acc-dim));border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--bg0);font-size:13px;margin-bottom:8px;flex-shrink:0;font-family:var(--mono);font-weight:600;letter-spacing:-1px;box-shadow:0 0 16px var(--accg),0 2px 8px rgba(0,0,0,.4);transition:transform var(--spd),box-shadow var(--spd);cursor:pointer}
+.act-logo:hover{transform:scale(1.08);animation:glow 1.5s ease infinite}
+.act-btn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:7px;cursor:pointer;color:var(--t3);font-size:13px;transition:background var(--spd),color var(--spd),transform var(--spd);position:relative;border:none;background:none;flex-shrink:0}
+.act-btn:hover{background:var(--bg4);color:var(--t0);transform:translateX(2px)}
+.act-btn.active{background:var(--bg4);color:var(--acc)}
+.act-btn[data-tip]:hover::after{content:attr(data-tip);position:absolute;left:calc(100% + 10px);top:50%;transform:translateY(-50%);background:var(--bg5);border:1px solid var(--bdr4);color:var(--t0);padding:4px 9px;border-radius:5px;font-size:11px;white-space:nowrap;pointer-events:none;z-index:999;font-family:var(--ui);animation:slideDown var(--spd) ease;box-shadow:0 4px 16px rgba(0,0,0,.5)}
+.act-spacer{flex:1}
+.sidebar{width:var(--side);background:var(--bg1);border-right:1px solid var(--bdr);display:flex;flex-direction:column;z-index:20;flex-shrink:0;transition:width var(--spd2) cubic-bezier(.4,0,.2,1);overflow:hidden}
+.sidebar.hidden{width:0}
+.proj-hdr{padding:11px 10px 9px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:8px}
+.proj-ico{color:var(--acc);font-size:11px;flex-shrink:0}
+.proj-name{background:transparent;border:none;color:var(--t0);font-family:var(--ui);font-size:12.5px;font-weight:600;flex:1;outline:none;min-width:0;transition:color var(--spd)}
+.proj-name:focus{color:var(--acc)}
+.side-sec{padding:11px 10px 4px;font-size:9.5px;font-weight:700;letter-spacing:1.6px;color:var(--t4);text-transform:uppercase;display:flex;justify-content:space-between;align-items:center;font-family:var(--mono)}
+.ico-btn{width:19px;height:19px;display:flex;align-items:center;justify-content:center;border-radius:4px;background:transparent;border:none;color:var(--t3);cursor:pointer;font-size:10px;transition:background var(--spd),color var(--spd),transform var(--spd)}
+.ico-btn:hover{background:var(--bg4);color:var(--t0);transform:scale(1.1)}
+.file-list{list-style:none;flex:1;overflow-y:auto;padding:2px 5px}
+.file-item{padding:5px 7px;margin:1px 0;border-radius:5px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;color:var(--t2);font-size:12px;transition:background var(--spd),color var(--spd),padding-left var(--spd);white-space:nowrap;position:relative;overflow:hidden}
+.file-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--acc);transform:scaleY(0);transition:transform var(--spd) cubic-bezier(.4,0,.2,1);border-radius:0 1px 1px 0}
+.file-item:hover{background:var(--bg3);color:var(--t1);padding-left:10px}
+.file-item.active{background:var(--bg3);color:var(--t0);font-weight:500;padding-left:10px}
+.file-item.active::before{transform:scaleY(1)}
+.file-left{display:flex;align-items:center;gap:7px;min-width:0}
+.file-left span{overflow:hidden;text-overflow:ellipsis;font-family:var(--mono)}
+.file-left i{font-size:11px;width:13px;text-align:center;flex-shrink:0}
+.del-btn{opacity:0;background:none;border:none;color:var(--t3);font-size:9px;cursor:pointer;width:17px;height:17px;border-radius:3px;display:flex;align-items:center;justify-content:center;transition:opacity var(--spd),background var(--spd),color var(--spd),transform var(--spd);flex-shrink:0}
+.del-btn:hover{background:rgba(224,85,69,.15);color:var(--red);transform:rotate(90deg)}
+.file-item:hover .del-btn{opacity:1}
+.side-footer{border-top:1px solid var(--bdr);padding:7px 5px;display:flex;gap:4px}
+.side-btn{flex:1;background:var(--bg3);border:1px solid var(--bdr2);color:var(--t2);padding:6px;border-radius:5px;cursor:pointer;font-size:11px;font-weight:600;font-family:var(--ui);display:flex;align-items:center;justify-content:center;gap:5px;transition:background var(--spd),color var(--spd),border-color var(--spd),transform var(--spd);position:relative;overflow:hidden}
+.side-btn:hover{background:var(--bg5);color:var(--t0);border-color:var(--bdr4);transform:translateY(-1px)}
+.side-btn .ripple-el{position:absolute;border-radius:50%;background:var(--accg);animation:ripple .5s ease forwards;pointer-events:none}
+.credit{padding:7px;font-size:10px;color:var(--t4);text-align:center;border-top:1px solid var(--bdr);font-family:var(--mono)}
+.credit strong{color:var(--t3)}
+.workspace{flex:1;display:flex;overflow:hidden;background:var(--bg0)}
+.editor-section{flex:1 1 0;display:flex;flex-direction:column;min-width:180px;background:var(--bg0);position:relative;overflow:hidden}
+.splitter{width:1px;background:var(--bdr);cursor:col-resize;position:relative;z-index:10;flex-shrink:0;transition:background var(--spd),width var(--spd)}
+.splitter::after{content:'';position:absolute;top:0;bottom:0;left:-5px;right:-5px}
+.splitter:hover,.splitter.dragging{background:var(--acc);width:2px;box-shadow:0 0 10px var(--accg)}
+.splitter.hidden{display:none}
+.preview-section{flex:1 1 0;display:flex;flex-direction:column;min-width:180px;background:#fff;position:relative}
+.preview-section.hidden{display:none}
+.tabs-bar{height:var(--tabh);background:var(--bg1);border-bottom:1px solid var(--bdr);display:flex;flex-direction:row;align-items:stretch;overflow-x:auto;overflow-y:hidden;flex-shrink:0}
+.tabs-bar::-webkit-scrollbar{height:0}
+.tab{flex:0 0 auto;padding:0 14px;display:flex;flex-direction:row;align-items:center;justify-content:center;background:transparent;color:var(--t3);border-right:1px solid transparent;font-size:11.5px;font-family:var(--mono);cursor:pointer;white-space:nowrap;gap:6px;position:relative;box-shadow:inset 0 0 0 transparent;transition:color var(--spd),background var(--spd),box-shadow var(--spd);animation:tabIn var(--spd2) cubic-bezier(.4,0,.2,1)}
+.tab.leaving{animation:tabOut var(--spd) cubic-bezier(.4,0,.2,1) forwards}
+.tab:hover{color:var(--t1);background:var(--bg2)}
+.tab.active{color:var(--t0);background:var(--bg0);box-shadow:inset 0 2px 0 var(--acc);border-right-color:var(--bdr)}
+.tab .ft-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;transition:transform var(--spd)}
+.tab:hover .ft-dot{transform:scale(1.4)}
+.tab .unsaved-dot{width:6px;height:6px;border-radius:50%;background:var(--acc3);flex-shrink:0;animation:pulse 2s infinite}
+.ctab{margin-left:2px;opacity:0;color:var(--t3);font-size:9px;width:14px;height:14px;border-radius:3px;display:flex;align-items:center;justify-content:center;transition:opacity var(--spd),background var(--spd),color var(--spd),transform var(--spd);flex-shrink:0}
+.tab:hover .ctab{opacity:.5}
+.ctab:hover{opacity:1!important;background:rgba(224,85,69,.2);color:var(--red);transform:rotate(90deg)}
+.editor-container{flex:1;display:flex;overflow:hidden;position:relative;background:var(--bg0)}
+.editor-pane{flex:1;display:flex;overflow:hidden;position:relative;transition:opacity var(--spd2),transform var(--spd2)}
+.editor-pane.out{opacity:0;transform:translateX(-10px);pointer-events:none}
+.editor-pane.in{animation:switchIn var(--spd2) cubic-bezier(.4,0,.2,1)}
+.lnums{width:46px;background:var(--bg0);color:var(--t4);text-align:right;padding:14px 8px 14px 0;font-family:var(--mono);font-size:13px;line-height:1.65;overflow:hidden;user-select:none;border-right:1px solid var(--bdr);flex-shrink:0;letter-spacing:-.3px}
+.code-area{flex:1;background:var(--bg0);color:var(--t0);font-family:var(--mono);font-size:13px;line-height:1.65;padding:14px 14px 14px 12px;border:none;resize:none;outline:none;tab-size:2;white-space:pre;overflow:auto;caret-color:var(--acc)}
+.md-wrap{flex:1;display:none;flex-direction:column;overflow:hidden;background:var(--bg0)}
+.md-wrap.active{display:flex;animation:switchIn var(--spd2) cubic-bezier(.4,0,.2,1)}
+.md-bar{height:36px;background:var(--bg2);border-bottom:1px solid var(--bdr);display:flex;align-items:center;padding:0 14px;gap:8px;flex-shrink:0}
+.md-bar-label{font-size:9.5px;font-weight:700;letter-spacing:1.6px;color:var(--t4);text-transform:uppercase;font-family:var(--mono);flex:1;display:flex;align-items:center;gap:6px}
+.md-bar-label i{color:var(--acc)}
+.md-mode-btns{display:flex;background:var(--bg1);border:1px solid var(--bdr2);border-radius:6px;padding:2px;gap:2px}
+.md-mode-btn{background:transparent;border:none;color:var(--t2);padding:3px 10px;border-radius:4px;cursor:pointer;font-size:11px;font-weight:600;font-family:var(--ui);display:flex;align-items:center;gap:5px;transition:background var(--spd),color var(--spd)}
+.md-mode-btn:hover{color:var(--t1)}
+.md-mode-btn.active{background:var(--acc);color:var(--bg0);box-shadow:0 1px 6px var(--accg)}
+.md-save-btn{background:transparent;border:1px solid var(--bdr3);color:var(--t2);padding:3px 10px;border-radius:5px;cursor:pointer;font-size:11px;font-weight:600;font-family:var(--ui);display:none;align-items:center;gap:5px;transition:background var(--spd),color var(--spd),border-color var(--spd),transform var(--spd)}
+.md-save-btn:hover{background:var(--bg4);color:var(--t0);border-color:var(--acc);transform:translateY(-1px)}
+.md-save-btn.saved{border-color:var(--grn);color:var(--grn)}
+.md-save-btn.show{display:flex}
+.md-rendered-area{flex:1;overflow-y:auto;display:none}
+.md-rendered-area.active{display:block;animation:switchIn var(--spd2) cubic-bezier(.4,0,.2,1)}
+.md-editor-area{flex:1;display:none}
+.md-editor-area.active{display:flex;animation:switchIn var(--spd2) cubic-bezier(.4,0,.2,1)}
+.md-rendered{padding:28px 36px;font-family:var(--ui);font-size:14px;line-height:1.78;color:var(--t0);max-width:820px}
+.md-rendered h1{font-size:26px;font-weight:800;border-bottom:2px solid var(--bdr3);padding-bottom:10px;margin-bottom:16px;color:var(--t0);letter-spacing:-.4px}
+.md-rendered h2{font-size:19px;font-weight:700;border-bottom:1px solid var(--bdr2);padding-bottom:6px;margin:22px 0 11px;color:var(--t0)}
+.md-rendered h3{font-size:15px;font-weight:600;margin:18px 0 8px;color:var(--t1)}
+.md-rendered h4{font-size:13px;font-weight:600;margin:14px 0 6px;color:var(--t1)}
+.md-rendered p{margin:0 0 13px;color:var(--t1)}
+.md-rendered a{color:var(--acc2);text-decoration:none;border-bottom:1px solid var(--accg);transition:color var(--spd)}
+.md-rendered a:hover{color:var(--acc3)}
+.md-rendered code{background:var(--bg4);border:1px solid var(--bdr3);color:var(--acc3);font-family:var(--mono);font-size:12px;padding:2px 6px;border-radius:4px}
+.md-rendered pre{background:var(--bg2);border:1px solid var(--bdr2);border-radius:8px;padding:16px 18px;margin:13px 0;overflow-x:auto}
+.md-rendered pre code{background:none;border:none;padding:0;color:var(--t0);font-size:12.5px;line-height:1.65}
+.md-rendered ul,.md-rendered ol{margin:0 0 13px 22px}
+.md-rendered li{margin-bottom:4px;color:var(--t1)}
+.md-rendered li::marker{color:var(--acc)}
+.md-rendered blockquote{border-left:3px solid var(--acc);padding:8px 16px;margin:13px 0;background:var(--bg3);border-radius:0 7px 7px 0;color:var(--t1)}
+.md-rendered table{width:100%;border-collapse:collapse;margin:13px 0;font-size:12.5px}
+.md-rendered th{background:var(--bg3);padding:8px 12px;text-align:left;border:1px solid var(--bdr2);font-weight:600;color:var(--t0);font-family:var(--mono);font-size:11.5px}
+.md-rendered td{padding:8px 12px;border:1px solid var(--bdr2);color:var(--t1)}
+.md-rendered tr:nth-child(even) td{background:var(--bg2)}
+.md-rendered hr{border:none;border-top:1px solid var(--bdr2);margin:20px 0}
+.md-rendered img{max-width:100%;border-radius:7px;border:1px solid var(--bdr2)}
+.md-rendered strong{color:var(--t0);font-weight:700}
+.md-rendered em{color:var(--acc2);font-style:italic}
+.md-rendered del{color:var(--t3);text-decoration:line-through}
+.changelog-wrap{flex:1;display:none;flex-direction:column;overflow:hidden;background:var(--bg0)}
+.changelog-wrap.active{display:flex;animation:switchIn var(--spd2) cubic-bezier(.4,0,.2,1)}
+.changelog-hdr{height:36px;background:var(--bg2);border-bottom:1px solid var(--bdr);display:flex;align-items:center;padding:0 16px;gap:8px;flex-shrink:0}
+.changelog-title{font-size:9.5px;font-weight:700;letter-spacing:1.6px;color:var(--t4);text-transform:uppercase;font-family:var(--mono);flex:1;display:flex;align-items:center;gap:7px}
+.changelog-title i{color:var(--acc)}
+.changelog-badge{background:var(--acc);color:var(--bg0);font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px;font-family:var(--mono);animation:badgePop var(--spd2) cubic-bezier(.4,0,.2,1)}
+.changelog-body{flex:1;overflow-y:auto;padding:24px 28px}
+.cl-version{margin-bottom:28px}
+.cl-version-hdr{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--bdr2)}
+.cl-ver-tag{background:var(--acc);color:var(--bg0);font-family:var(--mono);font-size:11px;font-weight:600;padding:3px 10px;border-radius:5px}
+.cl-ver-tag.prev{background:var(--bg4);color:var(--t2);border:1px solid var(--bdr3)}
+.cl-ver-date{font-size:11px;color:var(--t3);font-family:var(--mono)}
+.cl-ver-label{font-size:12px;font-weight:600;color:var(--t1);margin-left:auto}
+.cl-entries{display:flex;flex-direction:column;gap:7px}
+.cl-entry{display:flex;align-items:flex-start;gap:10px;padding:8px 10px;border-radius:6px;background:var(--bg2);border:1px solid var(--bdr);animation:logSlideIn var(--spd2) cubic-bezier(.4,0,.2,1);transition:background var(--spd)}
+.cl-entry:hover{background:var(--bg3)}
+.cl-entry-tag{font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:4px;font-family:var(--mono);letter-spacing:.5px;flex-shrink:0;margin-top:1px}
+.cl-entry-tag.new{background:rgba(90,184,128,.15);color:var(--grn);border:1px solid rgba(90,184,128,.3)}
+.cl-entry-tag.fix{background:rgba(90,159,212,.15);color:var(--blu);border:1px solid rgba(90,159,212,.3)}
+.cl-entry-tag.imp{background:rgba(212,129,42,.15);color:var(--acc2);border:1px solid rgba(212,129,42,.3)}
+.cl-entry-tag.rmv{background:rgba(224,85,69,.15);color:var(--red);border:1px solid rgba(224,85,69,.3)}
+.cl-entry-text{font-size:12px;color:var(--t1);line-height:1.55;font-family:var(--ui)}
+.cl-entry-text strong{color:var(--t0);font-weight:600}
+.settings-panel,.shortcuts-panel{flex:1;background:var(--bg0);padding:20px 18px;overflow-y:auto;color:var(--t0);display:none;font-family:var(--ui)}
+.settings-panel.active,.shortcuts-panel.active{display:block;animation:fadeSlideIn var(--spd2) ease}
+.panel-title{font-size:13px;font-weight:700;color:var(--t0);margin-bottom:18px;display:flex;align-items:center;gap:8px}
+.panel-title i{color:var(--acc)}
+.s-group{margin-bottom:18px}
+.s-lbl{display:block;margin-bottom:7px;color:var(--t4);font-size:9.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;font-family:var(--mono)}
+.s-group input[type="text"],.s-group input[type="number"],.s-group select{background:var(--bg2);border:1px solid var(--bdr2);color:var(--t0);padding:7px 10px;border-radius:5px;outline:none;font-size:12px;font-family:var(--mono);width:100%;transition:border-color var(--spd),box-shadow var(--spd)}
+.s-group input:focus,.s-group select:focus{border-color:var(--acc);box-shadow:0 0 0 2px var(--accg2)}
+.s-group select option{background:var(--bg3)}
+.tog-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--bdr)}
+.tog-row:last-child{border-bottom:none}
+.tog-lbl{font-size:12px;color:var(--t1)}
+.toggle{position:relative;width:30px;height:16px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.tog-sl{position:absolute;top:0;left:0;right:0;bottom:0;background:var(--bg5);border-radius:16px;cursor:pointer;transition:background var(--spd);border:1px solid var(--bdr3)}
+.tog-sl::after{content:'';position:absolute;width:10px;height:10px;border-radius:50%;background:var(--t3);top:2px;left:2px;transition:transform var(--spd),background var(--spd)}
+.toggle input:checked+.tog-sl{background:var(--acc);border-color:var(--acc-dim)}
+.toggle input:checked+.tog-sl::after{transform:translateX(14px);background:#fff}
+.s-actions{display:flex;gap:7px;justify-content:flex-end;margin-top:14px}
+.btn{padding:7px 14px;border-radius:6px;border:none;font-weight:600;cursor:pointer;font-size:12px;font-family:var(--ui);transition:background var(--spd),opacity var(--spd),transform var(--spd);position:relative;overflow:hidden}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn-p{background:var(--acc);color:var(--bg0)}
+.btn-p:hover{background:var(--acc2)}
+.btn-s{background:var(--bg4);border:1px solid var(--bdr3);color:var(--t1)}
+.btn-s:hover{background:var(--bg5);color:var(--t0)}
+.sc-list{list-style:none}
+.sc-list li{display:flex;justify-content:space-between;align-items:center;padding:7px 6px;border-bottom:1px solid var(--bdr);font-size:12px;color:var(--t1);border-radius:4px;transition:background var(--spd)}
+.sc-list li:hover{background:var(--bg2)}
+.sc-list li:last-child{border-bottom:none}
+.sc-list .key{color:var(--t0);font-family:var(--mono);background:var(--bg4);border:1px solid var(--bdr4);padding:2px 8px;border-radius:4px;font-size:10.5px}
+.hk-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.hk-row span{flex:1;font-size:12px;color:var(--t1)}
+.hk-row input{width:120px!important;font-family:var(--mono)!important;font-size:11px!important}
+.find-wrap{position:absolute;top:8px;right:12px;background:var(--bg3);border:1px solid var(--bdr4);border-radius:8px;padding:7px 9px;display:none;align-items:center;gap:7px;z-index:50;box-shadow:0 8px 32px rgba(0,0,0,.6);animation:slideDown var(--spd) ease}
+.find-wrap input{background:var(--bg1);border:1px solid var(--bdr3);color:var(--t0);padding:4px 10px;border-radius:5px;width:175px;outline:none;font-size:12px;font-family:var(--mono);transition:border-color var(--spd)}
+.find-wrap input:focus{border-color:var(--acc);box-shadow:0 0 0 2px var(--accg2)}
+.find-cnt{color:var(--t3);font-size:10px;font-family:var(--mono);min-width:34px;text-align:center}
+.find-btn{background:var(--bg4);border:1px solid var(--bdr2);color:var(--t2);width:24px;height:24px;border-radius:4px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:10px;transition:background var(--spd),color var(--spd),transform var(--spd)}
+.find-btn:hover{background:var(--bg5);color:var(--t0);transform:scale(1.08)}
+.pv-hdr{background:var(--bg1);height:var(--tabh);padding:0 11px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--bdr);flex-shrink:0}
+.pv-lbl{font-size:9.5px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:var(--t4);display:flex;align-items:center;gap:6px;font-family:var(--mono)}
+.live-dot{width:5px;height:5px;border-radius:50%;background:var(--grn);animation:pulse 2s ease infinite}
+.pv-btns{display:flex;gap:3px;align-items:center}
+.pv-sel{background:var(--bg3);border:1px solid var(--bdr2);color:var(--t1);padding:3px 8px;border-radius:4px;font-size:11px;font-family:var(--mono);outline:none;cursor:pointer;transition:border-color var(--spd)}
+.pv-sel:focus{border-color:var(--acc)}
+.pv-sel option{background:var(--bg2)}
+.pv-btn{background:transparent;border:none;color:var(--t3);width:26px;height:26px;border-radius:4px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;transition:background var(--spd),color var(--spd),transform var(--spd)}
+.pv-btn:hover{background:var(--bg3);color:var(--t0);transform:scale(1.1)}
+.sa-tog{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--t3);cursor:pointer;padding:0 5px;transition:color var(--spd)}
+.sa-tog:hover{color:var(--t1)}
+iframe{width:100%;flex:1;border:none;background:#fff;min-height:0}
+.con-panel{background:var(--bg1);border-top:1px solid var(--bdr);height:164px;display:flex;flex-direction:column;transition:height var(--spd2) cubic-bezier(.4,0,.2,1);flex-shrink:0}
+.con-hdr{height:30px;display:flex;align-items:center;justify-content:space-between;padding:0 11px;border-bottom:1px solid var(--bdr);flex-shrink:0}
+.con-title{font-size:9.5px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:var(--t4);display:flex;align-items:center;gap:5px;font-family:var(--mono)}
+.con-acts{display:flex;gap:2px}
+.con-acts button{background:transparent;border:none;color:var(--t3);cursor:pointer;font-size:10px;width:22px;height:22px;border-radius:3px;display:flex;align-items:center;justify-content:center;transition:background var(--spd),color var(--spd),transform var(--spd)}
+.con-acts button:hover{background:var(--bg3);color:var(--t0);transform:scale(1.1)}
+.con-logs{flex:1;overflow-y:auto;padding:5px 9px;font-family:var(--mono);font-size:11.5px;line-height:1.55}
+.log-item{padding:2px 0;border-bottom:1px solid var(--bg3);display:flex;gap:7px;align-items:flex-start;animation:fadeSlideIn var(--spd) ease}
+.log-item:last-child{border-bottom:none}
+.log-item.error{color:var(--red)}.log-item.warn{color:var(--yelw)}.log-item.info{color:var(--blu)}.log-item.log{color:var(--t1)}
+.log-ico{opacity:.7;width:12px;margin-top:2px;flex-shrink:0;font-size:9px}
+.modal-bg{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.72);backdrop-filter:blur(6px);align-items:center;justify-content:center;z-index:200}
+.modal-bg.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--bdr4);border-radius:12px;padding:22px;width:450px;max-width:92%;box-shadow:0 24px 80px rgba(0,0,0,.8);animation:fadeSlideIn var(--spd2) cubic-bezier(.4,0,.2,1)}
+.modal-ttl{font-size:13px;font-weight:700;color:var(--t0);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.modal-ttl i{color:var(--acc)}
+.modal-inp{width:100%;background:var(--bg0);border:1px solid var(--bdr3);color:var(--t0);padding:8px 11px;border-radius:6px;margin-bottom:12px;outline:none;font-size:12.5px;font-family:var(--mono);transition:border-color var(--spd),box-shadow var(--spd)}
+.modal-inp:focus{border-color:var(--acc);box-shadow:0 0 0 2px var(--accg2)}
+.modal-row{display:flex;gap:8px;margin-bottom:12px}
+.modal-row .modal-inp{margin-bottom:0}
+.modal-row select{background:var(--bg0);border:1px solid var(--bdr3);color:var(--t1);padding:8px 11px;border-radius:6px;outline:none;font-size:12px;font-family:var(--mono);cursor:pointer;transition:border-color var(--spd);flex-shrink:0}
+.modal-row select:focus{border-color:var(--acc)}
+.modal-row select option{background:var(--bg3)}
+.modal-acts{display:flex;justify-content:flex-end;gap:7px}
+.preset-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:14px}
+.preset-btn{background:var(--bg3);border:1px solid var(--bdr2);color:var(--t2);padding:9px 8px;border-radius:6px;cursor:pointer;text-align:center;font-size:12px;font-weight:600;font-family:var(--ui);transition:background var(--spd),border-color var(--spd),color var(--spd),transform var(--spd);display:flex;align-items:center;justify-content:center;gap:5px}
+.preset-btn:hover{background:var(--bg5);border-color:var(--acc);color:var(--t0);transform:translateY(-2px)}
+.preset-btn i{font-size:12px}
+.statusbar{height:var(--sbh);background:var(--acc);display:flex;align-items:center;padding:0 10px;gap:12px;font-family:var(--mono);font-size:10.5px;color:rgba(0,0,0,.65);flex-shrink:0}
+.sb-item{display:flex;align-items:center;gap:4px}
+.sb-sep{opacity:.25}
+.sb-r{margin-left:auto;display:flex;gap:12px}
+.i-html{color:#e34c26}.i-css{color:#264de4}.i-js{color:#d4b800}.i-json{color:#6abccd}.i-md{color:#5aafde}.i-py{color:#3572a5}.i-def{color:var(--t2)}
+.d-html{background:#e34c26}.d-css{background:#264de4}.d-js{background:#d4b800}.d-json{background:#6abccd}.d-md{background:#5aafde}.d-py{background:#3572a5}.d-def{background:var(--t2)}
 </style>
 </head>
 <body>
-<div class="activity-bar" id="activityBar">
-<i class="fas fa-file-code activity-icon fa-icon" onclick="switchToFile('index.html')" title="Home (index.html)"></i>
-<i class="fas fa-cog activity-icon fa-icon" onclick="openSettingsTab()" title="Settings"></i>
-<i class="fas fa-keyboard activity-icon fa-icon" onclick="openShortcutsTab()" title="Shortcuts"></i>
+<div class="app">
+<div class="activity-bar" id="actBar">
+  <div class="act-logo" title="Visual Proof">&lt;/&gt;</div>
+  <button class="act-btn active" id="actExplorer" onclick="goToRecentFile()" data-tip="Explorer — recent file"><i class="fas fa-folder-open"></i></button>
+  <button class="act-btn" id="actChangelog" onclick="openChangelogTab()" data-tip="Update Log"><i class="fas fa-history"></i></button>
+  <button class="act-btn" id="actSettings" onclick="openSettingsTab()" data-tip="Settings"><i class="fas fa-sliders-h"></i></button>
+  <button class="act-btn" id="actShortcuts" onclick="openShortcutsTab()" data-tip="Shortcuts"><i class="fas fa-keyboard"></i></button>
+  <div class="act-spacer"></div>
+  <button class="act-btn" onclick="toggleSidebar()" data-tip="Toggle sidebar"><i class="fas fa-bars"></i></button>
 </div>
 <div class="sidebar" id="sidebar">
-<div class="project-header">
-<input type="text" class="project-name" value="Visual Proof" spellcheck="false" id="projectNameInput">
+  <div class="proj-hdr">
+    <i class="fas fa-cube proj-ico"></i>
+    <input type="text" class="proj-name" value="visual-proof" spellcheck="false" id="projNameInput">
+  </div>
+  <div class="side-sec">
+    <span>Explorer</span>
+    <button class="ico-btn" onclick="showCreateFileModal()" title="New File"><i class="fas fa-plus"></i></button>
+  </div>
+  <ul class="file-list" id="fileList"></ul>
+  <div class="side-footer">
+    <button class="side-btn" id="importBtn" onclick="document.getElementById('zipInput').click()"><i class="fas fa-upload"></i>Import</button>
+    <button class="side-btn" id="exportBtn" onclick="exportProject()"><i class="fas fa-download"></i>Export</button>
+    <input type="file" id="zipInput" accept=".zip" style="display:none" onchange="importZip(event)">
+  </div>
+  <div class="credit">by <strong>Chip Hill</strong> · v1.5</div>
 </div>
-<div class="sidebar-title">
-<span><i class="fas fa-crown" style="margin-right:8px; color:var(--amber-400);"></i>FILES</span>
-<span class="add-file-btn" onclick="showCreateFileModal()" title="New File"><i class="fas fa-plus"></i></span>
-</div>
-<ul class="file-list" id="fileList"></ul>
-<div class="import-export">
-<button onclick="document.getElementById('zipInput').click()"><i class="fas fa-file-import"></i> IMPORT</button>
-<button onclick="exportProject()"><i class="fas fa-file-export"></i> EXPORT</button>
-<input type="file" id="zipInput" accept=".zip" style="display:none;" onchange="importZip(event)">
-</div>
-<div class="credit">
-made with <i class="fas fa-heart"></i> by <strong>Chip Hill</strong> <span class="version">v1.1</span>
-</div>
-</div>
-<div class="workspace layout-row" id="workspace">
-<div class="editor-section" id="editorSection">
-<div class="tabs" id="tabsArea"></div>
-<div class="editor-container">
-<div class="line-numbers" id="lineNumbers"></div>
-<textarea id="codeEditor" class="code-area" spellcheck="false" wrap="off"></textarea>
-<div class="settings-panel" id="settingsPanel">
-<h3 style="color:var(--amber-300); margin-bottom:24px;"><i class="fas fa-cog"></i> Settings</h3>
-<div class="settings-group" id="hotkeySettings"></div>
-<div class="settings-group">
-<label>Theme</label>
-<select id="themeSelector" onchange="applyTheme(this.value)">
-<option value="amber">Amber (Default)</option>
-<option value="green">Green Forest</option>
-<option value="cyber">Cyber Blue</option>
-<option value="hacker">Hacker Matrix</option>
-<option value="vscode">VS Code Dark</option>
-</select>
-</div>
-<div class="settings-group">
-<label>Editor</label>
-<div style="margin-bottom:12px;">
-<label class="custom-checkbox" style="margin-bottom:8px;">
-<input type="checkbox" id="livePreviewCheckbox"> Live Preview (auto-update)
-</label>
-</div>
-<div style="display:flex; gap:12px; margin-bottom:12px;">
-<div style="flex:1;">
-<label style="font-size:12px; color:var(--amber-300);">Font Size</label>
-<input type="number" id="fontSizeInput" min="10" max="30" step="1" value="15">
-</div>
-<div style="flex:1;">
-<label style="font-size:12px; color:var(--amber-300);">Tab Size</label>
-<select id="tabSizeSelect">
-<option value="2">2 spaces</option>
-<option value="4" selected>4 spaces</option>
-</select>
-</div>
-</div>
-<div style="margin-bottom:12px;">
-<label class="custom-checkbox">
-<input type="checkbox" id="wordWrapCheckbox"> Word Wrap
-</label>
-</div>
-<div style="margin-bottom:12px;">
-<label class="custom-checkbox">
-<input type="checkbox" id="showLineNumbersCheckbox" checked> Show Line Numbers
-</label>
-</div>
-</div>
-<div class="settings-group">
-<label>Performance Mode</label>
-<label class="custom-checkbox">
-<input type="checkbox" id="performanceModeCheckbox"> Disable animations & transitions
-</label>
-</div>
-<div class="settings-actions">
-<button onclick="saveSettingsFromPanel()">Save Settings</button>
-<button class="reset" onclick="resetHotkeys()">Reset Shortcuts</button>
-</div>
-</div>
-<div class="shortcuts-panel" id="shortcutsPanel">
-<h3 style="color:var(--amber-300); margin-bottom:24px;"><i class="fas fa-keyboard"></i> Keyboard Shortcuts</h3>
-<ul class="shortcut-list" id="shortcutsList"></ul>
-<div class="settings-actions">
-<button onclick="exitShortcutsMode()">Close</button>
-</div>
-</div>
-</div>
-<div class="find-overlay" id="findOverlay">
-<input type="text" id="findInput" placeholder="Find in file...">
-<span class="find-count" id="findCount">0/0</span>
-<button id="findPrev" title="Previous"><i class="fas fa-chevron-up"></i></button>
-<button id="findNext" title="Next"><i class="fas fa-chevron-down"></i></button>
-<button class="close-btn" onclick="hideFind()"><i class="fas fa-times"></i></button>
-</div>
-</div>
-<div class="splitter" id="splitter"></div>
-<div class="preview-section" id="previewSection">
-<div class="preview-header">
-<span><i class="fas fa-eye" style="color:var(--amber-400); margin-right:8px;"></i>PREVIEW</span>
-<div class="preview-controls">
-<select id="htmlPreviewSelect" onchange="changePreviewHtml()"></select>
-<label class="custom-checkbox">
-<input type="checkbox" id="standaloneCheckbox"> Standalone
-</label>
-<button onclick="swapPanels()" title="Swap Editor/Preview"><i class="fas fa-arrows-left-right"></i></button>
-<button onclick="togglePreview()" title="Toggle Fullscreen Editor"><i class="fas fa-toggle-on"></i></button>
-<button onclick="openNewTab()" title="Open in New Tab"><i class="fas fa-external-link-alt"></i></button>
-</div>
-</div>
-<iframe id="previewFrame"></iframe>
-<div class="console-panel" id="consolePanel">
-<div class="console-header">
-<span><i class="fas fa-terminal" style="margin-right:8px;"></i>CONSOLE</span>
-<div class="console-actions">
-<button onclick="clearConsole()" title="Clear Logs"><i class="fas fa-trash-alt"></i></button>
-<button onclick="toggleConsole()" title="Minimize/Expand"><i class="fas fa-chevron-down"></i></button>
-</div>
-</div>
-<div class="console-logs" id="consoleLogs"></div>
+<div class="workspace" id="workspace">
+  <div class="editor-section" id="edSec">
+    <div class="tabs-bar" id="tabsArea"></div>
+    <div class="editor-container">
+      <div class="editor-pane" id="edPane">
+        <div class="lnums" id="lnums"></div>
+        <textarea id="codeArea" class="code-area" spellcheck="false" wrap="off"></textarea>
+      </div>
+      <div class="md-wrap" id="mdWrap">
+        <div class="md-bar">
+          <span class="md-bar-label"><i class="fab fa-markdown"></i>README</span>
+          <div class="md-mode-btns">
+            <button class="md-mode-btn active" id="mdPrevBtn" onclick="setMdMode('preview')"><i class="fas fa-eye"></i>Preview</button>
+            <button class="md-mode-btn" id="mdEditBtn" onclick="setMdMode('edit')"><i class="fas fa-pen"></i>Edit</button>
+          </div>
+          <button class="md-save-btn" id="mdSaveBtn" onclick="saveMdAndPreview()"><i class="fas fa-save"></i>Save &amp; Preview</button>
+        </div>
+        <div class="md-rendered-area active" id="mdRendArea"><div class="md-rendered" id="mdRend"></div></div>
+        <div class="md-editor-area" id="mdEdArea">
+          <div class="lnums" id="mdLnums"></div>
+          <textarea id="mdCode" class="code-area" spellcheck="false" wrap="off"></textarea>
+        </div>
+      </div>
+      <div class="changelog-wrap" id="changelogWrap">
+        <div class="changelog-hdr">
+          <div class="changelog-title"><i class="fas fa-history"></i>Update Log<span class="changelog-badge">v1.5</span></div>
+        </div>
+        <div class="changelog-body" id="changelogBody"></div>
+      </div>
+      <div class="settings-panel" id="settPanel">
+        <div class="panel-title"><i class="fas fa-sliders-h"></i>Settings</div>
+        <div class="s-group">
+          <span class="s-lbl">Theme</span>
+          <select id="themeSelector" onchange="applyTheme(this.value)">
+            <option value="amber">Amber (Default)</option>
+            <option value="dark">Dark Void</option>
+            <option value="nord">Nord</option>
+            <option value="catppuccin">Catppuccin Mocha</option>
+            <option value="green">Matrix Green</option>
+            <option value="rose">Rose Pine</option>
+          </select>
+        </div>
+        <div class="s-group">
+          <span class="s-lbl">Editor</span>
+          <div class="tog-row"><span class="tog-lbl">Live preview</span><label class="toggle"><input type="checkbox" id="livePreviewCb"><span class="tog-sl"></span></label></div>
+          <div class="tog-row"><span class="tog-lbl">Word wrap</span><label class="toggle"><input type="checkbox" id="wordWrapCb"><span class="tog-sl"></span></label></div>
+          <div class="tog-row"><span class="tog-lbl">Line numbers</span><label class="toggle"><input type="checkbox" id="lineNumsCb" checked><span class="tog-sl"></span></label></div>
+          <div class="tog-row"><span class="tog-lbl">Performance mode</span><label class="toggle"><input type="checkbox" id="perfCb"><span class="tog-sl"></span></label></div>
+        </div>
+        <div class="s-group">
+          <span class="s-lbl">Font &amp; Tab</span>
+          <div style="display:flex;gap:7px">
+            <div style="flex:1"><div style="font-size:10px;color:var(--t4);margin-bottom:4px;font-family:var(--mono)">Font px</div><input type="number" id="fontSzInput" min="10" max="28" value="13"></div>
+            <div style="flex:1"><div style="font-size:10px;color:var(--t4);margin-bottom:4px;font-family:var(--mono)">Tab size</div><select id="tabSzSel"><option value="2">2 spaces</option><option value="4">4 spaces</option></select></div>
+          </div>
+        </div>
+        <div class="s-group" id="hkSettings"></div>
+        <div class="s-actions">
+          <button class="btn btn-s" onclick="resetHotkeys()">Reset Keys</button>
+          <button class="btn btn-p" onclick="saveSettings()">Save</button>
+        </div>
+      </div>
+      <div class="shortcuts-panel" id="scPanel">
+        <div class="panel-title"><i class="fas fa-keyboard"></i>Keyboard Shortcuts</div>
+        <ul class="sc-list" id="scList"></ul>
+        <div class="s-actions" style="margin-top:14px"><button class="btn btn-p" onclick="exitSpecial()">Close</button></div>
+      </div>
+    </div>
+    <div class="find-wrap" id="findWrap">
+      <input type="text" id="findInput" placeholder="Find…">
+      <span class="find-cnt" id="findCnt">0/0</span>
+      <button class="find-btn" id="findPrevBtn"><i class="fas fa-chevron-up"></i></button>
+      <button class="find-btn" id="findNextBtn"><i class="fas fa-chevron-down"></i></button>
+      <button class="find-btn" onclick="hideFind()"><i class="fas fa-times"></i></button>
+    </div>
+  </div>
+  <div class="splitter" id="splitter"></div>
+  <div class="preview-section" id="pvSec">
+    <div class="pv-hdr">
+      <div class="pv-lbl"><div class="live-dot"></div>Preview</div>
+      <div class="pv-btns">
+        <select id="htmlPvSel" class="pv-sel" onchange="changePreviewHtml()"></select>
+        <label class="sa-tog"><input type="checkbox" id="standaloneCb" style="width:11px;height:11px;accent-color:var(--acc)"><span>Standalone</span></label>
+        <button class="pv-btn" onclick="swapPanels()" title="Swap panels"><i class="fas fa-arrows-left-right"></i></button>
+        <button class="pv-btn" onclick="togglePreview()" title="Toggle preview"><i class="fas fa-eye-slash"></i></button>
+        <button class="pv-btn" onclick="openNewTab()" title="Open in new tab"><i class="fas fa-external-link-alt"></i></button>
+      </div>
+    </div>
+    <iframe id="pvFrame"></iframe>
+    <div class="con-panel" id="conPanel">
+      <div class="con-hdr">
+        <div class="con-title"><i class="fas fa-terminal"></i>Console</div>
+        <div class="con-acts">
+          <button onclick="clearConsole()" title="Clear"><i class="fas fa-trash"></i></button>
+          <button onclick="toggleConsole()" title="Minimize"><i class="fas fa-chevron-down"></i></button>
+        </div>
+      </div>
+      <div class="con-logs" id="conLogs"></div>
+    </div>
+  </div>
 </div>
 </div>
+<div class="statusbar">
+  <span class="sb-item"><i class="fas fa-code"></i><span id="sbFile">index.html</span></span>
+  <span class="sb-sep">|</span>
+  <span id="sbLang" class="sb-item">HTML</span>
+  <div class="sb-r">
+    <span id="sbPos" class="sb-item" style="font-family:var(--mono)">Ln 1, Col 1</span>
+    <span class="sb-sep">|</span>
+    <span id="sbLines" class="sb-item">1 line</span>
+    <span class="sb-sep">|</span>
+    <span class="sb-item"><i class="fas fa-circle" style="font-size:5px;opacity:.5"></i>Live</span>
+  </div>
 </div>
-<div class="modal-overlay" id="fileModal">
-<div class="modal">
-<h3><i class="fas fa-file-signature"></i> Create New File</h3>
-<div class="preset-grid" id="presetGrid"></div>
-<div style="display:flex; gap:12px; margin-bottom:24px;">
-<input type="text" id="customFileName" class="modal-input" style="margin-bottom:0;" placeholder="Custom file name...">
-<select id="customExt">
-<option value=".html">.html</option>
-<option value=".css">.css</option>
-<option value=".js">.js</option>
-<option value=".json">.json</option>
-<option value=".md">.md</option>
-<option value=".py">.py</option>
-<option value="">(none)</option>
-</select>
+<div class="modal-bg" id="fileMod">
+  <div class="modal">
+    <div class="modal-ttl"><i class="fas fa-file-plus"></i>New File</div>
+    <div class="preset-grid" id="presetGrid"></div>
+    <div class="modal-row">
+      <input type="text" id="custFileName" class="modal-inp" placeholder="filename">
+      <select id="custExt"><option value=".html">.html</option><option value=".css">.css</option><option value=".js">.js</option><option value=".json">.json</option><option value=".md">.md</option><option value=".py">.py</option><option value="">(none)</option></select>
+    </div>
+    <div class="modal-acts">
+      <button class="btn btn-s" onclick="hideModal('fileMod')">Cancel</button>
+      <button class="btn btn-p" onclick="createCustomFile()">Create</button>
+    </div>
+  </div>
 </div>
-<div class="modal-actions">
-<button class="cancel" onclick="hideModal('fileModal')">Cancel</button>
-<button class="create" onclick="createCustomFile()">Create</button>
+<div class="modal-bg" id="confirmMod">
+  <div class="modal" style="width:360px">
+    <div class="modal-ttl"><i class="fas fa-exclamation-triangle" style="color:var(--yelw)"></i>Confirm</div>
+    <p id="confirmMsg" style="margin-bottom:16px;color:var(--t1);font-size:13px;line-height:1.6"></p>
+    <div class="modal-acts">
+      <button class="btn btn-s" id="confirmCancel">Cancel</button>
+      <button class="btn btn-p" id="confirmOk">Proceed</button>
+    </div>
+  </div>
 </div>
-</div>
-</div>
-<div class="modal-overlay" id="confirmModal">
-<div class="modal" style="width: 400px;">
-<h3><i class="fas fa-exclamation-triangle" style="color:var(--amber-400);"></i> Confirm Action</h3>
-<p id="confirmMessage" style="margin-bottom:28px; color: var(--amber-100); font-size: 15px;"></p>
-<div class="modal-actions">
-<button class="cancel" id="confirmCancel">Cancel</button>
-<button class="confirm" id="confirmOk">Proceed</button>
-</div>
-</div>
-</div>
-<div class="modal-overlay" id="shortcutsModal">
-<div class="modal">
-<h3><i class="fas fa-keyboard"></i> Quick Shortcuts</h3>
-<ul class="shortcut-list" id="shortcutListModal"></ul>
-<div class="modal-actions">
-<button class="confirm" onclick="hideShortcutsModal()">Close</button>
-</div>
-</div>
+<div class="modal-bg" id="scMod">
+  <div class="modal">
+    <div class="modal-ttl"><i class="fas fa-keyboard"></i>Shortcuts</div>
+    <ul class="sc-list" id="scModList"></ul>
+    <div class="modal-acts" style="margin-top:14px"><button class="btn btn-p" onclick="hideModal('scMod')">Close</button></div>
+  </div>
 </div>
 <script>
-let files = {
-'index.html': { icon: 'fab fa-html5', content: `<!DOCTYPE html>
+const CHANGELOG=[
+  {version:'1.5',date:'2025-07-15',label:'Latest',entries:[
+    {type:'fix',text:'<strong>Tab centering fixed for real</strong> — replaced inline-flex + border-top with flex + inset box-shadow so text never shifts'},
+    {type:'fix',text:'<strong>Explorer activity button</strong> now reliably returns to your most recently active file'},
+    {type:'new',text:'<strong>Update Log tab</strong> is now always visible in the activity bar with animated version badge'},
+    {type:'imp',text:'<strong>Tab close button</strong> uses pure flex layout — no more vertical misalignment on the × icon'},
+    {type:'imp',text:'<strong>Animations tightened</strong> — removed conflicting double animation declarations on unsaved dot'},
+  ]},
+  {version:'1.4',date:'2025-07-14',label:'Previous',entries:[
+    {type:'new',text:'<strong>Update Log tab</strong> — full version history now accessible from the activity bar'},
+    {type:'fix',text:'<strong>Tab centering bug fixed</strong> — tabs now align perfectly using inline-flex with stretch alignment'},
+    {type:'fix',text:'<strong>Explorer button</strong> now navigates to your most recently active file instead of always opening index.html'},
+    {type:'imp',text:'<strong>Tab switch animations</strong> — smooth slide + fade transitions when changing files or opening panels'},
+    {type:'imp',text:'<strong>Unsaved indicator</strong> — pulsing amber dot on the tab when a markdown file has unsaved edits'},
+    {type:'imp',text:'<strong>Ripple effect</strong> on sidebar import/export buttons for tactile feedback'},
+  ]},
+  {version:'1.3',date:'2025-07-12',label:'Previous',entries:[
+    {type:'new',text:'<strong>Markdown save workflow</strong> — edit .md files then hit <strong>Save & Preview</strong> (or Ctrl+S) to render'},
+    {type:'new',text:'<strong>Ctrl+S in MD editor</strong> saves and switches to preview mode instantly'},
+    {type:'imp',text:'<strong>Tab animations</strong> — tabs slide in/out with cubic-bezier easing'},
+    {type:'imp',text:'<strong>Editor pane transitions</strong> — cross-fade with translateX when switching files'},
+    {type:'imp',text:'<strong>Status bar cursor position</strong> — live Ln/Col tracking'},
+    {type:'imp',text:'<strong>Activity bar tooltips</strong> with smooth slide-down animation'},
+  ]},
+  {version:'1.2',date:'2025-07-10',label:'',entries:[
+    {type:'new',text:'<strong>Markdown preview mode</strong> — .md files open as rendered README with GitHub-style styling'},
+    {type:'new',text:'<strong>Edit/Preview toggle</strong> — switch between rendered view and raw editor'},
+    {type:'new',text:'<strong>6 themes</strong> — Amber, Dark Void, Nord, Catppuccin, Matrix Green, Rose Pine'},
+    {type:'imp',text:'<strong>JetBrains Mono + Syne</strong> typography for sharper readability'},
+    {type:'imp',text:'<strong>File indicator bar</strong> — animated left-side accent on active sidebar file'},
+    {type:'imp',text:'<strong>Status bar</strong> with live file, language, and line count'},
+  ]},
+  {version:'1.1',date:'2025-07-08',label:'',entries:[
+    {type:'new',text:'<strong>Multiple themes</strong> — Amber, Green Forest, Cyber Blue, Hacker Matrix, VS Code Dark'},
+    {type:'new',text:'<strong>Custom hotkeys</strong> — remap any shortcut in settings'},
+    {type:'new',text:'<strong>Standalone preview mode</strong> — isolate a single HTML file without injecting other assets'},
+    {type:'imp',text:'<strong>Performance mode</strong> — disable all animations for older machines'},
+    {type:'imp',text:'<strong>Find overlay</strong> with prev/next navigation and match counter'},
+    {type:'fix',text:'<strong>Import/export ZIP</strong> now correctly handles nested file paths'},
+  ]},
+  {version:'1.0',date:'2025-07-05',label:'',entries:[
+    {type:'new',text:'<strong>Initial release</strong> — multi-file editor with HTML, CSS, JS, Markdown, JSON, Python'},
+    {type:'new',text:'<strong>Split-pane live preview</strong> with draggable splitter'},
+    {type:'new',text:'<strong>Integrated console</strong> — captures logs, warnings, errors from preview iframe'},
+    {type:'new',text:'<strong>ZIP import/export</strong> for full project management'},
+    {type:'new',text:'<strong>Auto bracket/quote closing</strong> and smart Tab indentation'},
+    {type:'new',text:'<strong>Keyboard-first design</strong> — 14 configurable shortcuts'},
+  ]},
+];
+
+function buildChangelog(){
+  const body=document.getElementById('changelogBody');
+  body.innerHTML='';
+  CHANGELOG.forEach(ver=>{
+    const sec=document.createElement('div');
+    sec.className='cl-version';
+    const isLatest=ver.label==='Latest';
+    sec.innerHTML=`<div class="cl-version-hdr"><span class="cl-ver-tag${isLatest?'':' prev'}">v${ver.version}</span><span class="cl-ver-date">${ver.date}</span>${ver.label?`<span class="cl-ver-label">${ver.label}</span>`:''}</div><div class="cl-entries" id="cl-entries-${ver.version}"></div>`;
+    body.appendChild(sec);
+    const entriesEl=document.getElementById(`cl-entries-${ver.version}`);
+    ver.entries.forEach((e,i)=>{
+      const el=document.createElement('div');
+      el.className='cl-entry';
+      el.style.animationDelay=`${i*40}ms`;
+      const typeMap={new:'NEW',fix:'FIX',imp:'IMP',rmv:'RMV'};
+      el.innerHTML=`<span class="cl-entry-tag ${e.type}">${typeMap[e.type]||e.type.toUpperCase()}</span><span class="cl-entry-text">${e.text}</span>`;
+      entriesEl.appendChild(el);
+    });
+  });
+}
+
+function gfic(f){
+  if(f.endsWith('.html'))return'fab fa-html5 i-html';
+  if(f.endsWith('.css'))return'fab fa-css3-alt i-css';
+  if(f.endsWith('.js'))return'fab fa-js i-js';
+  if(f.endsWith('.json'))return'fas fa-file-code i-json';
+  if(f.endsWith('.md'))return'fab fa-markdown i-md';
+  if(f.endsWith('.py'))return'fab fa-python i-py';
+  return'fas fa-file i-def';
+}
+function gdc(f){
+  if(f.endsWith('.html'))return'd-html';if(f.endsWith('.css'))return'd-css';if(f.endsWith('.js'))return'd-js';
+  if(f.endsWith('.json'))return'd-json';if(f.endsWith('.md'))return'd-md';if(f.endsWith('.py'))return'd-py';return'd-def';
+}
+function glang(f){
+  if(f.endsWith('.html'))return'HTML';if(f.endsWith('.css'))return'CSS';if(f.endsWith('.js'))return'JavaScript';
+  if(f.endsWith('.json'))return'JSON';if(f.endsWith('.md'))return'Markdown';if(f.endsWith('.py'))return'Python';return'Text';
+}
+function escFN(n){return n.replace(/'/g,"\\'")}
+
+function renderMd(md){
+  let h=md;
+  h=h.replace(/```(\w*)\n([\s\S]*?)```/g,(_,l,c)=>`<pre><code>${eH(c.trimEnd())}</code></pre>`);
+  h=h.replace(/`([^`\n]+)`/g,(_,c)=>`<code>${eH(c)}</code>`);
+  h=h.replace(/^#{6} (.+)$/gm,'<h6>$1</h6>');
+  h=h.replace(/^#{5} (.+)$/gm,'<h5>$1</h5>');
+  h=h.replace(/^#{4} (.+)$/gm,'<h4>$1</h4>');
+  h=h.replace(/^#{3} (.+)$/gm,'<h3>$1</h3>');
+  h=h.replace(/^#{2} (.+)$/gm,'<h2>$1</h2>');
+  h=h.replace(/^#{1} (.+)$/gm,'<h1>$1</h1>');
+  h=h.replace(/^\s*---+\s*$/gm,'<hr>');
+  h=h.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+  h=h.replace(/\*(.+?)\*/g,'<em>$1</em>');
+  h=h.replace(/~~(.+?)~~/g,'<del>$1</del>');
+  h=h.replace(/!\[([^\]]*)\]\(([^)]+)\)/g,'<img alt="$1" src="$2">');
+  h=h.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank">$1</a>');
+  const tR=/^\|(.+)\|\n\|[-| :]+\|\n((?:\|.+\|\n?)+)/gm;
+  h=h.replace(tR,(m,hdr,rows)=>{
+    const ths=hdr.split('|').filter(c=>c.trim()).map(c=>`<th>${c.trim()}</th>`).join('');
+    const trs=rows.trim().split('\n').map(r=>{
+      const cells=r.split('|').filter((c,i,a)=>i>0&&i<a.length-1);
+      return`<tr>${cells.map(c=>`<td>${c.trim()}</td>`).join('')}</tr>`;
+    }).join('');
+    return`<table><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody></table>`;
+  });
+  h=h.replace(/^> (.+)$/gm,'<blockquote>$1</blockquote>');
+  h=h.replace(/^[-*] (.+)$/gm,'<li>$1</li>');
+  h=h.replace(/^\d+\. (.+)$/gm,'<li>$1</li>');
+  h=h.replace(/(<li>[\s\S]+?<\/li>(\n|$))+/g,m=>`<ul>${m}</ul>`);
+  const lines=h.split('\n');
+  const out=[];
+  const blockTags=['<h1','<h2','<h3','<h4','<h5','<h6','<ul','<ol','<li','<pre','<table','<blockquote','<hr','<img','</'];
+  for(let ln of lines){
+    const t=ln.trim();
+    if(!t){out.push('');continue;}
+    if(blockTags.some(tag=>t.startsWith(tag))){out.push(ln);continue;}
+    out.push(`<p>${ln}</p>`);
+  }
+  return out.join('\n').replace(/<p><\/p>/g,'');
+}
+function eH(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+let files={
+'index.html':{content:`<!DOCTYPE html>
 <html>
 <head>
-    <title>Visual Proof Sandbox</title>
-    <style>
-        body {
-            background: #0a0502;
-            color: #f7d4b7;
-            font-family: 'Inter', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-        }
-        .welcome-card {
-            background: #170c06;
-            border: 2px solid #854823;
-            border-radius: 30px;
-            padding: 40px;
-            max-width: 800px;
-            box-shadow: 0 20px 50px rgba(133, 72, 35, 0.3);
-        }
-        h1 {
-            color: #ab5e2e;
-            font-size: 2.5em;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .tagline {
-            color: #d17834;
-            font-size: 1.2em;
-            margin-bottom: 30px;
-            border-left: 4px solid #854823;
-            padding-left: 20px;
-        }
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin: 30px 0;
-        }
-        .feature-item {
-            background: #29150a;
-            border: 1px solid #5c3218;
-            border-radius: 16px;
-            padding: 20px;
-            transition: transform 0.2s;
-        }
-        .feature-item:hover {
-            transform: translateY(-2px);
-            border-color: #ab5e2e;
-            box-shadow: 0 10px 20px rgba(171, 94, 46, 0.2);
-        }
-        .feature-icon {
-            color: #ab5e2e;
-            font-size: 2em;
-            margin-bottom: 10px;
-        }
-        .feature-title {
-            color: #e69655;
-            font-size: 1.2em;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-        .feature-desc {
-            color: #f0b584;
-            font-size: 0.9em;
-            line-height: 1.5;
-        }
-        .philosophy {
-            background: #3d2110;
-            border-radius: 16px;
-            padding: 20px;
-            margin: 30px 0;
-            color: #f7d4b7;
-            font-size: 1.1em;
-            border: 1px solid #854823;
-        }
-        .shortcuts-preview {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 30px;
-        }
-        .shortcut-badge {
-            background: #29150a;
-            border: 1px solid #5c3218;
-            border-radius: 12px;
-            padding: 8px 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .shortcut-key {
-            background: #854823;
-            color: #0a0502;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-family: 'Fira Code', monospace;
-            font-size: 0.9em;
-        }
-        .footer-note {
-            margin-top: 30px;
-            text-align: center;
-            color: #5c3218;
-            font-size: 0.9em;
-        }
-    </style>
+  <title>Visual Proof</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:#080401;color:#f8e0c0;font-family:'Syne',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px}
+    .card{max-width:900px;width:100%}
+    .hdr{display:flex;align-items:center;gap:14px;margin-bottom:6px}
+    .logo{width:40px;height:40px;background:linear-gradient(135deg,#d4812a,#c47020);border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:#080401;box-shadow:0 0 28px rgba(212,129,42,0.4);flex-shrink:0}
+    h1{font-size:25px;font-weight:800;letter-spacing:-.5px}
+    .tag{color:#3a2410;font-size:12px;margin-bottom:32px;margin-left:54px;font-family:'JetBrains Mono',monospace}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:11px;margin-bottom:24px}
+    .feat{background:#0e0602;border:1px solid #251208;border-radius:9px;padding:15px;transition:border-color .15s,transform .15s}
+    .feat:hover{border-color:#d4812a;transform:translateY(-2px)}
+    .feat-ico{font-size:17px;margin-bottom:8px}
+    .feat-name{font-size:12.5px;font-weight:700;margin-bottom:4px}
+    .feat-desc{font-size:11.5px;color:#5a3a18;line-height:1.55}
+    .scs{display:flex;flex-wrap:wrap;gap:6px;margin-top:20px}
+    .sc{background:#0e0602;border:1px solid #251208;border-radius:5px;padding:4px 10px;display:flex;align-items:center;gap:6px;font-size:11.5px;color:#5a3a18}
+    .sc kbd{background:#150902;border:1px solid #341a0a;border-radius:3px;padding:2px 6px;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#f8e0c0}
+    .foot{margin-top:24px;text-align:center;font-size:11px;color:#1d0f05;font-family:'JetBrains Mono',monospace}
+  </style>
 </head>
 <body>
-    <div class="welcome-card">
-        <h1>
-            <i class="fas fa-crown" style="color: #ab5e2e;"></i>
-            Visual Proof Sandbox
-        </h1>
-        <div class="tagline">
-            Built by devs, for devs — because not every dev is rich.
-        </div>
-        
-        <div class="feature-grid">
-            <div class="feature-item">
-                <div class="feature-icon"><i class="fas fa-code"></i></div>
-                <div class="feature-title">Multi-Language Editor</div>
-                <div class="feature-desc">HTML, CSS, JavaScript, Python, Markdown, JSON — all in one place with syntax highlighting.</div>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon"><i class="fas fa-eye"></i></div>
-                <div class="feature-title">Live Preview</div>
-                <div class="feature-desc">See your changes in real-time with the built-in preview panel. Toggle standalone mode for full control.</div>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon"><i class="fas fa-terminal"></i></div>
-                <div class="feature-title">Integrated Console</div>
-                <div class="feature-desc">Catch logs, errors, and warnings from your JavaScript code directly in the editor.</div>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon"><i class="fas fa-palette"></i></div>
-                <div class="feature-title">Multiple Themes</div>
-                <div class="feature-desc">Amber, Green Forest, Cyber Blue, Hacker Matrix, and VS Code Dark — pick your vibe.</div>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon"><i class="fas fa-keyboard"></i></div>
-                <div class="feature-title">Keyboard Shortcuts</div>
-                <div class="feature-desc">Everything has a shortcut. Press Ctrl+? to see them all. Work faster, not harder.</div>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon"><i class="fas fa-file-export"></i></div>
-                <div class="feature-title">Import/Export</div>
-                <div class="feature-desc">Save your work as a ZIP file or import existing projects. Your work, your control.</div>
-            </div>
-        </div>
-
-        <div class="philosophy">
-            <i class="fas fa-quote-left" style="color: #ab5e2e; margin-right: 10px;"></i>
-            We believe great tools shouldn't cost a fortune. Every developer deserves a powerful sandbox to learn, experiment, and build. No subscriptions, no hidden costs — just pure, open creativity.
-        </div>
-
-        <div class="shortcuts-preview">
-            <div class="shortcut-badge">
-                <span class="shortcut-key">Ctrl+S</span>
-                <span>Save/Preview</span>
-            </div>
-            <div class="shortcut-badge">
-                <span class="shortcut-key">Ctrl+F</span>
-                <span>Find</span>
-            </div>
-            <div class="shortcut-badge">
-                <span class="shortcut-key">Ctrl+N</span>
-                <span>New File</span>
-            </div>
-            <div class="shortcut-badge">
-                <span class="shortcut-key">Ctrl+Shift+P</span>
-                <span>Toggle Preview</span>
-            </div>
-            <div class="shortcut-badge">
-                <span class="shortcut-key">Ctrl+D</span>
-                <span>Duplicate Line</span>
-            </div>
-        </div>
-
-        <div class="footer-note">
-            <i class="fas fa-heart" style="color: #ab5e2e;"></i> Start coding — the only limit is your imagination
-        </div>
+  <div class="card">
+    <div class="hdr"><div class="logo">&lt;/&gt;</div><h1>Visual Proof Sandbox</h1></div>
+    <div class="tag">// built by devs, for devs — because not every dev is rich</div>
+    <div class="grid">
+      <div class="feat"><div class="feat-ico">📝</div><div class="feat-name">Multi-Language Editor</div><div class="feat-desc">HTML, CSS, JS, Python, Markdown, JSON — bracket matching, auto-close, smart indentation.</div></div>
+      <div class="feat"><div class="feat-ico">👁</div><div class="feat-name">Live Preview</div><div class="feat-desc">Instant split-pane preview. Standalone mode for isolated component testing.</div></div>
+      <div class="feat"><div class="feat-ico">📋</div><div class="feat-name">Markdown README View</div><div class="feat-desc">Edit .md files then hit Save & Preview to see a fully rendered GitHub-style README.</div></div>
+      <div class="feat"><div class="feat-ico">🖥</div><div class="feat-name">Integrated Console</div><div class="feat-desc">Logs, errors and warnings captured in-editor. No devtools needed.</div></div>
+      <div class="feat"><div class="feat-ico">🎨</div><div class="feat-name">6 Themes</div><div class="feat-desc">Amber, Dark Void, Nord, Catppuccin, Matrix Green, Rose Pine.</div></div>
+      <div class="feat"><div class="feat-ico">📋</div><div class="feat-name">Update Log</div><div class="feat-desc">Full version history in the activity bar. See every change since v1.0.</div></div>
     </div>
+    <div class="scs">
+      <div class="sc"><kbd>Ctrl+S</kbd>Save</div><div class="sc"><kbd>Ctrl+F</kbd>Find</div>
+      <div class="sc"><kbd>Ctrl+N</kbd>New File</div><div class="sc"><kbd>Ctrl+Shift+P</kbd>Preview</div>
+      <div class="sc"><kbd>Ctrl+D</kbd>Duplicate</div><div class="sc"><kbd>Ctrl+/</kbd>Comment</div>
+      <div class="sc"><kbd>Ctrl+?</kbd>Shortcuts</div>
+    </div>
+    <div class="foot">// start coding — the only limit is your imagination</div>
+  </div>
 </body>
-</html>` },
-'WELCOME.md': { icon: 'fab fa-markdown', content: `# Welcome to Visual Proof Sandbox 👋
+</html>`},
+'WELCOME.md':{content:`# Welcome to Visual Proof Sandbox 👋
 
-## Built by devs, for devs — because not every dev is rich.
+## Built by devs, for devs.
 
-### 🎯 Our Philosophy
-Great tools shouldn't cost a fortune. Every developer deserves a powerful sandbox to learn, experiment, and build. No subscriptions, no hidden costs — just pure, open creativity.
-
----
-
-## ✨ Features Breakdown
-
-### 1. Multi-Language Editor
-- **HTML** - Structure your web pages
-- **CSS** - Style with precision
-- **JavaScript** - Add interactivity
-- **Python** - Backend logic
-- **Markdown** - Beautiful documentation
-- **JSON** - Data configuration
-
-All with syntax highlighting and smart indentation.
-
-### 2. Live Preview
-Watch your changes come to life in real-time. The preview panel updates automatically (toggle with Ctrl+Shift+P). Use "Standalone" mode for isolated testing.
-
-### 3. Integrated Console
-No more switching to browser devtools! View console.logs, errors, and warnings directly in the editor. Press Ctrl+L to clear.
-
-### 4. Themes
-Choose your vibe:
-- **Amber** (Default) - Warm and earthy
-- **Green Forest** - Calm and natural
-- **Cyber Blue** - Futuristic and sharp
-- **Hacker Matrix** - Classic green-on-black
-- **VS Code Dark** - Familiar and professional
-
-### 5. Keyboard Shortcuts
-Everything has a shortcut:
-| Shortcut | Action |
-|----------|--------|
-| Ctrl+S | Save/Update Preview |
-| Ctrl+F | Find in file |
-| Ctrl+N | New file |
-| Ctrl+Shift+P | Toggle preview |
-| Ctrl+~ | Toggle console |
-| Ctrl+? | View all shortcuts |
-| Ctrl+Shift+S | Swap panels |
-| Ctrl+Tab | Next tab |
-| Ctrl+Shift+Tab | Previous tab |
-| Ctrl+W | Close tab |
-| Ctrl+Shift+H | Hide/show sidebar |
-| Ctrl+D | Duplicate line |
-| Ctrl+/ | Toggle comment |
-
-### 6. File Management
-- Create files with presets (HTML, CSS, JS, etc.)
-- Import/export projects as ZIP
-- Delete files with one click
-- Multiple tabs for easy navigation
-
-### 7. Split View
-Drag the divider between editor and preview to resize. Swap their positions with Ctrl+Shift+S.
-
-### 8. Performance Mode
-Toggle off animations for maximum speed on older machines.
+> Great tools shouldn't cost a fortune. Every developer deserves a powerful sandbox to learn, experiment, and build.
 
 ---
 
-## 🚀 Getting Started
-1. Open an existing file from the sidebar
-2. Create a new file with the + button
-3. Start coding!
-4. Watch the preview update
-5. Check the console for output
-6. Export your project when done
+## ✨ Features
 
-## 💡 Pro Tips
-- Use Ctrl+D to quickly duplicate lines
-- Auto-closing brackets and quotes save time
-- Find overlay (Ctrl+F) supports prev/next navigation
-- The console captures all browser logs
-- Themes persist across sessions
+### Multi-Language Editor
+Edit **HTML**, **CSS**, **JavaScript**, **Python**, **Markdown**, and **JSON** in one place.
 
-## 🤝 Community
-This sandbox is open source and community-driven. Found a bug? Want a feature? The code is yours to improve.
+- Auto-closing brackets and quotes
+- Smart tab indentation
+- Duplicate line \`Ctrl+D\`
+- Toggle comment \`Ctrl+/\`
 
-Remember: The best code is written when tools don't get in the way. Happy coding! 🎉
+### Markdown Preview
+Click **Edit** to write your markdown, then hit **Save & Preview** to see it rendered as a beautiful README. Toggle back to edit at any time. Press \`Ctrl+S\` while editing to save instantly.
+
+### Update Log
+Click the history icon in the activity bar to see a full changelog — every version, every fix, every new feature.
 
 ---
 
-*Visual Proof v1.1 — Crafted with ❤️ by Chip Hill*` }
+## 🎨 Themes
+
+| Theme | Vibe |
+|-------|------|
+| Amber | Warm dark — default |
+| Dark Void | Pure dark neutral |
+| Nord | Icy blue |
+| Catppuccin | Soft pastel dark |
+| Matrix Green | Terminal |
+| Rose Pine | Dusty rose |
+
+---
+
+## ⌨️ Shortcuts
+
+| Action | Key |
+|--------|-----|
+| Save / Preview | \`Ctrl+S\` |
+| Find | \`Ctrl+F\` |
+| New File | \`Ctrl+N\` |
+| Toggle Preview | \`Ctrl+Shift+P\` |
+| Toggle Console | \`Ctrl+\`\` |
+| Duplicate Line | \`Ctrl+D\` |
+| Toggle Comment | \`Ctrl+/\` |
+| View Shortcuts | \`Ctrl+?\` |
+| Swap Panels | \`Ctrl+Shift+S\` |
+| Next Tab | \`Ctrl+Tab\` |
+| Close Tab | \`Ctrl+W\` |
+| Toggle Sidebar | \`Ctrl+Shift+H\` |
+
+---
+
+*Visual Proof v1.4 — crafted with ❤️ by Chip Hill*`}
 };
-let currentFile = 'index.html';
-let previewHtmlFile = 'index.html';
-let previewVisible = true;
-let consoleVisible = true;
-let panelsSwapped = false;
-let openedFiles = ['index.html', 'WELCOME.md']; 
-let settingsMode = false;
-let shortcutsMode = false;
-let sidebarVisible = true;
-let editorRatio = 0.5;
-let performanceMode = false;
-const defaultHotkeys = {
-'save': { desc: 'Save / Update Preview', current: 'Ctrl+S' },
-'find': { desc: 'Find in Code', current: 'Ctrl+F' },
-'newFile': { desc: 'New File', current: 'Ctrl+N' },
-'togglePreview': { desc: 'Toggle Fullscreen Editor', current: 'Ctrl+Shift+P' },
-'clearConsole': { desc: 'Clear Console', current: 'Ctrl+L' },
-'toggleConsole': { desc: 'Minimize/Expand Console', current: 'Ctrl+~' },
-'shortcuts': { desc: 'View Shortcuts Modal', current: 'Ctrl+?' },
-'swapPanels': { desc: 'Swap Editor/Preview', current: 'Ctrl+Shift+S' },
-'nextTab': { desc: 'Next Tab', current: 'Ctrl+Tab' },
-'prevTab': { desc: 'Previous Tab', current: 'Ctrl+Shift+Tab' },
-'closeTab': { desc: 'Close Current Tab', current: 'Ctrl+W' },
-'toggleSidebar': { desc: 'Hide/Show Sidebar', current: 'Ctrl+Shift+H' },
-'duplicateLine': { desc: 'Duplicate Line', current: 'Ctrl+D' },
-'toggleComment': { desc: 'Toggle Line Comment', current: 'Ctrl+/' }
+
+let curFile='index.html';
+let recentFile='index.html';
+let pvHtmlFile='index.html';
+let pvVisible=true;
+let conVisible=true;
+let panelsSwapped=false;
+let openedFiles=['index.html','WELCOME.md'];
+let settMode=false;
+let scMode=false;
+let clMode=false;
+let sideVisible=true;
+let edRatio=0.5;
+let standaloneMode=false;
+let mdMode='preview';
+let mdUnsaved=false;
+
+const dHK={
+  save:{desc:'Save / Update Preview',current:'Ctrl+S'},
+  find:{desc:'Find in Code',current:'Ctrl+F'},
+  newFile:{desc:'New File',current:'Ctrl+N'},
+  togglePv:{desc:'Toggle Fullscreen Editor',current:'Ctrl+Shift+P'},
+  clearCon:{desc:'Clear Console',current:'Ctrl+L'},
+  toggleCon:{desc:'Minimize/Expand Console',current:'Ctrl+~'},
+  shortcuts:{desc:'View Shortcuts Modal',current:'Ctrl+?'},
+  swapPanels:{desc:'Swap Editor/Preview',current:'Ctrl+Shift+S'},
+  nextTab:{desc:'Next Tab',current:'Ctrl+Tab'},
+  prevTab:{desc:'Previous Tab',current:'Ctrl+Shift+Tab'},
+  closeTab:{desc:'Close Current Tab',current:'Ctrl+W'},
+  toggleSide:{desc:'Hide/Show Sidebar',current:'Ctrl+Shift+H'},
+  dupLine:{desc:'Duplicate Line',current:'Ctrl+D'},
+  togComment:{desc:'Toggle Line Comment',current:'Ctrl+/'}
 };
-let hotkeys = JSON.parse(JSON.stringify(defaultHotkeys));
-let editorSettings = {
-livePreview: true,
-fontSize: 15,
-tabSize: 4,
-wordWrap: false,
-showLineNumbers: true,
-performanceMode: false,
-theme: 'amber'
-};
-const fileListEl = document.getElementById('fileList');
-const codeEditor = document.getElementById('codeEditor');
-const lineNumbersEl = document.getElementById('lineNumbers');
-const tabsArea = document.getElementById('tabsArea');
-const previewFrame = document.getElementById('previewFrame');
-const fileModal = document.getElementById('fileModal');
-const shortcutsModal = document.getElementById('shortcutsModal');
-const findOverlay = document.getElementById('findOverlay');
-const findInput = document.getElementById('findInput');
-const findCount = document.getElementById('findCount');
-const htmlPreviewSelect = document.getElementById('htmlPreviewSelect');
-const consoleLogs = document.getElementById('consoleLogs');
-const workspace = document.getElementById('workspace');
-const splitter = document.getElementById('splitter');
-const editorSection = document.getElementById('editorSection');
-const previewSection = document.getElementById('previewSection');
-const projectNameInput = document.getElementById('projectNameInput');
-const settingsPanel = document.getElementById('settingsPanel');
-const shortcutsPanel = document.getElementById('shortcutsPanel');
-const hotkeySettings = document.getElementById('hotkeySettings');
-const shortcutsList = document.getElementById('shortcutsList');
-const shortcutListModal = document.getElementById('shortcutListModal');
-const sidebar = document.getElementById('sidebar');
-const activityBar = document.getElementById('activityBar');
-const performanceCheckbox = document.getElementById('performanceModeCheckbox');
-const livePreviewCheckbox = document.getElementById('livePreviewCheckbox');
-const fontSizeInput = document.getElementById('fontSizeInput');
-const tabSizeSelect = document.getElementById('tabSizeSelect');
-const wordWrapCheckbox = document.getElementById('wordWrapCheckbox');
-const showLineNumbersCheckbox = document.getElementById('showLineNumbersCheckbox');
-const themeSelector = document.getElementById('themeSelector');
-let findMatches = [], findIndex = -1;
-let standaloneMode = false;
-const standaloneCheckbox = document.getElementById('standaloneCheckbox');
-standaloneCheckbox.addEventListener('change', (e) => {
-  standaloneMode = e.target.checked;
-  updatePreview();
+let hotkeys=JSON.parse(JSON.stringify(dHK));
+let edSett={livePreview:true,fontSize:13,tabSize:2,wordWrap:false,showLineNums:true,perf:false,theme:'amber'};
+
+const codeArea=document.getElementById('codeArea');
+const mdCode=document.getElementById('mdCode');
+const lnums=document.getElementById('lnums');
+const mdLnums=document.getElementById('mdLnums');
+const tabsArea=document.getElementById('tabsArea');
+const pvFrame=document.getElementById('pvFrame');
+const fileMod=document.getElementById('fileMod');
+const scMod=document.getElementById('scMod');
+const findWrap=document.getElementById('findWrap');
+const findInput=document.getElementById('findInput');
+const findCnt=document.getElementById('findCnt');
+const htmlPvSel=document.getElementById('htmlPvSel');
+const conLogs=document.getElementById('conLogs');
+const workspace=document.getElementById('workspace');
+const splitter=document.getElementById('splitter');
+const edSec=document.getElementById('edSec');
+const pvSec=document.getElementById('pvSec');
+const sidebar=document.getElementById('sidebar');
+const actBar=document.getElementById('actBar');
+const standaloneCb=document.getElementById('standaloneCb');
+const mdWrap=document.getElementById('mdWrap');
+const mdRend=document.getElementById('mdRend');
+const edPane=document.getElementById('edPane');
+const mdRendArea=document.getElementById('mdRendArea');
+const mdEdArea=document.getElementById('mdEdArea');
+const mdSaveBtn=document.getElementById('mdSaveBtn');
+const settPanel=document.getElementById('settPanel');
+const scPanel=document.getElementById('scPanel');
+const changelogWrap=document.getElementById('changelogWrap');
+const fileListEl=document.getElementById('fileList');
+
+function setAllActBtnsInactive(){
+  document.querySelectorAll('.act-btn').forEach(b=>b.classList.remove('active'));
+}
+
+function applyTheme(t){
+  const map={amber:'',dark:'dark',nord:'nord',catppuccin:'catppuccin',green:'green',rose:'rose'};
+  document.documentElement.setAttribute('data-theme',map[t]||'');
+  edSett.theme=t;
+  const sel=document.getElementById('themeSelector');
+  if(sel)sel.value=t;
+}
+
+function updateSB(){
+  const lines=codeArea.value.split('\n').length;
+  document.getElementById('sbFile').textContent=curFile;
+  document.getElementById('sbLang').textContent=glang(curFile);
+  document.getElementById('sbLines').textContent=lines+(lines===1?' line':' lines');
+}
+
+function updateCursor(){
+  const val=codeArea.value;
+  const pos=codeArea.selectionStart;
+  const lines=val.substring(0,pos).split('\n');
+  document.getElementById('sbPos').textContent=`Ln ${lines.length}, Col ${lines[lines.length-1].length+1}`;
+}
+
+function isMd(f){return f&&f.endsWith('.md')}
+
+function hideAllPanels(){
+  edPane.style.display='none';
+  mdWrap.classList.remove('active');
+  changelogWrap.classList.remove('active');
+  settPanel.classList.remove('active');
+  scPanel.classList.remove('active');
+  codeArea.style.display='none';
+  lnums.style.display='none';
+}
+
+function showEditorPane(){
+  hideAllPanels();
+  edPane.style.display='flex';
+  codeArea.style.display='block';
+  lnums.style.display=edSett.showLineNums?'block':'none';
+}
+
+function showMdPane(){
+  hideAllPanels();
+  mdWrap.classList.add('active');
+}
+
+function showChangelogPane(){
+  hideAllPanels();
+  changelogWrap.classList.add('active');
+}
+
+function showSettingsPane(){
+  hideAllPanels();
+  settPanel.classList.add('active');
+}
+
+function showShortcutsPane(){
+  hideAllPanels();
+  scPanel.classList.add('active');
+}
+
+function showMdView(content){
+  showMdPane();
+  if(mdMode==='preview'){
+    mdRendArea.classList.add('active');
+    mdEdArea.classList.remove('active');
+    mdRend.innerHTML=renderMd(content);
+    mdSaveBtn.classList.remove('show');
+    document.getElementById('mdPrevBtn').classList.add('active');
+    document.getElementById('mdEditBtn').classList.remove('active');
+  } else {
+    mdRendArea.classList.remove('active');
+    mdEdArea.classList.add('active');
+    mdCode.value=content;
+    updateMdLineNums();
+    mdSaveBtn.classList.add('show');
+    mdSaveBtn.classList.remove('saved');
+    document.getElementById('mdEditBtn').classList.add('active');
+    document.getElementById('mdPrevBtn').classList.remove('active');
+  }
+}
+
+function setMdMode(mode){
+  if(mdMode===mode)return;
+  if(mode==='edit'){
+    if(files[curFile])mdCode.value=files[curFile].content;
+    mdRendArea.classList.remove('active');
+    mdEdArea.classList.add('active');
+    mdSaveBtn.classList.add('show');
+    mdSaveBtn.classList.remove('saved');
+    document.getElementById('mdEditBtn').classList.add('active');
+    document.getElementById('mdPrevBtn').classList.remove('active');
+    mdCode.focus();
+    updateMdLineNums();
+  } else {
+    const content=mdCode.value;
+    files[curFile].content=content;
+    mdRend.innerHTML=renderMd(content);
+    mdEdArea.classList.remove('active');
+    mdRendArea.classList.add('active');
+    mdSaveBtn.classList.remove('show');
+    document.getElementById('mdPrevBtn').classList.add('active');
+    document.getElementById('mdEditBtn').classList.remove('active');
+    mdUnsaved=false;
+    renderSideTabs();
+  }
+  mdMode=mode;
+}
+
+function saveMdAndPreview(){
+  const content=mdCode.value;
+  files[curFile].content=content;
+  mdRend.innerHTML=renderMd(content);
+  mdEdArea.classList.remove('active');
+  mdRendArea.classList.add('active');
+  mdSaveBtn.classList.remove('show');
+  mdSaveBtn.classList.add('saved');
+  document.getElementById('mdPrevBtn').classList.add('active');
+  document.getElementById('mdEditBtn').classList.remove('active');
+  mdMode='preview';
+  mdUnsaved=false;
+  renderSideTabs();
+}
+
+function updateMdLineNums(){
+  const lines=mdCode.value.split('\n').length;
+  mdLnums.innerHTML=Array.from({length:lines},(_,i)=>i+1).join('<br>');
+}
+mdCode.addEventListener('scroll',()=>{mdLnums.scrollTop=mdCode.scrollTop;});
+mdCode.addEventListener('input',()=>{updateMdLineNums();mdUnsaved=true;renderSideTabs();});
+
+function renderSideTabs(){
+  fileListEl.innerHTML='';
+  for(let n in files){
+    let li=document.createElement('li');
+    let isA=n===curFile&&!settMode&&!scMode&&!clMode;
+    let esc=escFN(n);
+    li.className=`file-item${isA?' active':''}`;
+    li.innerHTML=`<div class="file-left" onclick="switchToFile('${esc}')"><i class="${gfic(n)}"></i><span>${n}</span></div>${Object.keys(files).length>1?`<button class="del-btn" onclick="deleteFile('${esc}')" title="Delete"><i class="fas fa-times"></i></button>`:''}`;
+    fileListEl.appendChild(li);
+  }
+  renderTabs();
+}
+
+function renderTabs(){
+  tabsArea.innerHTML='';
+  if(settMode){
+    let t=document.createElement('div');t.className='tab active';
+    t.innerHTML='<i class="fas fa-sliders-h" style="font-size:9px"></i>settings';
+    tabsArea.appendChild(t);return;
+  }
+  if(scMode){
+    let t=document.createElement('div');t.className='tab active';
+    t.innerHTML='<i class="fas fa-keyboard" style="font-size:9px"></i>shortcuts';
+    tabsArea.appendChild(t);return;
+  }
+  if(clMode){
+    let t=document.createElement('div');t.className='tab active';
+    t.innerHTML='<i class="fas fa-history" style="font-size:9px"></i>update log';
+    tabsArea.appendChild(t);return;
+  }
+  for(let f of openedFiles){
+    if(!files[f])continue;
+    let t=document.createElement('div');
+    let unsaved=isMd(f)&&f===curFile&&mdUnsaved;
+    t.className=`tab${f===curFile?' active':''}`;
+    t.innerHTML=`<span class="ft-dot ${gdc(f)}"></span><span>${f}</span>${unsaved?'<span class="unsaved-dot"></span>':''}`;
+    if(openedFiles.length>1){
+      let esc=escFN(f);
+      t.innerHTML+=`<span class="ctab" onclick="closeTab('${esc}',event)"><i class="fas fa-times"></i></span>`;
+    }
+    t.onclick=(e)=>{if(!e.target.closest('.ctab'))switchToFile(f);};
+    tabsArea.appendChild(t);
+  }
+}
+
+function animSwitch(cb){
+  const activePane=mdWrap.classList.contains('active')?mdWrap:edPane;
+  activePane.style.transition='opacity var(--spd2),transform var(--spd2)';
+  activePane.style.opacity='0';
+  activePane.style.transform='translateX(-10px)';
+  setTimeout(()=>{
+    activePane.style.opacity='';
+    activePane.style.transform='';
+    activePane.style.transition='';
+    cb();
+  },160);
+}
+
+function closeTab(filename,event){
+  if(event&&event.stopPropagation)event.stopPropagation();
+  if(openedFiles.length<=1)return;
+  const tabEl=event&&event.target?event.target.closest('.tab'):null;
+  const doClose=()=>{
+    let i=openedFiles.indexOf(filename);
+    if(i!==-1)openedFiles.splice(i,1);
+    if(curFile===filename){
+      curFile=openedFiles[0]||Object.keys(files)[0];
+      animSwitch(()=>{codeArea.value=files[curFile]?.content||'';applyFileToEditor();});
+    }
+    if(settMode||scMode||clMode)exitSpecial();
+    renderSideTabs();updateLineNums();updateSB();
+  };
+  if(tabEl){
+    tabEl.classList.add('leaving');
+    setTimeout(doClose,150);
+  } else {
+    doClose();
+  }
+}
+
+function switchToFile(n){
+  if(!files[n])return;
+  const wasSpecial=settMode||scMode||clMode;
+  if(wasSpecial)exitSpecial();
+  if(curFile===n&&!wasSpecial)return;
+  if(files[curFile]&&!settMode&&!scMode&&!clMode){
+    if(isMd(curFile)&&mdMode==='edit')files[curFile].content=mdCode.value;
+    else files[curFile].content=codeArea.value;
+  }
+  if(!openedFiles.includes(n))openedFiles.push(n);
+  if(wasSpecial){
+    curFile=n;
+    recentFile=n;
+    codeArea.value=files[n].content;
+    applyFileToEditor();
+  } else {
+    animSwitch(()=>{
+      curFile=n;
+      recentFile=n;
+      codeArea.value=files[n].content;
+      applyFileToEditor();
+    });
+  }
+  renderSideTabs();updateLineNums();updateSB();
+}
+
+function applyFileToEditor(){
+  if(isMd(curFile)){
+    mdMode='preview';
+    mdUnsaved=false;
+    showMdView(files[curFile].content);
+  } else {
+    showEditorPane();
+  }
+  updateLineNums();updateSB();renderSideTabs();
+}
+
+function goToRecentFile(){
+  if(settMode||scMode||clMode){
+    exitSpecial();
+    switchToFile(recentFile);
+  } else {
+    switchToFile(recentFile);
+  }
+  setAllActBtnsInactive();
+  document.getElementById('actExplorer').classList.add('active');
+}
+
+function openChangelogTab(){
+  if(clMode)return;
+  if(files[curFile]){
+    if(isMd(curFile)&&mdMode==='edit')files[curFile].content=mdCode.value;
+    else files[curFile].content=codeArea.value;
+  }
+  settMode=false;scMode=false;clMode=true;
+  showChangelogPane();
+  renderSideTabs();
+  setAllActBtnsInactive();
+  document.getElementById('actChangelog').classList.add('active');
+}
+
+function openSettingsTab(){
+  if(settMode)return;
+  if(files[curFile]){
+    if(isMd(curFile)&&mdMode==='edit')files[curFile].content=mdCode.value;
+    else files[curFile].content=codeArea.value;
+  }
+  settMode=true;scMode=false;clMode=false;
+  showSettingsPane();
+  renderHKSettings();renderSideTabs();
+  setAllActBtnsInactive();
+  document.getElementById('actSettings').classList.add('active');
+}
+
+function openShortcutsTab(){
+  if(scMode)return;
+  if(files[curFile]){
+    if(isMd(curFile)&&mdMode==='edit')files[curFile].content=mdCode.value;
+    else files[curFile].content=codeArea.value;
+  }
+  scMode=true;settMode=false;clMode=false;
+  showShortcutsPane();
+  renderSCPanel();renderSideTabs();
+  setAllActBtnsInactive();
+  document.getElementById('actShortcuts').classList.add('active');
+}
+
+function exitSpecial(){
+  settMode=false;scMode=false;clMode=false;
+  if(files[curFile])codeArea.value=files[curFile].content;
+  setAllActBtnsInactive();
+  document.getElementById('actExplorer').classList.add('active');
+  applyFileToEditor();
+}
+
+function renderHKSettings(){
+  const hks=document.getElementById('hkSettings');
+  hks.innerHTML='<span class="s-lbl">Custom Hotkeys</span>';
+  for(let k in hotkeys){
+    let d=document.createElement('div');d.className='hk-row';
+    d.innerHTML=`<span>${hotkeys[k].desc}</span><input type="text" value="${hotkeys[k].current}" data-key="${k}">`;
+    hks.appendChild(d);
+  }
+  document.getElementById('perfCb').checked=edSett.perf;
+  document.getElementById('livePreviewCb').checked=edSett.livePreview;
+  document.getElementById('fontSzInput').value=edSett.fontSize;
+  document.getElementById('tabSzSel').value=edSett.tabSize;
+  document.getElementById('wordWrapCb').checked=edSett.wordWrap;
+  document.getElementById('lineNumsCb').checked=edSett.showLineNums;
+  document.getElementById('themeSelector').value=edSett.theme;
+}
+
+function renderSCPanel(){
+  const scl=document.getElementById('scList');scl.innerHTML='';
+  for(let k in hotkeys){
+    let li=document.createElement('li');
+    li.innerHTML=`<span>${hotkeys[k].desc}</span><span class="key">${hotkeys[k].current}</span>`;
+    scl.appendChild(li);
+  }
+}
+
+function saveSettings(){
+  document.querySelectorAll('#hkSettings input[data-key]').forEach(inp=>{let k=inp.dataset.key;if(k)hotkeys[k].current=inp.value.trim();});
+  edSett.perf=document.getElementById('perfCb').checked;
+  document.body.style.setProperty('--spd',edSett.perf?'0s':'0.18s');
+  document.body.style.setProperty('--spd2',edSett.perf?'0s':'0.28s');
+  edSett.livePreview=document.getElementById('livePreviewCb').checked;
+  edSett.fontSize=parseInt(document.getElementById('fontSzInput').value,10)||13;
+  edSett.tabSize=parseInt(document.getElementById('tabSzSel').value,10)||2;
+  edSett.wordWrap=document.getElementById('wordWrapCb').checked;
+  edSett.showLineNums=document.getElementById('lineNumsCb').checked;
+  edSett.theme=document.getElementById('themeSelector').value;
+  applyTheme(edSett.theme);applyEditorSettings();exitSpecial();
+}
+
+function resetHotkeys(){hotkeys=JSON.parse(JSON.stringify(dHK));renderHKSettings();}
+
+function applyEditorSettings(){
+  codeArea.style.fontSize=edSett.fontSize+'px';
+  lnums.style.fontSize=edSett.fontSize+'px';
+  mdCode.style.fontSize=edSett.fontSize+'px';
+  mdLnums.style.fontSize=edSett.fontSize+'px';
+  codeArea.style.tabSize=edSett.tabSize;
+  mdCode.style.tabSize=edSett.tabSize;
+  codeArea.style.whiteSpace=edSett.wordWrap?'pre-wrap':'pre';
+  lnums.style.display=edSett.showLineNums?'block':'none';
+  updateLineNums();
+}
+
+function updateLineNums(){
+  const lines=codeArea.value.split('\n').length;
+  lnums.innerHTML=Array.from({length:lines},(_,i)=>i+1).join('<br>');
+}
+codeArea.addEventListener('scroll',()=>{lnums.scrollTop=codeArea.scrollTop;});
+codeArea.addEventListener('click',updateCursor);
+codeArea.addEventListener('keyup',updateCursor);
+
+function deleteFile(n){
+  showConfirm(`Delete "${n}"?`,()=>{
+    delete files[n];
+    let i=openedFiles.indexOf(n);if(i!==-1)openedFiles.splice(i,1);
+    if(pvHtmlFile===n){let h=Object.keys(files).filter(f=>f.endsWith('.html'));pvHtmlFile=h.length?h[0]:null;}
+    if(curFile===n){
+      curFile=Object.keys(files)[0]||'';
+      if(recentFile===n)recentFile=curFile;
+      codeArea.value=files[curFile]?.content||'';
+    }
+    if(settMode||scMode||clMode)exitSpecial();
+    renderSideTabs();updateLineNums();updatePvHtmlSel();updatePreview();applyFileToEditor();
+  });
+}
+
+function createPreset(fn,cont){
+  const doIt=()=>{
+    if(files[curFile]&&!settMode&&!scMode&&!clMode){
+      if(isMd(curFile)&&mdMode==='edit')files[curFile].content=mdCode.value;
+      else files[curFile].content=codeArea.value;
+    }
+    files[fn]={content:cont};curFile=fn;recentFile=fn;
+    if(!openedFiles.includes(fn))openedFiles.push(fn);
+    codeArea.value=cont;
+    if(settMode||scMode||clMode)exitSpecial();
+    renderSideTabs();updateLineNums();updatePvHtmlSel();updatePreview();hideModal('fileMod');
+    if(isMd(fn)){mdMode='edit';showMdView(cont);setMdMode('edit');}else{showEditorPane();}
+  };
+  if(files[fn])showConfirm(`Overwrite "${fn}"?`,doIt);else doIt();
+}
+
+function createCustomFile(){
+  let base=document.getElementById('custFileName').value.trim();
+  let ext=document.getElementById('custExt').value;
+  if(!base)return;
+  let full=base+(ext&&!base.endsWith(ext)?ext:'');
+  full=full.replace(/[\\/]/g,'');if(!full)return;
+  createPreset(full,'');
+}
+
+function showCreateFileModal(){fileMod.classList.add('open');document.getElementById('custFileName').value='';document.getElementById('custFileName').focus();}
+function hideModal(id){document.getElementById(id).classList.remove('open');}
+
+function showConfirm(msg,onOk,onCancel){
+  let m=document.getElementById('confirmMod');
+  document.getElementById('confirmMsg').innerText=msg;m.classList.add('open');
+  let ok=document.getElementById('confirmOk'),cancel=document.getElementById('confirmCancel');
+  let done=()=>{m.classList.remove('open');ok.removeEventListener('click',okH);cancel.removeEventListener('click',cxH);};
+  let okH=()=>{done();if(onOk)onOk();};
+  let cxH=()=>{done();if(onCancel)onCancel();};
+  ok.addEventListener('click',okH);cancel.addEventListener('click',cxH);
+  m.addEventListener('click',function f(e){if(e.target===m){cxH();m.removeEventListener('click',f);}});
+}
+
+function addRipple(e,btn){
+  const r=document.createElement('span');
+  r.className='ripple-el';
+  const rect=btn.getBoundingClientRect();
+  const size=Math.max(rect.width,rect.height);
+  r.style.cssText=`width:${size}px;height:${size}px;left:${e.clientX-rect.left-size/2}px;top:${e.clientY-rect.top-size/2}px`;
+  btn.appendChild(r);
+  setTimeout(()=>r.remove(),500);
+}
+document.getElementById('importBtn').addEventListener('click',e=>addRipple(e,document.getElementById('importBtn')));
+document.getElementById('exportBtn').addEventListener('click',e=>addRipple(e,document.getElementById('exportBtn')));
+
+function updatePvHtmlSel(){
+  let h=Object.keys(files).filter(f=>f.endsWith('.html'));
+  htmlPvSel.innerHTML='';
+  if(!h.length){htmlPvSel.innerHTML='<option>No HTML</option>';pvHtmlFile=null;}
+  else{h.forEach(f=>{let o=document.createElement('option');o.value=f;o.text=f;if(f===pvHtmlFile)o.selected=true;htmlPvSel.appendChild(o);});if(!pvHtmlFile||!h.includes(pvHtmlFile))pvHtmlFile=h[0];}
+}
+
+function changePreviewHtml(){pvHtmlFile=htmlPvSel.value;updatePreview();}
+function togglePreview(){pvVisible=!pvVisible;pvSec.classList.toggle('hidden',!pvVisible);splitter.classList.toggle('hidden',!pvVisible);}
+function swapPanels(){panelsSwapped=!panelsSwapped;edSec.style.order=panelsSwapped?'3':'1';splitter.style.order='2';pvSec.style.order=panelsSwapped?'1':'3';}
+function toggleSidebar(){sideVisible=!sideVisible;sidebar.classList.toggle('hidden',!sideVisible);actBar.classList.toggle('hidden',!sideVisible);}
+standaloneCb.addEventListener('change',e=>{standaloneMode=e.target.checked;updatePreview();});
+
+function getCompiled(){
+  if(files[curFile]&&!settMode&&!scMode&&!clMode){
+    if(isMd(curFile)&&mdMode==='edit')files[curFile].content=mdCode.value;
+    else files[curFile].content=codeArea.value;
+  }
+  let htmlFile=pvHtmlFile;
+  if(!htmlFile||!files[htmlFile])return'<!DOCTYPE html><html><head></head><body></body></html>';
+  let hc=files[htmlFile].content;
+  if(standaloneMode)return hc;
+  let css='',js='';
+  for(let f in files){if(f.endsWith('.css'))css+=files[f].content+'\n';if(f.endsWith('.js'))js+=files[f].content+'\n';}
+  let st=css?`<style>${css}</style>`:'';
+  let sc2=js?`<script>${js}<\/script>`:'';
+  if(hc.includes('</head>'))hc=hc.replace('</head>',st+'</head>');else hc=st+hc;
+  if(hc.includes('</body>'))hc=hc.replace('</body>',sc2+'</body>');else hc+=sc2;
+  return hc;
+}
+
+function updatePreview(){
+  const c=getCompiled();
+  const blob=new Blob([c],{type:'text/html'});
+  const url=URL.createObjectURL(blob);
+  pvFrame.src=url;
+  pvFrame.onload=()=>{URL.revokeObjectURL(url);captureConsole();};
+}
+
+function openNewTab(){const c=getCompiled();const w=window.open();w.document.write(c);w.document.close();}
+
+let findMatches=[],findIdx=-1;
+function showFind(){findWrap.style.display='flex';findInput.focus();findInput.select();updateFindCnt();}
+function hideFind(){findWrap.style.display='none';codeArea.focus();}
+function updateFindCnt(){
+  let term=findInput.value;if(!term){findCnt.innerText='0/0';findMatches=[];return;}
+  let content=codeArea.value;findMatches=[];let pos=0;
+  while((pos=content.indexOf(term,pos))!==-1){findMatches.push(pos);pos+=term.length;}
+  findIdx=findMatches.length?0:-1;
+  findCnt.innerText=findMatches.length?`${findIdx+1}/${findMatches.length}`:'0/0';
+}
+function findNext(){if(!findMatches.length)updateFindCnt();if(!findMatches.length)return;findIdx=(findIdx+1)%findMatches.length;let pos=findMatches[findIdx];codeArea.focus();codeArea.setSelectionRange(pos,pos+findInput.value.length);findCnt.innerText=`${findIdx+1}/${findMatches.length}`;}
+function findPrev(){if(!findMatches.length)updateFindCnt();if(!findMatches.length)return;findIdx=(findIdx-1+findMatches.length)%findMatches.length;let pos=findMatches[findIdx];codeArea.focus();codeArea.setSelectionRange(pos,pos+findInput.value.length);findCnt.innerText=`${findIdx+1}/${findMatches.length}`;}
+findInput.addEventListener('input',updateFindCnt);
+findInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();e.shiftKey?findPrev():findNext();}if(e.key==='Escape')hideFind();});
+document.getElementById('findNextBtn').addEventListener('click',findNext);
+document.getElementById('findPrevBtn').addEventListener('click',findPrev);
+
+function showScModal(){
+  document.getElementById('scModList').innerHTML='';
+  for(let k in hotkeys){let li=document.createElement('li');li.innerHTML=`<span>${hotkeys[k].desc}</span><span class="key">${hotkeys[k].current}</span>`;document.getElementById('scModList').appendChild(li);}
+  scMod.classList.add('open');
+}
+
+async function importZip(e){
+  let file=e.target.files[0];if(!file)return;
+  try{
+    let zip=new JSZip();let contents=await zip.loadAsync(file);let nf={};let ps=[];
+    contents.forEach((path,entry)=>{if(!entry.dir)ps.push(entry.async('string').then(c=>{let name=path.split('/').pop();if(name)nf[name]={content:c};}));});
+    await Promise.all(ps);
+    if(Object.keys(nf).length)showConfirm('Replace current project?',()=>{
+      files=nf;openedFiles=Object.keys(nf).slice(0,3);
+      curFile=openedFiles[0]||Object.keys(nf)[0];
+      recentFile=curFile;
+      codeArea.value=files[curFile]?.content||'';
+      pvHtmlFile=Object.keys(nf).find(f=>f.endsWith('.html'))||null;
+      if(settMode||scMode||clMode)exitSpecial();
+      renderSideTabs();updateLineNums();updatePvHtmlSel();updatePreview();applyFileToEditor();
+    });
+    e.target.value='';
+  }catch{alert('Import failed.');}
+}
+
+function exportProject(){
+  if(files[curFile]&&!settMode&&!scMode&&!clMode){
+    if(isMd(curFile)&&mdMode==='edit')files[curFile].content=mdCode.value;
+    else files[curFile].content=codeArea.value;
+  }
+  let zip=new JSZip();
+  for(let[n,d]of Object.entries(files))zip.file(n,d.content);
+  let pn=document.getElementById('projNameInput').value.trim()||'visual-proof';
+  zip.generateAsync({type:'blob'}).then(b=>saveAs(b,pn+'.zip'));
+}
+
+function captureConsole(){
+  let w=pvFrame.contentWindow;if(!w)return;
+  ['log','warn','error','info'].forEach(t=>{let old=w.console[t];w.console[t]=function(...a){addLog(t,...a);old.apply(w.console,a);};});
+  w.addEventListener('error',e=>addLog('error',e.message));
+}
+function addLog(t,...a){
+  let el=document.createElement('div');el.className=`log-item ${t}`;
+  let ico={log:'›',warn:'⚠',error:'✕',info:'ℹ'}[t]||'›';
+  let msg=a.map(x=>{try{return typeof x==='string'?x:JSON.stringify(x);}catch{return String(x);}}).join(' ');
+  el.innerHTML=`<span class="log-ico">${ico}</span><span>${msg}</span>`;
+  conLogs.appendChild(el);conLogs.scrollTop=conLogs.scrollHeight;
+}
+function clearConsole(){conLogs.innerHTML='';}
+function toggleConsole(){conVisible=!conVisible;document.getElementById('conPanel').style.height=conVisible?'164px':'30px';}
+pvFrame.addEventListener('load',captureConsole);
+
+function dupLine(){
+  let start=codeArea.selectionStart,val=codeArea.value;
+  let ls=val.lastIndexOf('\n',start-1)+1,le=val.indexOf('\n',start);
+  if(le===-1)le=val.length;
+  let line=val.substring(ls,le);
+  codeArea.value=val.substring(0,le)+'\n'+line+val.substring(le);
+  codeArea.selectionStart=codeArea.selectionEnd=le+1;
+  if(files[curFile])files[curFile].content=codeArea.value;
+  updateLineNums();updatePreview();
+}
+
+function togComment(){
+  let start=codeArea.selectionStart,val=codeArea.value;
+  let ls=val.lastIndexOf('\n',start-1)+1,le=val.indexOf('\n',start);
+  if(le===-1)le=val.length;
+  let line=val.substring(ls,le);
+  line=line.trim().startsWith('//')?line.replace('//',''):'//'+line;
+  codeArea.value=val.substring(0,ls)+line+val.substring(le);
+  codeArea.selectionStart=ls;codeArea.selectionEnd=ls+line.length;
+  if(files[curFile])files[curFile].content=codeArea.value;
+  updateLineNums();updatePreview();
+}
+
+function chk(e,s){
+  if(!s)return false;
+  let keys=s.toLowerCase().split('+').map(x=>x.trim());
+  let nC=keys.includes('ctrl')||keys.includes('cmd');
+  let nS=keys.includes('shift');
+  let nA=keys.includes('alt');
+  let key=keys[keys.length-1];
+  if(key==='~'||key==='`')key='`';
+  return(!!e.ctrlKey===nC)&&(!!e.shiftKey===nS)&&(!!e.altKey===nA)&&(e.key.toLowerCase()===key||e.code.toLowerCase().endsWith(key));
+}
+
+function handleEdKeydown(e,isMain){
+  if(e.ctrlKey&&(e.key==='z'||e.key==='y'))return;
+  if(settMode||scMode||clMode)return;
+  if(e.key==='Tab'&&!e.ctrlKey&&!e.shiftKey){
+    e.preventDefault();
+    const ta=isMain?codeArea:mdCode;
+    let s=ta.selectionStart,sp=' '.repeat(edSett.tabSize);
+    ta.value=ta.value.substring(0,s)+sp+ta.value.substring(ta.selectionEnd);
+    ta.selectionStart=ta.selectionEnd=s+edSett.tabSize;
+    if(isMain&&files[curFile])files[curFile].content=ta.value;
+    if(isMain)updateLineNums();else updateMdLineNums();return;
+  }
+  if(!isMain)return;
+  const pairs={'(':')','{'  :'}','[':']','"':'"',"'":"'"};
+  if(pairs[e.key]){
+    let s=codeArea.selectionStart,end=codeArea.selectionEnd;
+    e.preventDefault();
+    let val=codeArea.value;
+    if(s!==end){codeArea.value=val.substring(0,s)+e.key+val.substring(s,end)+pairs[e.key]+val.substring(end);codeArea.selectionStart=s+1;codeArea.selectionEnd=end+1;}
+    else{codeArea.value=val.substring(0,s)+e.key+pairs[e.key]+val.substring(end);codeArea.selectionStart=codeArea.selectionEnd=s+1;}
+    if(files[curFile])files[curFile].content=codeArea.value;
+    updateLineNums();updatePreview();return;
+  }
+  if(chk(e,hotkeys.save.current)){e.preventDefault();updatePreview();}
+  if(chk(e,hotkeys.find.current)){e.preventDefault();showFind();}
+  if(chk(e,hotkeys.newFile.current)){e.preventDefault();showCreateFileModal();}
+  if(chk(e,hotkeys.togglePv.current)){e.preventDefault();togglePreview();}
+  if(chk(e,hotkeys.clearCon.current)){e.preventDefault();clearConsole();}
+  if(chk(e,hotkeys.toggleCon.current)){e.preventDefault();toggleConsole();}
+  if(chk(e,hotkeys.shortcuts.current)){e.preventDefault();showScModal();}
+  if(chk(e,hotkeys.swapPanels.current)){e.preventDefault();swapPanels();}
+  if(chk(e,hotkeys.nextTab.current)){e.preventDefault();cycleTab(1);}
+  if(chk(e,hotkeys.prevTab.current)){e.preventDefault();cycleTab(-1);}
+  if(chk(e,hotkeys.closeTab.current)){e.preventDefault();if(openedFiles.length>1)closeTab(curFile,null);}
+  if(chk(e,hotkeys.toggleSide.current)){e.preventDefault();toggleSidebar();}
+  if(chk(e,hotkeys.dupLine.current)){e.preventDefault();dupLine();}
+  if(chk(e,hotkeys.togComment.current)){e.preventDefault();togComment();}
+}
+
+mdCode.addEventListener('keydown',e=>{
+  if(e.ctrlKey&&e.key==='s'){e.preventDefault();saveMdAndPreview();return;}
+  handleEdKeydown(e,false);
 });
-function applyTheme(theme) {
-document.documentElement.setAttribute('data-theme', theme);
-editorSettings.theme = theme;
-themeSelector.value = theme;
+codeArea.addEventListener('keydown',e=>handleEdKeydown(e,true));
+
+function cycleTab(dir){
+  if(settMode||scMode||clMode)return;
+  let idx=openedFiles.indexOf(curFile);
+  switchToFile(openedFiles[(idx+dir+openedFiles.length)%openedFiles.length]);
 }
-function getFileIconClass(f) {
-if (f.endsWith('.html')) return 'fab fa-html5';
-if (f.endsWith('.css')) return 'fab fa-css3-alt';
-if (f.endsWith('.js')) return 'fab fa-js';
-if (f.endsWith('.json')) return 'fas fa-file-code';
-if (f.endsWith('.md')) return 'fab fa-markdown';
-if (f.endsWith('.py')) return 'fab fa-python';
-return 'fas fa-file';
-}
-function escapeFileName(name) {
-  return name.replace(/'/g, "\\'");
-}
-function renderSidebarAndTabs() {
-fileListEl.innerHTML = '';
-for (let n in files) {
-let li = document.createElement('li');
-let isActive = (n === currentFile && !settingsMode && !shortcutsMode);
-let escapedN = escapeFileName(n);
-li.className = `file-item ${isActive ? 'active' : ''}`;
-li.innerHTML = `<div class="file-left" onclick="switchToFile('${escapedN}')"><i class="${files[n].icon}"></i> ${n}</div>${Object.keys(files).length>1?`<button class="delete-btn" onclick="deleteFile('${escapedN}')" title="Delete File"><i class="fas fa-trash"></i></button>`:''}`;
-fileListEl.appendChild(li);
-}
-renderTabs();
-}
-function renderTabs() {
-tabsArea.innerHTML = '';
-if (settingsMode) {
-let t = document.createElement('div'); t.className = 'tab active'; t.innerHTML = '<i class="fas fa-cog"></i> Settings'; tabsArea.appendChild(t);
-return;
-}
-if (shortcutsMode) {
-let t = document.createElement('div'); t.className = 'tab active'; t.innerHTML = '<i class="fas fa-keyboard"></i> Shortcuts'; tabsArea.appendChild(t);
-return;
-}
-for (let f of openedFiles) {
-if (!files[f]) continue; 
-let t = document.createElement('div'); 
-t.className = `tab ${f === currentFile ? 'active' : ''}`;
-t.innerHTML = `<i class="${files[f].icon}"></i> ${f}`;
-if (openedFiles.length > 1) {
-let escapedF = escapeFileName(f);
-t.innerHTML += `<span class="close-tab" onclick="closeTab('${escapedF}', event)"><i class="fas fa-times"></i></span>`;
-}
-t.onclick = (e) => { if (!e.target.classList.contains('close-tab') && !e.target.closest('.close-tab')) switchToFile(f); };
-tabsArea.appendChild(t);
-}
-}
-function closeTab(filename, event) {
-event.stopPropagation();
-if (openedFiles.length <= 1) return; 
-let index = openedFiles.indexOf(filename);
-if (index !== -1) {
-openedFiles.splice(index, 1);
-if (currentFile === filename) {
-currentFile = openedFiles[0] || Object.keys(files)[0];
-codeEditor.value = files[currentFile]?.content || '';
-}
-if (settingsMode || shortcutsMode) exitSpecialModes();
-renderSidebarAndTabs();
-updateLineNumbers();
-}
-}
-function switchToFile(n) {
-if (!files[n]) return;
-if (settingsMode || shortcutsMode) exitSpecialModes();
-if (files[currentFile] && !settingsMode && !shortcutsMode) files[currentFile].content = codeEditor.value;
-currentFile = n;
-if (!openedFiles.includes(n)) openedFiles.push(n);
-codeEditor.value = files[n].content;
-renderSidebarAndTabs();
-updateLineNumbers();
-}
-function openSettingsTab() {
-if (settingsMode) return;
-if (shortcutsMode) {
-shortcutsMode = false;
-settingsMode = true;
-codeEditor.style.display = 'none';
-lineNumbersEl.style.display = 'none';
-shortcutsPanel.classList.remove('active');
-settingsPanel.classList.add('active');
-renderHotkeySettings();
-renderSidebarAndTabs();
-return;
-}
-if (!settingsMode && !shortcutsMode) {
-if (files[currentFile]) files[currentFile].content = codeEditor.value;
-settingsMode = true;
-codeEditor.style.display = 'none';
-lineNumbersEl.style.display = 'none';
-settingsPanel.classList.add('active');
-renderHotkeySettings();
-renderSidebarAndTabs();
-}
-}
-function openShortcutsTab() {
-if (shortcutsMode) return;
-if (settingsMode) {
-settingsMode = false;
-shortcutsMode = true;
-codeEditor.style.display = 'none';
-lineNumbersEl.style.display = 'none';
-settingsPanel.classList.remove('active');
-shortcutsPanel.classList.add('active');
-renderShortcutsPanel();
-renderSidebarAndTabs();
-return;
-}
-if (!shortcutsMode && !settingsMode) {
-if (files[currentFile]) files[currentFile].content = codeEditor.value;
-shortcutsMode = true;
-codeEditor.style.display = 'none';
-lineNumbersEl.style.display = 'none';
-shortcutsPanel.classList.add('active');
-renderShortcutsPanel();
-renderSidebarAndTabs();
-}
-}
-function exitSpecialModes() {
-settingsMode = false;
-shortcutsMode = false;
-codeEditor.style.display = 'block';
-if (editorSettings.showLineNumbers) lineNumbersEl.style.display = 'block';
-else lineNumbersEl.style.display = 'none';
-settingsPanel.classList.remove('active');
-shortcutsPanel.classList.remove('active');
-if (files[currentFile]) codeEditor.value = files[currentFile].content;
-renderSidebarAndTabs();
-updateLineNumbers();
-}
-function exitShortcutsMode() { exitSpecialModes(); }
-function renderHotkeySettings() {
-hotkeySettings.innerHTML = '<label style="margin-bottom:16px; display:block;">Custom Hotkeys</label>';
-for (let k in hotkeys) {
-let d = document.createElement('div'); d.style.marginBottom = '16px';
-d.innerHTML = `<div style="display:flex; align-items:center; gap:12px;">
-<span style="width:180px; color:var(--amber-200);">${hotkeys[k].desc}</span>
-<input type="text" value="${hotkeys[k].current}" data-key="${k}" style="flex:1; background:var(--amber-950); border:1px solid var(--amber-600); color:var(--amber-50); padding:10px 16px; border-radius:8px;">
-</div>`;
-hotkeySettings.appendChild(d);
-}
-performanceCheckbox.checked = performanceMode;
-livePreviewCheckbox.checked = editorSettings.livePreview;
-fontSizeInput.value = editorSettings.fontSize;
-tabSizeSelect.value = editorSettings.tabSize;
-wordWrapCheckbox.checked = editorSettings.wordWrap;
-showLineNumbersCheckbox.checked = editorSettings.showLineNumbers;
-themeSelector.value = editorSettings.theme;
-}
-function renderShortcutsPanel() {
-shortcutsList.innerHTML = '';
-for (let k in hotkeys) {
-let li = document.createElement('li'); li.innerHTML = `<span>${hotkeys[k].desc}</span> <span class="key">${hotkeys[k].current}</span>`;
-shortcutsList.appendChild(li);
-}
-}
-function saveSettingsFromPanel() {
-document.querySelectorAll('#hotkeySettings input').forEach(inp => {
-let k = inp.dataset.key;
-if (k) hotkeys[k].current = inp.value.replace(/\s+/g, '').toUpperCase();
+
+let isDrag=false,stX=0;
+splitter.addEventListener('mousedown',e=>{
+  e.preventDefault();isDrag=true;stX=e.clientX;
+  const ew=edSec.getBoundingClientRect().width;
+  const total=workspace.clientWidth-1;edRatio=ew/total;
+  splitter.classList.add('dragging');document.body.style.cursor='col-resize';
 });
-performanceMode = performanceCheckbox.checked;
-if (performanceMode) {
-document.body.classList.add('performance-mode');
-} else {
-document.body.classList.remove('performance-mode');
-}
-editorSettings.livePreview = livePreviewCheckbox.checked;
-editorSettings.fontSize = parseInt(fontSizeInput.value, 10) || 15;
-editorSettings.tabSize = parseInt(tabSizeSelect.value, 10) || 4;
-editorSettings.wordWrap = wordWrapCheckbox.checked;
-editorSettings.showLineNumbers = showLineNumbersCheckbox.checked;
-editorSettings.theme = themeSelector.value;
-applyTheme(editorSettings.theme);
-applyEditorSettings();
-exitSpecialModes();
-}
-function resetHotkeys() {
-hotkeys = JSON.parse(JSON.stringify(defaultHotkeys));
-renderHotkeySettings();
-renderShortcutsPanel();
-}
-function applyEditorSettings() {
-codeEditor.style.fontSize = editorSettings.fontSize + 'px';
-codeEditor.style.tabSize = editorSettings.tabSize;
-codeEditor.style.whiteSpace = editorSettings.wordWrap ? 'pre-wrap' : 'pre';
-lineNumbersEl.style.display = editorSettings.showLineNumbers ? 'block' : 'none';
-updateLineNumbers();
-}
-function updateLineNumbers() {
-const lines = codeEditor.value.split('\n').length;
-lineNumbersEl.innerHTML = Array.from({length: lines}, (_, i) => i + 1).join('<br>');
-}
-codeEditor.addEventListener('scroll', () => { lineNumbersEl.scrollTop = codeEditor.scrollTop; });
-function deleteFile(n) { 
-showConfirmDialog(`Are you sure you want to delete ${n}?`,()=>{ 
-delete files[n]; 
-let idx = openedFiles.indexOf(n);
-if (idx !== -1) openedFiles.splice(idx,1);
-if (previewHtmlFile===n && n.endsWith('.html')) { let h=Object.keys(files).filter(f=>f.endsWith('.html')); previewHtmlFile=h.length?h[0]:null; } 
-if (currentFile===n) { currentFile=Object.keys(files)[0]||''; codeEditor.value=files[currentFile]?.content||''; } 
-if (settingsMode || shortcutsMode) exitSpecialModes();
-renderSidebarAndTabs(); updateLineNumbers(); updatePreviewHtmlSelect(); updatePreview(); 
-}); 
-}
-function createPreset(fn,ic,cont) {
-if (files[fn]) { showConfirmDialog(`Overwrite existing ${fn}?`,()=>{ 
-if(files[currentFile] && !settingsMode && !shortcutsMode)files[currentFile].content=codeEditor.value; 
-files[fn]={icon:ic,content:cont}; currentFile=fn; 
-if (!openedFiles.includes(fn)) openedFiles.push(fn);
-codeEditor.value=cont; 
-if (settingsMode || shortcutsMode) exitSpecialModes();
-renderSidebarAndTabs(); updateLineNumbers(); updatePreviewHtmlSelect(); updatePreview(); hideModal('fileModal'); 
-}); }
-else { 
-if(files[currentFile] && !settingsMode && !shortcutsMode)files[currentFile].content=codeEditor.value; 
-files[fn]={icon:ic,content:cont}; currentFile=fn; 
-if (!openedFiles.includes(fn)) openedFiles.push(fn);
-codeEditor.value=cont; 
-if (settingsMode || shortcutsMode) exitSpecialModes();
-renderSidebarAndTabs(); updateLineNumbers(); updatePreviewHtmlSelect(); updatePreview(); hideModal('fileModal'); 
-}
-}
-function createCustomFile() {
-let base=document.getElementById('customFileName').value.trim(); let ext=document.getElementById('customExt').value; if(!base){ return; }
-let full=base+(ext&&!base.endsWith(ext)?ext:''); full=full.replace(/[\\/]/g,''); if(!full)return;
-if(files[full]){ showConfirmDialog(`Overwrite ${full}?`,()=>{ 
-if(files[currentFile] && !settingsMode && !shortcutsMode)files[currentFile].content=codeEditor.value; 
-files[full]={icon:getFileIconClass(full),content:''}; currentFile=full; 
-if (!openedFiles.includes(full)) openedFiles.push(full);
-codeEditor.value=''; 
-if (settingsMode || shortcutsMode) exitSpecialModes();
-renderSidebarAndTabs(); updateLineNumbers(); updatePreviewHtmlSelect(); updatePreview(); hideModal('fileModal'); 
-}); }
-else { 
-if(files[currentFile] && !settingsMode && !shortcutsMode)files[currentFile].content=codeEditor.value; 
-files[full]={icon:getFileIconClass(full),content:''}; currentFile=full; 
-if (!openedFiles.includes(full)) openedFiles.push(full);
-codeEditor.value=''; 
-if (settingsMode || shortcutsMode) exitSpecialModes();
-renderSidebarAndTabs(); updateLineNumbers(); updatePreviewHtmlSelect(); updatePreview(); hideModal('fileModal'); 
-}
-}
-function showCreateFileModal() { fileModal.style.display='flex'; document.getElementById('customFileName').focus(); }
-function hideModal(id) { document.getElementById(id).style.display='none'; }
-function showConfirmDialog(msg,onOk,onCancel) {
-let m=document.getElementById('confirmModal'); document.getElementById('confirmMessage').innerText=msg; m.style.display='flex';
-let ok=document.getElementById('confirmOk'), cancel=document.getElementById('confirmCancel');
-let done=()=>{ m.style.display='none'; ok.removeEventListener('click',okHandler); cancel.removeEventListener('click',cancelHandler); };
-let okHandler=()=>{ done(); if(onOk)onOk(); };
-let cancelHandler=()=>{ done(); if(onCancel)onCancel(); };
-ok.addEventListener('click',okHandler); cancel.addEventListener('click',cancelHandler);
-m.addEventListener('click',function f(e){ if(e.target===m){ cancelHandler(); m.removeEventListener('click',f); } });
-}
-function updatePreviewHtmlSelect() {
-let h=Object.keys(files).filter(f=>f.endsWith('.html')); htmlPreviewSelect.innerHTML='';
-if(!h.length){ htmlPreviewSelect.innerHTML='<option>No HTML Output</option>'; previewHtmlFile=null; }
-else { h.forEach(f=>{ let o=document.createElement('option'); o.value=f; o.text=f; if(f===previewHtmlFile)o.selected=true; htmlPreviewSelect.appendChild(o); }); if(!previewHtmlFile||!h.includes(previewHtmlFile)) previewHtmlFile=h[0]; }
-}
-function changePreviewHtml() { previewHtmlFile=htmlPreviewSelect.value; updatePreview(); }
-function togglePreview() { 
-previewVisible = !previewVisible; 
-previewSection.classList.toggle('hidden', !previewVisible);
-splitter.classList.toggle('hidden', !previewVisible);
-adjustLayoutAfterSidebarToggle();
-}
-function swapPanels() {
-panelsSwapped = !panelsSwapped;
-if (panelsSwapped) {
-editorSection.style.order = '3';
-splitter.style.order = '2';
-previewSection.style.order = '1';
-} else {
-editorSection.style.order = '1';
-splitter.style.order = '2';
-previewSection.style.order = '3';
-}
-}
-function toggleSidebar() {
-sidebarVisible = !sidebarVisible;
-sidebar.classList.toggle('hidden', !sidebarVisible);
-activityBar.classList.toggle('hidden', !sidebarVisible);
-adjustLayoutAfterSidebarToggle();
-}
-function adjustLayoutAfterSidebarToggle() {
-if (previewVisible) {
-const total = workspace.clientWidth - (splitter.clientWidth || 8);
-const editorWidth = total * (editorRatio || 0.5);
-const previewWidth = total - editorWidth;
-editorSection.style.flex = `0 0 ${editorWidth}px`;
-previewSection.style.flex = `0 0 ${previewWidth}px`;
-} else {
-editorSection.style.flex = '1 1 auto';
-}
-}
-function getCompiledCode() {
-if(files[currentFile] && !settingsMode && !shortcutsMode) files[currentFile].content = codeEditor.value;
-let htmlFile = previewHtmlFile;
-if (!htmlFile || !files[htmlFile]) return '<!DOCTYPE html><html><head></head><body></body></html>';
-let htmlContent = files[htmlFile].content;
-if (standaloneMode) {
-return htmlContent;
-} else {
-let css = '', js = '';
-for (let f in files) {
-if (f.endsWith('.css')) css += files[f].content + '\n';
-if (f.endsWith('.js')) js += files[f].content + '\n';
-}
-let styleTag = css ? `<style>${css}</style>` : '';
-let scriptTag = js ? `<script>${js}<\/script>` : '';
-if (htmlContent.includes('</head>')) {
-htmlContent = htmlContent.replace('</head>', styleTag + '</head>');
-} else {
-htmlContent = styleTag + htmlContent;
-}
-if (htmlContent.includes('</body>')) {
-htmlContent = htmlContent.replace('</body>', scriptTag + '</body>');
-} else {
-htmlContent += scriptTag;
-}
-return htmlContent;
-}
-}
-function updatePreview() {
-const compiled = getCompiledCode();
-const blob = new Blob([compiled], { type: 'text/html' });
-const url = URL.createObjectURL(blob);
-previewFrame.src = url;
-previewFrame.onload = () => {
-URL.revokeObjectURL(url);
-captureConsole();
-};
-}
-function openNewTab() {
-const compiled = getCompiledCode();
-const win = window.open();
-win.document.write(compiled);
-win.document.close();
-}
-function showFind() { findOverlay.style.display='flex'; findInput.focus(); findInput.select(); updateFindCount(); }
-function hideFind() { findOverlay.style.display='none'; codeEditor.focus(); }
-function updateFindCount() {
-let term=findInput.value; if(!term){ findCount.innerText='0/0'; findMatches=[]; return; }
-let content=codeEditor.value; findMatches=[]; let pos=0;
-while((pos=content.indexOf(term,pos))!==-1){ findMatches.push(pos); pos+=term.length; }
-findMatches.term=term; findIndex=findMatches.length?0:-1;
-findCount.innerText=findMatches.length?`${findIndex+1}/${findMatches.length}`:'0/0';
-}
-function findNext() { if(!findMatches.length) updateFindCount(); if(!findMatches.length) return; findIndex=(findIndex+1)%findMatches.length; let pos=findMatches[findIndex]; codeEditor.focus(); codeEditor.setSelectionRange(pos,pos+findInput.value.length); findCount.innerText=`${findIndex+1}/${findMatches.length}`; }
-function findPrev() { if(!findMatches.length) updateFindCount(); if(!findMatches.length) return; findIndex=(findIndex-1+findMatches.length)%findMatches.length; let pos=findMatches[findIndex]; codeEditor.focus(); codeEditor.setSelectionRange(pos,pos+findInput.value.length); findCount.innerText=`${findIndex+1}/${findMatches.length}`; }
-findInput.addEventListener('input',updateFindCount);
-findInput.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); if(e.shiftKey) findPrev(); else findNext(); } if(e.key==='Escape') hideFind(); });
-document.getElementById('findNext').addEventListener('click',findNext);
-document.getElementById('findPrev').addEventListener('click',findPrev);
-function showShortcutsModal() {
-let list=document.getElementById('shortcutListModal'); list.innerHTML='';
-for(let k in hotkeys) { let li=document.createElement('li'); li.innerHTML=`<span>${hotkeys[k].desc}</span> <span class="key">${hotkeys[k].current}</span>`; list.appendChild(li); }
-shortcutsModal.style.display='flex';
-}
-function hideShortcutsModal() { shortcutsModal.style.display='none'; }
-async function importZip(e) {
-let file=e.target.files[0]; if(!file)return;
-try{ let zip=new JSZip(); let contents=await zip.loadAsync(file); let newFiles={}; let promises=[];
-contents.forEach((path,entry)=>{ if(!entry.dir) promises.push(entry.async('string').then(c=>{ let name=path.split('/').pop(); if(name) newFiles[name]={icon:getFileIconClass(name),content:c}; })); });
-await Promise.all(promises);
-if(Object.keys(newFiles).length) showConfirmDialog('Replace current environment?',()=>{ files=newFiles; openedFiles = Object.keys(newFiles).filter(f=>f.endsWith('.html')||f.endsWith('.css')||f.endsWith('.js')||f.endsWith('.md')); if (openedFiles.length === 0) openedFiles = Object.keys(newFiles); currentFile=openedFiles[0]||Object.keys(newFiles)[0]; codeEditor.value=files[currentFile]?.content||''; previewHtmlFile=Object.keys(newFiles).find(f=>f.endsWith('.html'))||null; if (settingsMode||shortcutsMode) exitSpecialModes(); renderSidebarAndTabs(); updateLineNumbers(); updatePreviewHtmlSelect(); updatePreview(); });
-e.target.value='';
-} catch{ alert('Import failed.'); }
-}
-function exportProject() { 
-if(files[currentFile] && !settingsMode && !shortcutsMode) files[currentFile].content=codeEditor.value; 
-let zip=new JSZip(); 
-for(let [n,d] of Object.entries(files)) zip.file(n,d.content); 
-let projectName = projectNameInput.value.trim() || 'visual_proof';
-zip.generateAsync({type:'blob'}).then(b=>saveAs(b, projectName + '.zip')); 
-}
-function captureConsole() {
-let win=previewFrame.contentWindow; if(!win)return;
-let oldLog=win.console.log, oldWarn=win.console.warn, oldError=win.console.error, oldInfo=win.console.info;
-win.console.log=function(...a){ addLog('log',...a); oldLog.apply(win.console,a); };
-win.console.warn=function(...a){ addLog('warn',...a); oldWarn.apply(win.console,a); };
-win.console.error=function(...a){ addLog('error',...a); oldError.apply(win.console,a); };
-win.console.info=function(...a){ addLog('info',...a); oldInfo.apply(win.console,a); };
-win.addEventListener('error', (e) => addLog('error', e.message));
-}
-function addLog(t,...a) { let el=document.createElement('div'); el.className=`log-item ${t}`; let icon={log:'📋',warn:'⚠️',error:'❌',info:'ℹ️'}[t]||'📄'; let msg = a.map(x => { try { return typeof x === 'string' ? x : JSON.stringify(x); } catch { return String(x); } }).join(' '); el.innerHTML=`<span class="log-icon">${icon}</span><span>${msg}</span>`; consoleLogs.appendChild(el); consoleLogs.scrollTop=consoleLogs.scrollHeight; }
-function clearConsole() { consoleLogs.innerHTML=''; }
-function toggleConsole() { let p=document.getElementById('consolePanel'); consoleVisible=!consoleVisible; p.style.height=consoleVisible?'220px':'38px'; }
-previewFrame.addEventListener('load',captureConsole);
-function duplicateLine() {
-let start = codeEditor.selectionStart;
-let val = codeEditor.value;
-let lineStart = val.lastIndexOf('\n', start-1) + 1;
-let lineEnd = val.indexOf('\n', start);
-if (lineEnd === -1) lineEnd = val.length;
-let line = val.substring(lineStart, lineEnd);
-codeEditor.value = val.substring(0, lineEnd) + '\n' + line + val.substring(lineEnd);
-codeEditor.selectionStart = lineEnd + 1;
-codeEditor.selectionEnd = lineEnd + 1;
-files[currentFile].content = codeEditor.value;
-updateLineNumbers();
-updatePreview();
-}
-function toggleComment() {
-let start = codeEditor.selectionStart;
-let val = codeEditor.value;
-let lineStart = val.lastIndexOf('\n', start-1) + 1;
-let lineEnd = val.indexOf('\n', start);
-if (lineEnd === -1) lineEnd = val.length;
-let line = val.substring(lineStart, lineEnd);
-if (line.trim().startsWith('//')) {
-line = line.replace('//', '');
-} else {
-line = '//' + line;
-}
-codeEditor.value = val.substring(0, lineStart) + line + val.substring(lineEnd);
-codeEditor.selectionStart = lineStart;
-codeEditor.selectionEnd = lineStart + line.length;
-files[currentFile].content = codeEditor.value;
-updateLineNumbers();
-updatePreview();
-}
-function checkHotkey(e, shortcutString) {
-if (!shortcutString) return false;
-let keys = shortcutString.toLowerCase().split('+').map(s => s.trim());
-let needsCtrl = keys.includes('ctrl') || keys.includes('cmd');
-let needsShift = keys.includes('shift');
-let needsAlt = keys.includes('alt');
-let key = keys[keys.length - 1];
-if (key === 'space') key = ' ';
-if (key === '~' || key === '`') key = '`';
-return (!!e.ctrlKey === needsCtrl) && (!!e.shiftKey === needsShift) && (!!e.altKey === needsAlt) && (e.key.toLowerCase() === key || e.code.toLowerCase().endsWith(key));
-}
-applyTheme(editorSettings.theme);
-applyEditorSettings();
-codeEditor.value=files[currentFile].content; renderSidebarAndTabs(); updateLineNumbers(); updatePreviewHtmlSelect(); updatePreview();
-let timeout; codeEditor.addEventListener('input',()=>{
-if(!settingsMode && !shortcutsMode) {
-updateLineNumbers();
-if (editorSettings.livePreview) {
-clearTimeout(timeout);
-timeout=setTimeout(updatePreview,400);
-}
-}
+window.addEventListener('mousemove',e=>{
+  if(!isDrag)return;e.preventDefault();
+  const dx=e.clientX-stX;const total=workspace.clientWidth-1;
+  const nEW=total*edRatio+dx,nPW=total-nEW;
+  if(nEW>180&&nPW>180){edSec.style.flex=`0 0 ${nEW}px`;pvSec.style.flex=`0 0 ${nPW}px`;}
 });
-codeEditor.addEventListener('keydown', e => {
-if (e.ctrlKey && e.key === 'z') return;
-if (e.ctrlKey && e.key === 'y') return;
-if(settingsMode || shortcutsMode) return;
-if(e.key==='Tab' && !e.ctrlKey && !e.shiftKey && document.activeElement === codeEditor){ e.preventDefault(); let s=codeEditor.selectionStart; codeEditor.value=codeEditor.value.substring(0,s)+'  '+codeEditor.value.substring(codeEditor.selectionEnd); codeEditor.selectionStart=codeEditor.selectionEnd=s+2; files[currentFile].content=codeEditor.value; updateLineNumbers(); updatePreview(); return; }
-const pairs = { '(': ')', '{': '}', '[': ']', '"': '"', "'": "'" };
-if (pairs[e.key] && document.activeElement === codeEditor) {
-let s = codeEditor.selectionStart, end = codeEditor.selectionEnd;
-if (s !== end) { e.preventDefault(); let val = codeEditor.value; codeEditor.value = val.substring(0,s) + e.key + val.substring(s,end) + pairs[e.key] + val.substring(end); codeEditor.selectionStart = s+1; codeEditor.selectionEnd = end+1; files[currentFile].content = codeEditor.value; updateLineNumbers(); updatePreview(); } 
-else { e.preventDefault(); let val = codeEditor.value; codeEditor.value = val.substring(0,s) + e.key + pairs[e.key] + val.substring(end); codeEditor.selectionStart = codeEditor.selectionEnd = s+1; files[currentFile].content = codeEditor.value; updatePreview(); }
-}
-if (checkHotkey(e, hotkeys.save.current)) { e.preventDefault(); updatePreview(); }
-if (checkHotkey(e, hotkeys.find.current)) { e.preventDefault(); showFind(); }
-if (checkHotkey(e, hotkeys.newFile.current)) { e.preventDefault(); showCreateFileModal(); }
-if (checkHotkey(e, hotkeys.togglePreview.current)) { e.preventDefault(); togglePreview(); }
-if (checkHotkey(e, hotkeys.clearConsole.current)) { e.preventDefault(); clearConsole(); }
-if (checkHotkey(e, hotkeys.toggleConsole.current)) { e.preventDefault(); toggleConsole(); }
-if (checkHotkey(e, hotkeys.shortcuts.current)) { e.preventDefault(); showShortcutsModal(); }
-if (checkHotkey(e, hotkeys.swapPanels.current)) { e.preventDefault(); swapPanels(); }
-if (checkHotkey(e, hotkeys.nextTab.current)) { e.preventDefault(); cycleTab(1); }
-if (checkHotkey(e, hotkeys.prevTab.current)) { e.preventDefault(); cycleTab(-1); }
-if (checkHotkey(e, hotkeys.closeTab.current)) { e.preventDefault(); if (!settingsMode && !shortcutsMode && openedFiles.length > 1) closeTab(currentFile, new Event('click')); }
-if (checkHotkey(e, hotkeys.toggleSidebar.current)) { e.preventDefault(); toggleSidebar(); }
-if (checkHotkey(e, hotkeys.duplicateLine.current)) { e.preventDefault(); duplicateLine(); }
-if (checkHotkey(e, hotkeys.toggleComment.current)) { e.preventDefault(); toggleComment(); }
+window.addEventListener('mouseup',()=>{
+  if(isDrag){isDrag=false;splitter.classList.remove('dragging');document.body.style.cursor='';
+  const ew=edSec.getBoundingClientRect().width;const total=workspace.clientWidth-1;edRatio=ew/total;}
 });
-function cycleTab(direction) {
-if (settingsMode || shortcutsMode) return;
-let idx = openedFiles.indexOf(currentFile);
-let newIdx = (idx + direction + openedFiles.length) % openedFiles.length;
-switchToFile(openedFiles[newIdx]);
-}
-fileModal.addEventListener('click',e=>{ if(e.target===fileModal) hideModal('fileModal'); });
-shortcutsModal.addEventListener('click',e=>{ if(e.target===shortcutsModal) hideShortcutsModal(); });
-let isDragging = false; let startX = 0;
-splitter.addEventListener('mousedown', (e) => { 
-e.preventDefault(); 
-isDragging = true; 
-startX = e.clientX; 
-const editorWidth = editorSection.getBoundingClientRect().width; 
-const total = workspace.clientWidth - (splitter.clientWidth || 8);
-editorRatio = editorWidth / total;
-splitter.classList.add('dragging'); 
-document.body.style.cursor = 'col-resize'; 
+
+let lvTimeout;
+codeArea.addEventListener('input',()=>{
+  if(!settMode&&!scMode&&!clMode){
+    updateLineNums();updateSB();
+    if(files[curFile])files[curFile].content=codeArea.value;
+    if(edSett.livePreview){clearTimeout(lvTimeout);lvTimeout=setTimeout(updatePreview,400);}
+  }
 });
-window.addEventListener('mousemove', (e) => { 
-if (!isDragging) return; 
-e.preventDefault(); 
-const dx = e.clientX - startX; 
-const total = workspace.clientWidth - (splitter.clientWidth || 8);
-const newEditorWidth = total * editorRatio + dx;
-const newPreviewWidth = total - newEditorWidth;
-if (newEditorWidth > 200 && newPreviewWidth > 200) { 
-editorSection.style.flex = '0 0 ' + newEditorWidth + 'px'; 
-previewSection.style.flex = '0 0 ' + newPreviewWidth + 'px'; 
-} 
-});
-window.addEventListener('mouseup', () => { 
-if (isDragging) { 
-isDragging = false; 
-splitter.classList.remove('dragging'); 
-document.body.style.cursor = ''; 
-const editorWidth = editorSection.getBoundingClientRect().width; 
-const total = workspace.clientWidth - (splitter.clientWidth || 8);
-editorRatio = editorWidth / total;
-} 
-});
-const presets = [
-  { label: 'HTML', filename: 'index.html', icon: 'fab fa-html5', content: '<!DOCTYPE html>\n<html>\n<head>\n    <title>New Page</title>\n</head>\n<body>\n    <h1>Hello World</h1>\n</body>\n</html>' },
-  { label: 'CSS', filename: 'style.css', icon: 'fab fa-css3-alt', content: 'body {\n    margin: 0;\n    padding: 20px;\n    font-family: sans-serif;\n}' },
-  { label: 'JS', filename: 'script.js', icon: 'fab fa-js', content: 'console.log("Hello from JavaScript!");' },
-  { label: 'JSON', filename: 'data.json', icon: 'fas fa-file-code', content: '{\n    "name": "project",\n    "version": "1.0.0"\n}' },
-  { label: 'Markdown', filename: 'README.md', icon: 'fab fa-markdown', content: '# Project Title\n\nDescription goes here.' },
-  { label: 'Python', filename: 'main.py', icon: 'fab fa-python', content: 'print("Hello from Python!")' }
+
+const presets=[
+  {label:'HTML',icon:'fab fa-html5 i-html',fn:'index.html',cont:'<!DOCTYPE html>\n<html>\n<head>\n  <title>New Page</title>\n</head>\n<body>\n  <h1>Hello World</h1>\n</body>\n</html>'},
+  {label:'CSS',icon:'fab fa-css3-alt i-css',fn:'style.css',cont:'body {\n  margin: 0;\n  padding: 20px;\n  font-family: sans-serif;\n}'},
+  {label:'JS',icon:'fab fa-js i-js',fn:'script.js',cont:'console.log("Hello from JavaScript!");'},
+  {label:'JSON',icon:'fas fa-file-code i-json',fn:'data.json',cont:'{\n  "name": "project",\n  "version": "1.0.0"\n}'},
+  {label:'Markdown',icon:'fab fa-markdown i-md',fn:'README.md',cont:'# Project Title\n\nDescription goes here.\n\n## Features\n\n- Feature one\n- Feature two\n'},
+  {label:'Python',icon:'fab fa-python i-py',fn:'main.py',cont:'print("Hello from Python!")'}
 ];
-const presetGrid = document.getElementById('presetGrid');
-presets.forEach(p => {
-  const btn = document.createElement('div');
-  btn.className = 'preset-btn';
-  btn.textContent = p.label;
-  btn.addEventListener('click', () => createPreset(p.filename, p.icon, p.content));
+const presetGrid=document.getElementById('presetGrid');
+presets.forEach(p=>{
+  const btn=document.createElement('div');btn.className='preset-btn';
+  btn.innerHTML=`<i class="${p.icon}"></i>${p.label}`;
+  btn.addEventListener('click',()=>createPreset(p.fn,p.cont));
   presetGrid.appendChild(btn);
 });
+
+document.querySelectorAll('.modal-bg').forEach(m=>{
+  m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');});
+});
+
+buildChangelog();
+applyTheme(edSett.theme);
+applyEditorSettings();
+codeArea.value=files[curFile].content;
+renderSideTabs();
+updateLineNums();
+updatePvHtmlSel();
+updatePreview();
+updateSB();
+applyFileToEditor();
 </script>
 </body>
 </html>
